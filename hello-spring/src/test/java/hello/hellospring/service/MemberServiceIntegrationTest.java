@@ -25,22 +25,26 @@ class MemberServiceIntegrationTest {
         //given
         Member member = new Member();
         //member.setName("sirong");
-        member.setName("sirong33");
+        member.setName("sirong3");
 
         //when
         Long saveId = memberService.join(member);
+        //System.out.println("s id  "+ saveId);
+        //System.out.println("get id :"+member.getId());
         //then
         Member findMember = memberService.findOne(saveId).get();
+        //System.out.println("find id : "+findMember.getId());
+        //System.out.println("find name: "+findMember.getName());
         assertThat(member.getName()).isEqualTo(findMember.getName());
     }
 
     @Test
-    public void 중복_회원_예외() {
+    public void 중복_회원_예외() throws Exception {
         //given
         Member member = new Member();
-        member.setName("sisiro");
+        member.setName("sisiro2");
         Member member2 = new Member();
-        member2.setName("sisiro");
+        member2.setName("sisiro2");
 
         //when
         memberService.join(member);
@@ -57,5 +61,6 @@ class MemberServiceIntegrationTest {
         //then
 
     }
+
 
 }

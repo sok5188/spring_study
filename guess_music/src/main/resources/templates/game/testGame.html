@@ -12,11 +12,14 @@
     </audio>
 </div>
 <div>
-    <form action="/testGame" method="post">
-        <input type="text" name="answer" placeholder="write answer">
-        <input type="submit" value="answer">
-    </form>
+
+    <input type="text" id="answer" name="answer" onkeypress="enterKey(event)" placeholder="write answer"/>
+    <input type="button" id="sub_btn" value="submit" onclick="checkAnswer()">
+
 </div>
 
 </body>
+<script src="js/Game.js">
+</script>
+
 </html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div>
+    <audio autoplay controls>
+        <source th:src="'audio/'+${music}+'.mp3'" type="audio/mp3">
+    </audio>
+</div>
+<div>
+    <form action="/testGame" method="post">
+        <input type="text" name="answer" placeholder="write answer">
+        <input type="submit" value="answer">
+    </form>
+</div>
+
+</body>
+</html>

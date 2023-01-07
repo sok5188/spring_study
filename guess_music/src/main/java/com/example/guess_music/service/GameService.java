@@ -17,23 +17,24 @@ public class GameService {
     private final GameRepository gameRepository;
 
 
-    public boolean checkAnswers(String target,int gameIndex,int seq){
+    public String getAnswers(String target,int gameIndex,int seq){
         Optional<List<String>> opt = gameRepository.findAnswerBySeq(gameIndex, seq);
         if(opt.isPresent()){
             // gameIndex,seq에 맞는 answers가 존재하는 경우 해당 list의 nullable을 푼다
-            System.out.println("not empty");
             List<String> answers=opt.get();
-            for (String s :
-                    answers) {
-                System.out.println("right answer : "+s);
-            }
             // 사용자가 입력한 target과 db에 존재하는 정답들을 비교하여 정답 여부를 리턴한다.
-            return answers.stream().filter(ans -> ans.equals(target)).findAny().isPresent();
+            Optional<String> answer= answers.stream().filter(ans -> ans.equals(target)).findAny();
+            if(answer.isPresent()){
+                return answer.get();
+            }
         }
-        //answer 맞으면 true 아니면 false반환하자
-        //List stream사용해서 반복문 돌기
-        //그 뭐 findany였나 그거로 찾을 수 있나?
+       //어쩌면 예외 핸들링 해야 할 부분..
 
-        return false;
+        return "X";
+    }
+    public Long getGameSize(int gameIndex){
+        //db에서 해당 게임의 인덱스를 가지고 게임 내의 노래 수를 가져와서 return하는 함수
+        List<Long> result = gameRepository.findNumGameByGameIndex(gameIndex);
+        return result.get(0);
     }
 }

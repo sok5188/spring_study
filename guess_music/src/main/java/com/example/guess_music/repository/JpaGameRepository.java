@@ -1,6 +1,9 @@
 package com.example.guess_music.repository;
 
 import com.example.guess_music.domain.Answers;
+import com.example.guess_music.domain.QAnswers;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -26,9 +29,13 @@ public class JpaGameRepository implements GameRepository{
     }
 
     @Override
-    public Optional<List<Answers>> findByGameIndex(int gameIndex) {
-        //나중
-        return Optional.empty();
+    public List<Long> findNumGameByGameIndex(int gameIndex) {
+        //game index로 game내의 노래의 수를 리턴
+        QAnswers qAnswers=QAnswers.answers;
+        JPAQueryFactory queryFactory=new JPAQueryFactory(em);
+        JPAQuery<Long> query = queryFactory.from(qAnswers).select(qAnswers.seq.countDistinct()).where(qAnswers.gameIndex.eq(gameIndex));
+        List<Long> fetch = query.fetch();
+        return fetch;
     }
 
     @Override

@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface GameRepository {
     Answers save(Answers answers);
     List<Answers> findAnswer(int gameIndex);
-    Optional<List<Answers>> findByGameIndex(int gameIndex);
+    List<Long> findNumGameByGameIndex(int gameIndex);
     Optional<List<String>> findAnswerBySeq(int gameIndex,int seq);
 }

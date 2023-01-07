@@ -5,19 +5,25 @@
     <title>Title</title>
 </head>
 <body>
-
+<div>
+    <p th:text="${remainSong}+'/'+${totalSong}"></p>
+</div>
 <div>
     <audio autoplay controls>
         <source th:src="'audio/'+${music}+'.mp3'" type="audio/mp3">
     </audio>
 </div>
-<div>
-
+<div id="enterAnswer">
     <input type="text" id="answer" name="answer" onkeypress="enterKey(event)" placeholder="write answer"/>
     <input type="button" id="sub_btn" value="submit" onclick="checkAnswer()">
-
+    <input type="button" id="skip_btn" value="Skip" onclick="skipSong()">
 </div>
-
+<div id="gotAnswer" hidden="hidden">
+    <h2 id="endText" hidden="hidden">수고하셨습니다</h2>
+    <h3> 정답 ! </h3>
+    <p id="answerText">g</p>
+    <input type="button" id="next_btn" value="Skip" onclick="skipSong()">
+</div>
 </body>
 <script src="js/Game.js">
 </script>

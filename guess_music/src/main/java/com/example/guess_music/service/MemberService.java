@@ -2,6 +2,8 @@ package com.example.guess_music.service;
 
 import com.example.guess_music.domain.Member;
 import com.example.guess_music.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -30,6 +32,14 @@ public class MemberService {
     }
 
     public Optional<Member> findOne(String id){ return memberRepository.findById(id); }
+
+    public boolean checkLogin(HttpServletRequest request) {
+        HttpSession session=request.getSession();
+        if(session.getAttribute("login")==null || (boolean)session.getAttribute("login")==false){
+            return false;
+        }
+        return true;
+    }
 
 
 }

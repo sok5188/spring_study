@@ -43,4 +43,19 @@ public class JpaGameRepository implements GameRepository{
         List<String> resultList = em.createQuery("select m.answer from Answers m where m.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex",gameIndex).setParameter("seq",seq).getResultList();
         return Optional.ofNullable(resultList);
     }
+
+    @Override
+    public Optional<String> findSingerBySeq(int gameIndex, int seq) {
+        String singleResult = em.createQuery("select m.singer from Answers m where m.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getSingleResult();
+        System.out.println("find singer : "+ singleResult);
+        return Optional.ofNullable(singleResult);
+    }
+
+    @Override
+    public Optional<String> findInitialBySeq(int gameIndex, int seq) {
+        String singleResult = em.createQuery("select m.initial from Answers m where m.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getSingleResult();
+        System.out.println("find initial : "+ singleResult);
+        return Optional.ofNullable(singleResult);
+    }
+
 }

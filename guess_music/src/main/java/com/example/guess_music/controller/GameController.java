@@ -70,19 +70,11 @@ public class GameController {
         System.out.println("will send data : "+result);
         return result;
     }
-    @PostMapping("/testGame/skip")
-    @ResponseBody
-    public Result skipGame(){
-        Result result=new Result();
-        session.setAttribute("seq",++seq);
-        Long gameSize = gameService.getGameSize(1);
-        if(seq>gameSize) {
-            result.setResult("Game End");
-            seq=1;
-        }else{
-            result.setResult("Next Song");
-        }
-        return result;
-    }
 
+    @GetMapping("/testGame/hint")
+    @ResponseBody
+    public String Hint(@RequestParam("type") String type){
+        System.out.println("at controller in Hint : "+gameService.getHint(type,gameIndex,seq));
+        return gameService.getHint(type,gameIndex,seq);
+    }
 }

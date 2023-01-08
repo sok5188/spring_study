@@ -10,4 +10,7 @@ public interface GameRepository {
     List<Answers> findAnswer(int gameIndex);
     List<Long> findNumGameByGameIndex(int gameIndex);
     Optional<List<String>> findAnswerBySeq(int gameIndex,int seq);
+
+    Optional<String> findSingerBySeq(int gameIndex,int seq);
+    Optional<String> findInitialBySeq(int gameIndex,int seq);
 }

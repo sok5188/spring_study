@@ -9,9 +9,16 @@
     <p th:text="${remainSong}+'/'+${totalSong}"></p>
 </div>
 <div>
-    <audio autoplay controls>
+    <audio autoplay controls="false" hidden="hidden" id="musicPlayer">
         <source th:src="'audio/'+${music}+'.mp3'" type="audio/mp3">
+        <p>
+            지원되지 않는 브라우저 입니다
+        </p>
     </audio>
+</div>
+<div>
+    <label for="timer">남은 시간 : </label>
+    <input id="timer" type="text" value="" readonly>
 </div>
 <div id="enterAnswer">
     <input type="text" id="answer" name="answer" onkeypress="enterKey(event)" placeholder="write answer"/>
@@ -23,6 +30,10 @@
     <h3> 정답 ! </h3>
     <p id="answerText">g</p>
     <input type="button" id="next_btn" value="Skip" onclick="skipSong()">
+</div>
+<div id="hintDiv">
+    <p id="singerHint"></p>
+    <p id="initialHint"></p>
 </div>
 </body>
 <script src="js/Game.js">

@@ -1,3 +1,23 @@
+//for timer
+var time=60;
+var sec="";
+var x=setInterval(function(){
+    sec=time%60
+    document.getElementById("timer").value=sec+"초";
+    time--;
+    if(time==30){
+        showSingerHint();
+    }
+    if(time==15){
+        showInitialHint();
+    }
+    if(time<0){
+        clearInterval(x);
+        skipSong();
+    }
+},1000)
+var audio=document.getElementById('musicPlayer');
+audio.volume=0.4;
 
 function checkAnswer(){
     var textBox=document.getElementById('answer');
@@ -50,6 +70,7 @@ function skipSong(){
     let hidden=document.getElementById('gotAnswer').getAttribute("hidden");
     let endFlag=document.getElementById('endText').getAttribute("hidden");
     console.log("skip handler called");
+    audio.pause();
     if(!endFlag){
         //game end!
         //일단 홈으로 이동시킴
@@ -75,4 +96,23 @@ function skipSong(){
         else
             window.location.href='http://localhost:8080/testGame';
     }
+}
+var hintDiv=document.getElementById('hintDiv');
+function showSingerHint(){
+    //document.getElementById('hintDiv').textContent
+    let url='testGame/hint?type=singer';
+    fetch(url).then(res=>res.text()).then(data=>{
+        document.getElementById('singerHint').textContent="가수 : "+data;
+    }).catch(err=>{
+        console.log("showSingerHint error");
+    })
+}
+
+function showInitialHint(){
+    let url='testGame/hint?type=initial';
+        fetch(url).then(res=>res.text()).then(data=>{
+            document.getElementById('initialHint').textContent="초성 힌트 : "+data;
+        }).catch(err=>{
+            console.log("showInitialrHint error");
+        })
 }

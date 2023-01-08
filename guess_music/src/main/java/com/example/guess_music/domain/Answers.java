@@ -46,4 +46,24 @@ public class Answers {
         this.answer = answer;
     }
 
+    public String getSinger() {
+        return singer;
+    }
+
+    public void setSinger(String singer) {
+        this.singer = singer;
+    }
+
+    private String singer;
+
+    public String getInitial() {
+        return initial;
+    }
+
+    public void setInitial(String initial) {
+        this.initial = initial;
+    }
+
+    private String initial;
+
 }

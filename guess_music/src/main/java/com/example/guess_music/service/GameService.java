@@ -43,4 +43,23 @@ public class GameService {
         List<Long> result = gameRepository.findNumGameByGameIndex(gameIndex);
         return result.get(0);
     }
+
+    public String getHint(String type,int gameIndex,int seq){
+        if(type.equals("singer")){
+            Optional<String> opt = gameRepository.findSingerBySeq(gameIndex, seq);
+            if(opt.isPresent())
+                return opt.get();
+            else
+                return "Nothing";
+        }
+        if(type.equals("initial")){
+            Optional<String> opt = gameRepository.findInitialBySeq(gameIndex, seq);
+            if(opt.isPresent())
+                return opt.get();
+            else
+                return "Nothing";
+
+        }
+        return "False type";
+    }
 }

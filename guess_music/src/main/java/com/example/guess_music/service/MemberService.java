@@ -33,12 +33,12 @@ public class MemberService {
 
     public Optional<Member> findOne(String id){ return memberRepository.findById(id); }
 
-    public boolean checkLogin(HttpServletRequest request) {
+    public String checkLogin(HttpServletRequest request) {
         HttpSession session=request.getSession();
         if(session.getAttribute("login")==null || (boolean)session.getAttribute("login")==false){
-            return false;
+            return "False";
         }
-        return true;
+        return "True";
     }
 
 

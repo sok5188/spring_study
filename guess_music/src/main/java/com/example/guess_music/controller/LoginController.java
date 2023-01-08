@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
 
@@ -53,4 +54,9 @@ public class LoginController {
         return "redirect:/";
     }
 
+    @GetMapping("/checkLogin")
+    @ResponseBody
+    public String checkLogin(HttpServletRequest request){
+        return memberService.checkLogin(request);
+    }
 }

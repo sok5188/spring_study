@@ -1,23 +1,25 @@
 package com.example.guess_music.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Answers {
     @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int gameIndex;
 
-    public int getGameIndex() {
+
+    public Game getGameIndex() {
         return gameIndex;
     }
 
-    public void setGameIndex(int gameIndex) {
+    public void setGameIndex(Game gameIndex) {
         this.gameIndex = gameIndex;
     }
+
+    @ManyToOne@JoinColumn(name = "gameIndex")
+    private Game gameIndex;
+
+
 
     private int seq;
     private String answer;

@@ -1,5 +1,6 @@
 package com.example.guess_music.controller;
 
+import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
 import com.example.guess_music.service.GameService;
 import com.example.guess_music.service.MemberService;
@@ -13,20 +14,44 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class GameController {
     private final GameService gameService;
-    private int gameIndex,seq,score;
+    private int seq,score;
+    private Long gameIndex;
     @Autowired
     public GameController(GameService gameService) {
         this.gameService = gameService;
-        gameIndex=seq=1;
+        gameIndex=1L;
+        seq=1;
         score=0;
     }
     @Autowired
     private HttpSession session;
+    @GetMapping("/select")
+    public String selectGame(){
+        return "/game/select";
+    }
+
+
+    @ResponseBody
+    @GetMapping("/gameList")
+    public List<Game> gameList(){
+        List<Game> gameList = gameService.getGameList();
+        System.out.println("got list from service : "+gameList);
+        for (Game g :
+                gameList) {
+            System.out.println(g.getGameIndex()+" / "+g.getTitle()+" / "+g.getSongNum());
+        }
+        if(gameList.isEmpty()){
+            //??
+        }
+        return gameList;
+    }
+
     @GetMapping("/testGame")
     public String createtestGame(Model model){
         //HttpSession session=request.getSession();
@@ -34,7 +59,7 @@ public class GameController {
             seq=(int)session.getAttribute("seq");
         }
         String music=gameIndex+"-"+seq;
-        Long gameSize = gameService.getGameSize(1);
+        Long gameSize = gameService.getGameSize(1L);
         System.out.println("now target music is : "+music+"and game index,seq : "+gameIndex+" / "+seq);
         model.addAttribute("music",music).addAttribute("remainSong",gameSize-seq+1).addAttribute("totalSong",gameSize);
 
@@ -47,7 +72,7 @@ public class GameController {
         System.out.println("Got target : "+target);
 
         Result result=new Result();
-        Long gameSize = gameService.getGameSize(1);
+        Long gameSize = gameService.getGameSize(1L);
         Result results=gameService.getAnswers(target,gameIndex,seq);
         result.setAnswer(results.getAnswer());
 
@@ -61,6 +86,7 @@ public class GameController {
             if(seq>gameSize) {
                 result.setResult("Game End");
                 seq=1;
+                session.setAttribute("seq",seq);
             }else{
                 result.setResult("Next Song");
             }

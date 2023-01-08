@@ -41,18 +41,22 @@ public class GameController {
         return "/game/testGame";
     }
 
-    @PostMapping("/testGame")
+    @GetMapping("/testGame/checkAnswer")
     @ResponseBody
     public Result testGame(@RequestParam("target") String target){
+        System.out.println("Got target : "+target);
+
         Result result=new Result();
         Long gameSize = gameService.getGameSize(1);
-        System.out.println("in controller got game size : "+gameSize);
-        String getAnswer=gameService.getAnswers(target,gameIndex,seq);
-        result.setAnswer(getAnswer);
-        if(getAnswer!="X"){
-            //score 처리 부분 만들어야 함
-            score++;
+        Result results=gameService.getAnswers(target,gameIndex,seq);
+        result.setAnswer(results.getAnswer());
 
+        if(target.equals("skip")|| results.getResult() =="Right"){
+            //score 처리 부분 만들어야 함
+            if(results.getResult()=="Right")
+                score++;
+
+            System.out.println("entered");
             session.setAttribute("seq",++seq);
             if(seq>gameSize) {
                 result.setResult("Game End");
@@ -63,8 +67,22 @@ public class GameController {
         }else{
             result.setResult("Wrong Answer");
         }
+        System.out.println("will send data : "+result);
         return result;
     }
-
+    @PostMapping("/testGame/skip")
+    @ResponseBody
+    public Result skipGame(){
+        Result result=new Result();
+        session.setAttribute("seq",++seq);
+        Long gameSize = gameService.getGameSize(1);
+        if(seq>gameSize) {
+            result.setResult("Game End");
+            seq=1;
+        }else{
+            result.setResult("Next Song");
+        }
+        return result;
+    }
 
 }

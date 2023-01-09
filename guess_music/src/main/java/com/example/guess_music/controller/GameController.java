@@ -51,28 +51,46 @@ public class GameController {
         }
         return gameList;
     }
+    @GetMapping("/gameStart")
+    public String startGame(@RequestParam(value = "gameIndex", required = false) Optional<Long> gameIdx){
+        //선택한 게임의 인덱스를 변수에 저장한다.
+        if(gameIdx.isPresent()){
+            //세션에 저장한 seq는 게임 인덱스 값이 바뀌면 초기화 한다
+            if(gameIndex.equals(gameIdx.get())){
+                //직전에 진행하던 게임과 같은 게임을 선택한 경우 게임 진행을 이어간다
+            }else{
+                //게임 인덱스 값을 변경하고 seq값도 변경한다
+                session.setAttribute("seq",1);
+                gameIndex=gameIdx.get();
+            }
+        }
 
-    @GetMapping("/testGame")
-    public String createtestGame(Model model){
+        return "game/intro";
+    }
+    @GetMapping("/Game")
+    public String createGame(Model model){
         //HttpSession session=request.getSession();
         if(session.getAttribute("seq")!=null){
             seq=(int)session.getAttribute("seq");
+        }else {
+            //세션에 seq정보가 없는 경우
+            session.setAttribute("seq",1);
         }
         String music=gameIndex+"-"+seq;
-        Long gameSize = gameService.getGameSize(1L);
+        Long gameSize = gameService.getGameSize(gameIndex);
         System.out.println("now target music is : "+music+"and game index,seq : "+gameIndex+" / "+seq);
         model.addAttribute("music",music).addAttribute("remainSong",gameSize-seq+1).addAttribute("totalSong",gameSize);
 
-        return "/game/testGame";
+        return "/game/Game";
     }
 
-    @GetMapping("/testGame/checkAnswer")
+    @GetMapping("/Game/checkAnswer")
     @ResponseBody
-    public Result testGame(@RequestParam("target") String target){
+    public Result getGameAnswer(@RequestParam("target") String target){
         System.out.println("Got target : "+target);
 
         Result result=new Result();
-        Long gameSize = gameService.getGameSize(1L);
+        Long gameSize = gameService.getGameSize(gameIndex);
         Result results=gameService.getAnswers(target,gameIndex,seq);
         result.setAnswer(results.getAnswer());
 
@@ -85,8 +103,8 @@ public class GameController {
             session.setAttribute("seq",++seq);
             if(seq>gameSize) {
                 result.setResult("Game End");
-                seq=1;
-                session.setAttribute("seq",seq);
+                session.removeAttribute("seq");
+//                session.setAttribute("seq",seq);
             }else{
                 result.setResult("Next Song");
             }
@@ -97,7 +115,7 @@ public class GameController {
         return result;
     }
 
-    @GetMapping("/testGame/hint")
+    @GetMapping("/Game/hint")
     @ResponseBody
     public String Hint(@RequestParam("type") String type){
         System.out.println("at controller in Hint : "+gameService.getHint(type,gameIndex,seq));

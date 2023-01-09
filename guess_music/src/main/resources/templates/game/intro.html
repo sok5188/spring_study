@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <h2> 노래맞추기 </h2>
+    <h4> 모든 노래는 1분동안 재생됩니다. <br>
+         만약 정답을 모르겠다면 스킵버튼을 눌러주세요<br>
+        모든 정답은 한글 혹은 영어 소문자로 이루어져 있습니다<br>
+        30초가 남게되면 가수 힌트가 제공되고 15초가 남게되면 제목의 초성 힌트가 제공됩니다<br>
+    </h4>
+    <h3>
+        정답을 입력하실 때 띄어쓰기를 하지 말아주세요!
+    </h3>
+</div>
+<input type="button" value="Start Game" id="startBtn" onclick="startGame()">
+</body>
+<script>
+    function startGame(){
+         window.location.href='http://localhost:8080/Game';
+    }
+</script>
+</html>

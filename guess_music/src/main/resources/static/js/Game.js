@@ -23,7 +23,7 @@ function checkAnswer(){
     var textBox=document.getElementById('answer');
     if(textBox!=null){
         var target=textBox.value;
-        var url='/testGame/checkAnswer?target='+target;
+        var url='/Game/checkAnswer?target='+target;
         fetch(url).then(res=>res.json()).then(data=>{
             console.log(data.result);
             //정답시.. 정답화면 표
@@ -35,7 +35,7 @@ function checkAnswer(){
                 console.log("next song gogo!")
                 this.showAnswer("next",data.answer);
                 console.log("after called showAnswer");
-                //window.location.href='http://localhost:8080/testGame';
+                //window.location.href='http://localhost:8080/Game';
             }
         })
         .catch(err=>{
@@ -80,7 +80,7 @@ function skipSong(){
         //다음곡으로 이동
         if(hidden){
             //정답을 맞추지 못한 상태로 skip : 정답 창 보여주기
-            let url='testGame/checkAnswer?target=skip';
+            let url='Game/checkAnswer?target=skip';
             fetch(url).then(res=>res.json()).then(data=>{
                 console.log("got response"+data.result);
                 if(data.result=="Game End"){
@@ -94,13 +94,13 @@ function skipSong(){
             });
         }
         else
-            window.location.href='http://localhost:8080/testGame';
+            window.location.href='http://localhost:8080/Game';
     }
 }
 var hintDiv=document.getElementById('hintDiv');
 function showSingerHint(){
     //document.getElementById('hintDiv').textContent
-    let url='testGame/hint?type=singer';
+    let url='Game/hint?type=singer';
     fetch(url).then(res=>res.text()).then(data=>{
         document.getElementById('singerHint').textContent="가수 : "+data;
     }).catch(err=>{
@@ -109,10 +109,13 @@ function showSingerHint(){
 }
 
 function showInitialHint(){
-    let url='testGame/hint?type=initial';
+    let url='Game/hint?type=initial';
         fetch(url).then(res=>res.text()).then(data=>{
             document.getElementById('initialHint').textContent="초성 힌트 : "+data;
         }).catch(err=>{
             console.log("showInitialrHint error");
         })
+}
+function goHome(){
+    window.location.href='http://localhost:8080';
 }

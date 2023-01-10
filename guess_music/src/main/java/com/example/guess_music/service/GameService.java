@@ -21,9 +21,10 @@ public class GameService {
     private final AnswerRepository answerRepository;
     private final GameRepository gameRepository;
 
-    public Result getAnswers(String target, Long gameIndex, int seq){
+    public Result getResult(String target, Long gameIndex, int seq){
         Result result=new Result();
         Optional<List<String>> opt = answerRepository.findAnswerBySeq(gameIndex, seq);
+        Optional<String> singerBySeq = answerRepository.findSingerBySeq(gameIndex, seq);
         if(opt.isPresent()){
             // gameIndex,seq에 맞는 answers가 존재하는 경우 해당 list의 nullable을 푼다
             List<String> answers=opt.get();
@@ -35,6 +36,8 @@ public class GameService {
             }else{
                 result.setResult("Wrong");
             }
+            if(singerBySeq.isPresent())
+                result.setSinger(singerBySeq.get());
             return result;
         }
        //어쩌면 예외 핸들링 해야 할 부분..
@@ -43,9 +46,9 @@ public class GameService {
     }
     public Long getGameSize(Long gameIndex){
         //db에서 해당 게임의 인덱스를 가지고 게임 내의 노래 수를 가져와서 return하는 함수
-        Optional<Long> opt = gameRepository.findSongNumByGameIndex(gameIndex);
+        Optional<Game> opt = gameRepository.findGameByGameIndex(gameIndex);
         if(opt.isPresent())
-            return opt.get();
+            return opt.get().getSongNum();
         else return 0L;
     }
 

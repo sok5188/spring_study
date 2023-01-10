@@ -2,6 +2,9 @@ package com.example.guess_music.repository;
 
 import com.example.guess_music.domain.Game;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +23,10 @@ public class JpaGameRepository implements GameRepository{
     }
 
     @Override
-    public Optional<Long> findSongNumByGameIndex(Long gameIndex) {
+    public Optional<Game> findGameByGameIndex(Long gameIndex) {
         Game findGame=em.find(Game.class,gameIndex);
-        return Optional.ofNullable(findGame.getSongNum());
+        System.out.println("in repo game is : "+findGame.getTitle());
+        return Optional.ofNullable(findGame);
     }
 
     @Override
@@ -37,13 +41,24 @@ public class JpaGameRepository implements GameRepository{
     }
 
     @Override
+    public void addSongToGame(@Param("gameIndex") Long gameIndex){
+        em.createQuery("update Game g set g.songnum=g.songnum+1 where g.gameIndex=:gameIndex").setParameter("gameIndex",gameIndex).executeUpdate();
+    }
+
+    @Override
+    public void deleteSongInGame(Long gameIndex) {
+        em.createQuery("update Game g set g.songnum=g.songnum-1 where g.gameIndex=:gameIndex").setParameter("gameIndex",gameIndex).executeUpdate();
+    }
+
+    ;
+
+
+    @Override
     public boolean delete(Long gameIndex) {
         try{
             em.remove(em.find(Game.class,gameIndex));
-            System.out.println("in repo delete ok");
             return true;
         } catch(Exception e){
-            System.out.println("in repo delete nono");
             return false;
         }
 

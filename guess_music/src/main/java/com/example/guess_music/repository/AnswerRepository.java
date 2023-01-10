@@ -12,4 +12,10 @@ public interface AnswerRepository {
     Optional<List<String>> findAnswerBySeq(Long gameIndex,int seq);
     Optional<String> findSingerBySeq(Long gameIndex,int seq);
     Optional<String> findInitialBySeq(Long gameIndex,int seq);
+    Optional<List<String>> findSingerByAnswer(String answer);
+
+    int findMaxSeq(Long gameIndex);
+    boolean delete(Long gameIndex,int seq);
+
+    void updateAnswer(Long id,String answer);
 }

@@ -48,4 +48,34 @@ public class JpaAnswerRepository implements AnswerRepository {
         return Optional.ofNullable(singleResult);
     }
 
+    @Override
+    public Optional<List<String>> findSingerByAnswer(String answer) {
+        List<String> list = em.createQuery("select a.singer from Answers a where a.answer=:answer", String.class).setParameter("answer", answer).getResultList();
+        return Optional.ofNullable(list);
+    }
+
+    @Override
+    public int findMaxSeq(Long gameIndex) {
+        return em.createQuery("select max(a.seq) from Answers a where a.gameIndex.gameIndex=:gameIndex",int.class).setParameter("gameIndex",gameIndex).getSingleResult();
+    }
+
+    @Override
+    public boolean delete(Long gameIndex, int seq) {
+        try {
+            List<Answers> resultList = em.createQuery("select a from Answers a where a.gameIndex.gameIndex=:gameIndex and a.seq=:seq", Answers.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList();
+            for(Answers ans:resultList){
+                em.remove(ans);
+            }
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    public void updateAnswer(Long id,String answer) {
+        em.createQuery("update Answers a set a.answer=:answer where a.id=:id").setParameter("answer",answer).setParameter("id",id).executeUpdate();
+    }
+
+
 }

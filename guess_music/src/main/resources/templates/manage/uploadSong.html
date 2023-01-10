@@ -1,22 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<form action="/manage/upload" method="post">
+<div>
+    <p th:text="${gameIndex}" id="gameIndex" hidden="hidden">
+</div>
+
+<form action="/manage/upload" method="post" enctype="multipart/form-data">
     <input type="file" id="uploadedMusic" name="mp3">
-    <input type="text" id="songAnswer" name="answer" placeholder="enterAnswer">
+    <p id="ansP" content="look">
+        <input type="text" id="songAnswer" name="answer" placeholder="enterAnswer">
+    </p>
+    <input type="button" id="answerAddBtn" value="AddAnswer" onclick="addAnswer()">
+    <br>
+    <br>
     <input type="text" id="singer" name="singer" placeholder="enterSinger">
     <input type="text" id="initial" name="initial" placeholder="enterInitial">
+    <br>
+    <br>
     <input type="submit" id="uploadBtn" value="Upload">
 </form>
 <div>
+    <br>
     <input type="button" id="finishBtn" onclick="finish()" value="Finish uploading">
 </div>
 
 </body>
-<script src="/js/SaveMusic.js">
+<script>
+    function addAnswer(){
+        console.log("add answer called");
+        var ans=document.getElementById("ansP");
+        var child=document.createElement("input");
+        child.type="text";
+        child.name="answer";
+        child.placeholder="enterAnswer";
+        console.log("child is : ",child);
+        ans.appendChild(child);
+    }
 </script>
 </html>

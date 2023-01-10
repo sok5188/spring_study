@@ -1,15 +1,19 @@
 package com.example.guess_music.controller;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
+import java.util.List;
 
 public class SaveSongForm {
-    private String answer,singer,initial;
+    private String singer,initial;
+    private List<String> answer;
 
-    public String getAnswer() {
+    public List<String> getAnswer() {
         return answer;
     }
 
-    public void setAnswer(String answer) {
+    public void setAnswer(List<String> answer) {
         this.answer = answer;
     }
 
@@ -29,13 +33,14 @@ public class SaveSongForm {
         this.initial = initial;
     }
 
-    public File getMp3() {
+
+    public MultipartFile getMp3() {
         return mp3;
     }
 
-    public void setMp3(File mp3) {
+    public void setMp3(MultipartFile mp3) {
         this.mp3 = mp3;
     }
 
-    private File mp3;
+    private MultipartFile mp3;
 }

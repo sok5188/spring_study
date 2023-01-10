@@ -3,14 +3,11 @@ package com.example.guess_music.controller;
 import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
 import com.example.guess_music.service.GameService;
-import com.example.guess_music.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -91,15 +88,14 @@ public class GameController {
 
         Result result=new Result();
         Long gameSize = gameService.getGameSize(gameIndex);
-        Result results=gameService.getAnswers(target,gameIndex,seq);
+        Result results=gameService.getResult(target,gameIndex,seq);
         result.setAnswer(results.getAnswer());
-
+        result.setSinger(results.getSinger());
         if(target.equals("skip")|| results.getResult() =="Right"){
             //score 처리 부분 만들어야 함
             if(results.getResult()=="Right")
                 score++;
 
-            System.out.println("entered");
             session.setAttribute("seq",++seq);
             if(seq>gameSize) {
                 result.setResult("Game End");
@@ -111,7 +107,7 @@ public class GameController {
         }else{
             result.setResult("Wrong Answer");
         }
-        System.out.println("will send data : "+result);
+
         return result;
     }
 
@@ -121,4 +117,5 @@ public class GameController {
         System.out.println("at controller in Hint : "+gameService.getHint(type,gameIndex,seq));
         return gameService.getHint(type,gameIndex,seq);
     }
+
 }

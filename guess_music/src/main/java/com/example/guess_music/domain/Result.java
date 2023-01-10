@@ -20,4 +20,14 @@ public class Result {
     }
 
     private String answer;
+
+    public String getSinger() {
+        return singer;
+    }
+
+    public void setSinger(String singer) {
+        this.singer = singer;
+    }
+
+    private String singer;
 }

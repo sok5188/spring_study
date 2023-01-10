@@ -29,11 +29,11 @@ function checkAnswer(){
             //정답시.. 정답화면 표
             if(data.result=="Game End"){
                 console.log("game end gogo!")
-                this.showAnswer("end",data.answer);
+                this.showAnswer("end",data.answer,data.singer);
                 //window.location.href='http://localhost:8080';
             }else if(data.result=="Next Song"){
                 console.log("next song gogo!")
-                this.showAnswer("next",data.answer);
+                this.showAnswer("next",data.answer,data.singer);
                 console.log("after called showAnswer");
                 //window.location.href='http://localhost:8080/Game';
             }
@@ -50,7 +50,7 @@ function enterKey(e){
     }
 }
 
-function showAnswer(status,answer){
+function showAnswer(status,answer,singer){
 
     let submitDiv=document.getElementById('enterAnswer');
     let gotAnswerDiv=document.getElementById('gotAnswer');
@@ -59,7 +59,7 @@ function showAnswer(status,answer){
     submitDiv.hidden=true;
     gotAnswer.hidden=false;
 
-    answerText.textContent=answer;
+    answerText.textContent=singer+"  -  "+answer;
 
     if(status=="end"){
         document.getElementById('endText').hidden=false;
@@ -84,9 +84,9 @@ function skipSong(){
             fetch(url).then(res=>res.json()).then(data=>{
                 console.log("got response"+data.result);
                 if(data.result=="Game End"){
-                    this.showAnswer("end",data.answer);
+                    this.showAnswer("end",data.answer,data.singer);
                 }else if(data.result=="Next Song"){
-                    this.showAnswer("next",data.answer);
+                    this.showAnswer("next",data.answer,data.singer);
                 }
             })
             .catch(err=>{

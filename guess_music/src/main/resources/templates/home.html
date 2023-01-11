@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="css/main.css">
     <meta charset="UTF-8">
     <title>음악 맞추기!</title>
 </head>
 <body>
-<h2> 노래 맞추기 !</h2>
+<div>
+    <h1> 노래 맞추기 !</h1>
+</div>
+
 <div id="notLoginHome">
     <p> 시작을 위해 로그인 하여 주세요 </p>
-  <a href="/login" type="button"> Login </a>
-  <a href="/signIn" type="button"> Sign in </a>
+    <a href="/login" type="button"> 로그인 </a>
+    <br>
+    <br>
+    <a href="/signIn" type="button"> 회원가입 </a>
 </div>
 <div id="loginHome" hidden="hidden">
-  <a href="/select"> Go to Play Game</a>
+    <a href="/select"> Go to Play Game</a>
 </div>
-<div>
-    <a href="/testGame"> For Test </a>
-</div>
+
 </body>
 <script src="js/Login.js"></script>
 </html>

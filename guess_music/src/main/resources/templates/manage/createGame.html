@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" href="../css/main.css">
     <meta charset="UTF-8">
     <title>Manage-createGame</title>
 </head>
@@ -8,7 +9,7 @@
 <div>
     <h2> 새로운 게임 생성 </h2>
     <form action="/manage/createGame" method="post">
-        <input type="text" id="title" name="title">
+        <input type="text" id="title" name="title" placeholder="게임 제목을 입력해 주세요" style="font-size:10pt">
         <input type="submit" value="생성">
     </form>
 

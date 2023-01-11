@@ -35,10 +35,10 @@ public class MemberService {
 
     public String checkLogin(HttpServletRequest request) {
         HttpSession session=request.getSession();
-        if(session.getAttribute("login")==null || (boolean)session.getAttribute("login")==false){
+        if(session.getAttribute("login")==null){
             return "False";
         }
-        return "True";
+        return session.getAttribute("login").toString();
     }
 
 

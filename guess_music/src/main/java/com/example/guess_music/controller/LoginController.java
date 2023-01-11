@@ -22,7 +22,13 @@ public class LoginController {
 
     @GetMapping("/login")
     public String createLoginForm(){ return "/login/createLoginForm"; }
-
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request){
+        HttpSession session=request.getSession();
+        System.out.println("logout called");
+        session.removeAttribute("login");
+        return "finish";
+    }
     @PostMapping("/login")
     public String login(MemberForm form, HttpServletRequest request){
         HttpSession session=request.getSession();
@@ -31,8 +37,15 @@ public class LoginController {
         Optional<Member> optional= memberService.findOne(id);
         Member member=optional.get();
         if(password.equals(member.getPassword())){
-            session.setAttribute("login",true);
-            return "redirect:/";}
+            if(form.getId().equals("admin")){
+                session.setAttribute("login","manager");
+                return "redirect:/manage";
+            }
+            else{
+                session.setAttribute("login","user");
+                return "redirect:/";
+            }
+        }
         else {
             //need to alert
             //front에서 뭐 click listner같은 애들로 확인 여부체크하고 여기서는 redirect하지 않는 방향?? (나중에 체크)
@@ -58,5 +71,16 @@ public class LoginController {
     @ResponseBody
     public String checkLogin(HttpServletRequest request){
         return memberService.checkLogin(request);
+    }
+
+    @GetMapping("/findId")
+    public String findId(){
+        //나중에 인증기능 추가하고 구현
+        return "Not Implemented";
+    }
+    @GetMapping("/findPwd")
+    public String findPwd(){
+        //나중에 인증기능 추가하고 구현
+        return "Not Implemented";
     }
 }

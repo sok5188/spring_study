@@ -1,3 +1,4 @@
+
 //for timer
 var time=60;
 var sec="";

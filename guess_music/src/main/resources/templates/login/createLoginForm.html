@@ -15,6 +15,19 @@
             <label for="password">비밀번호</label>
             <input type="password" id="password" name="password" placeholder="password"> </div>
         <button type="submit">Enter</button> </form>
+    <br>
+    <a href="/findId">아이디 찾기</a>   <a href="/findPwd">비밀번호 찾기</a>
 </div> <!-- /container -->
 </body>
+<script>
+    let url2='/checkLogin'
+    fetch(url2).then(res=>res.text()).then(data=>{
+    console.log("data fetched"+data);
+    if(data!="False"){
+        window.location.href='http://localhost:8080';
+    }
+    }).catch(err=>{
+    console.log("login check api error");
+    })
+</script>
 </html>

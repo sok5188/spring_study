@@ -10,6 +10,8 @@
     <h1> 노래 맞추기 !</h1>
 </div>
 
+<a href="/manage">관리자 페이지로 이동</a>
+
 <div id="notLoginHome">
     <p> 시작을 위해 로그인 하여 주세요 </p>
     <a href="/login" type="button"> 로그인 </a>
@@ -19,6 +21,7 @@
 </div>
 <div id="loginHome" hidden="hidden">
     <a href="/select"> Go to Play Game</a>
+    <input type="button" value="logoutTMP" id="logoutBtn" onclick="logoutHandler()">
 </div>
 
 </body>

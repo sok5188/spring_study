@@ -56,7 +56,10 @@ public class JpaAnswerRepository implements AnswerRepository {
 
     @Override
     public int findMaxSeq(Long gameIndex) {
-        return em.createQuery("select max(a.seq) from Answers a where a.gameIndex.gameIndex=:gameIndex",int.class).setParameter("gameIndex",gameIndex).getSingleResult();
+        Integer result = em.createQuery("select max(a.seq) from Answers a where a.gameIndex.gameIndex=:gameIndex", int.class).setParameter("gameIndex", gameIndex).getSingleResult();
+        if(result!=null)
+            return result;
+        else return 0;
     }
 
     @Override

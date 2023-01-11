@@ -25,7 +25,6 @@ public class JpaGameRepository implements GameRepository{
     @Override
     public Optional<Game> findGameByGameIndex(Long gameIndex) {
         Game findGame=em.find(Game.class,gameIndex);
-        System.out.println("in repo game is : "+findGame.getTitle());
         return Optional.ofNullable(findGame);
     }
 

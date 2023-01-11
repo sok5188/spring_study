@@ -11,11 +11,9 @@ import java.util.List;
 import java.util.Optional;
 @Transactional
 public class GameService {
-    private Long gameIndex;
     public GameService(AnswerRepository answerRepository, GameRepository gameRepository) {
         this.answerRepository = answerRepository;
         this.gameRepository = gameRepository;
-        gameIndex=0L;
     }
 
     private final AnswerRepository answerRepository;

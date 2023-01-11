@@ -23,8 +23,8 @@ public class ManagerService {
     public Long join(Game game){
         game.setGameIndex(getValidGameIndex());
         game.setSongNum(0L);
-        gameRepository.save(game);
-        return  game.getGameIndex();
+        Game saved=gameRepository.save(game);
+        return  saved.getGameIndex();
     }
     public Long getValidGameIndex(){
         Optional<Long> opt = gameRepository.findMaxGameIndex();
@@ -44,7 +44,7 @@ public class ManagerService {
             if(file.delete())
                 System.out.println("file deleted");
             else System.out.println("file delete fail");
-        }else System.out.println("???");
+        }else System.out.println("file doesn't exist");
         //game repo에 노래 수 감소
         gameRepository.deleteSongInGame(gameIndex);
         return answerRepository.delete(gameIndex,seq);
@@ -73,11 +73,8 @@ public class ManagerService {
         int saveCount=0;
 
         for(String ans: answer){
-            System.out.println("now target answer is : "+ans);
             if(checkValidSong(ans,singer,gameIndex)){
                 //유효한 정답일 경우
-                System.out.println("and it is valid answer");
-
                 Answers answers=new Answers();
                 answers.setSinger(singer);
                 answers.setInitial(initial);
@@ -89,6 +86,7 @@ public class ManagerService {
                 saveCount++;
             }
         }
+
         gameRepository.addSongToGame(gameIndex);
         if(saveCount==0)
             return -1;

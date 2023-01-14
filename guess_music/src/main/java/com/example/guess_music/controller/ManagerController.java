@@ -72,9 +72,10 @@ public class ManagerController {
     }
 
     @GetMapping("/manage/upload")
-    public String uploadSong(@RequestParam("gameIndex")Long gameIndex) throws IOException {
+    public String uploadSong(@RequestParam("gameIndex")Long gameIndex,Model model) throws IOException {
         //추후 멀티 부분에서 세션에 저장하든 해야 할 지도..?
         this.gameIndex=gameIndex;
+        model.addAttribute("gameIndex",gameIndex);
         return "manage/uploadSong";
     }
 

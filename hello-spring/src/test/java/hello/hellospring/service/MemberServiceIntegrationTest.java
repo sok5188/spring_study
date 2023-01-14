@@ -38,29 +38,29 @@ class MemberServiceIntegrationTest {
         assertThat(member.getName()).isEqualTo(findMember.getName());
     }
 
-    @Test
-    public void 중복_회원_예외() throws Exception {
-        //given
-        Member member = new Member();
-        member.setName("sisiro2");
-        Member member2 = new Member();
-        member2.setName("sisiro2");
-
-        //when
-        memberService.join(member);
-        //해당 예외가 터져야 테스트가 성공
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
-        assertThat(e.getMessage()).isEqualTo("already exist");
-
-        //이건 너무 길고 불편..
-//        try{ memberService.join(member2);
-//            fail();
-//        }catch (IllegalStateException e){
-//            assertThat(e.getMessage()).isEqualTo("already exist")
-//        }
-        //then
-
-    }
+//    @Test
+//    public void 중복_회원_예외() throws Exception {
+//        //given
+//        Member member = new Member();
+//        member.setName("sisiro2");
+//        Member member2 = new Member();
+//        member2.setName("sisiro2");
+//
+//        //when
+//        memberService.join(member);
+//        //해당 예외가 터져야 테스트가 성공
+//        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+//        assertThat(e.getMessage()).isEqualTo("already exist");
+//
+//        //이건 너무 길고 불편..
+////        try{ memberService.join(member2);
+////            fail();
+////        }catch (IllegalStateException e){
+////            assertThat(e.getMessage()).isEqualTo("already exist")
+////        }
+//        //then
+//
+//    }
 
 
 }

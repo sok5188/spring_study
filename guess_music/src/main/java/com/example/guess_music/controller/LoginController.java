@@ -39,10 +39,12 @@ public class LoginController {
         if(password.equals(member.getPassword())){
             if(form.getId().equals("admin")){
                 session.setAttribute("login","manager");
+                System.out.println("Manager Log in");
                 return "redirect:/manage";
             }
             else{
                 session.setAttribute("login","user");
+                System.out.println("User Log in");
                 return "redirect:/";
             }
         }

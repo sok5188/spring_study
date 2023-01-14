@@ -1,10 +1,6 @@
 package com.example.guess_music.repository;
 
 import com.example.guess_music.domain.Answers;
-import com.example.guess_music.domain.Game;
-import com.example.guess_music.domain.QAnswers;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -36,16 +32,14 @@ public class JpaAnswerRepository implements AnswerRepository {
 
     @Override
     public Optional<String> findSingerBySeq(Long gameIndex, int seq) {
-        String singleResult = em.createQuery("select m.singer from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getSingleResult();
-        System.out.println("find singer : "+ singleResult);
-        return Optional.ofNullable(singleResult);
+        Optional<String> singleResult = em.createQuery("select m.singer from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
+        return singleResult;
     }
 
     @Override
     public Optional<String> findInitialBySeq(Long gameIndex, int seq) {
-        String singleResult = em.createQuery("select m.initial from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getSingleResult();
-        System.out.println("find initial : "+ singleResult);
-        return Optional.ofNullable(singleResult);
+        Optional<String> singleResult = em.createQuery("select m.initial from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
+        return singleResult;
     }
 
     @Override

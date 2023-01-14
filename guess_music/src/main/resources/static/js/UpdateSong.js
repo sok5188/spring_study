@@ -5,7 +5,6 @@ const table=document.getElementById("tableBody");
 var ansCount=0;
 fetch(url).then(res=>res.json()).then(data=>{
     data.forEach(function(answers){
-        console.log(answers);
         ansCount++;
         var row=`<tr id="${ansCount}">
         <td>${answers.seq}</td>
@@ -42,7 +41,6 @@ function sendNewAnswer(id){
 
     let ans=document.getElementById("newAnswer");
     let newAns=ans.value;
-    console.log(newAns);
     let urls='/manage/updateAnswer?id='+id+"&answer="+ newAns;
     fetch(urls,{method:"POST"}).then(res=>res.text()).then(data=>{
         if(data=="Fail")
@@ -67,6 +65,5 @@ function addSong(){
 // 업로드 된 mp3를 저장해야 함..(보안 이슈 발생 가능)
     console.log("add song btn clicked");
     let urls='http://localhost:8080/manage/upload?gameIndex='+idx;
-    console.log("urls is  : "+urls);
     window.location.href=urls;
 }

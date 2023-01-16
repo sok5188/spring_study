@@ -20,6 +20,12 @@ public class JpaAnswerRepository implements AnswerRepository {
     }
 
     @Override
+    public Optional<Answers> findById(Long id) {
+        Answers answers = em.find(Answers.class, id);
+        return Optional.ofNullable(answers);
+    }
+
+    @Override
     public Optional<List<Answers>> findAnswers(Long gameIndex) {
         return Optional.ofNullable(em.createQuery("select m from Answers m where m.gameIndex.gameIndex=:gameIndex", Answers.class).setParameter("gameIndex",gameIndex).getResultList());
     }
@@ -72,6 +78,19 @@ public class JpaAnswerRepository implements AnswerRepository {
     @Override
     public void updateAnswer(Long id,String answer) {
         em.createQuery("update Answers a set a.answer=:answer where a.id=:id").setParameter("answer",answer).setParameter("id",id).executeUpdate();
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        try {
+            Optional<Answers> byId = this.findById(id);
+            if(!byId.isPresent())
+                return false;
+            em.remove(byId.get());
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
 

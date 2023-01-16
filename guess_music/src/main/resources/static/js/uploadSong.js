@@ -8,5 +8,5 @@ function addAnswer(){
     }
 function finish(){
     var idx=document.getElementById("gameIndex").textContent;
-    window.location.href='http://localhost:8080/manage/modifyGame?gameIndex='+idx;
+    window.location.href='/manage/modifyGame?gameIndex='+idx;
 }

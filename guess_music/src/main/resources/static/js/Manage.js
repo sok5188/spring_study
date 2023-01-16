@@ -15,7 +15,7 @@ fetch(url).then(res=>res.json()).then(data=>{
 })
 
 function modifyGame(idx){
-    let urls='http://localhost:8080/manage/modifyGame?gameIndex='+idx;
+    let urls='/manage/modifyGame?gameIndex='+idx;
     window.location.href=urls;
 }
 
@@ -23,11 +23,14 @@ function deleteGame(idx){
     let urls='/manage?gameIndex='+idx;
     fetch(urls,{method:"DELETE"}).then(res=>res.text()).then(data=>{
         if(data=="Success")
-            window.location.href='http://localhost:8080/manage';
+            window.location.href='/manage';
         else
             alert('fail to delete');
     }).catch(err=>{console.log("delete game error")});
 }
 function makeGame(){
-    window.location.href='http://localhost:8080/manage/createGame';
+    window.location.href='/manage/createGame';
+}
+function goback(){
+    window.location.href='/';
 }

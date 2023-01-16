@@ -46,10 +46,11 @@ public class ManagerController {
 
     @PostMapping("/manage/createGame")
     public String createGame(CreateGameForm form){
+        System.out.println("in");
         Game game = new Game();
         game.setTitle(form.getTitle());
         managerService.join(game);
-
+        System.out.println("fin");
         return "redirect:/manage";
     }
     @GetMapping("/manage/modifyGame")
@@ -89,7 +90,10 @@ public class ManagerController {
             System.out.println("result is : "+result);
             if(result!=-1){
                 System.out.println("save success");
-                String folder="/Users/sin-wongyun/Desktop/guess_music/src/main/resources/static/audio/";
+                //ec2서버용
+                //String folder="/home/ubuntu/audio/";
+                //Local 테스트용
+                String folder="/Users/sin-wongyun/Desktop/guessAudio/";
                 String filename=gameIndex+"-"+result+".mp3";
                 form.getMp3().transferTo(new File(folder+filename));
                 String red="redirect:/manage/upload?gameIndex="+gameIndex;
@@ -104,6 +108,27 @@ public class ManagerController {
     public String updateAnswer(@RequestParam("id") Long id,@RequestParam("answer") String answer){
         System.out.println("get update Answer req : "+id);
         if(managerService.updateAnswer(id,answer))
+            return "Success";
+        else
+            return "Fail";
+    }
+
+    @ResponseBody
+    @PostMapping("/manage/addAnswer")
+    public String addAnswer(@RequestParam("seq") int seq,@RequestParam("answer") String answer,@RequestParam("gameIndex") Long gameIndex){
+        System.out.println("get add Answer req : "+seq);
+
+        if(managerService.addAnswer(gameIndex,seq,answer))
+            return "Success";
+        else
+            return "Fail";
+
+    }
+    @ResponseBody
+    @DeleteMapping("/manage/updateAnswer")
+    public String deleteAnswer(@RequestParam("ansId") Long id){
+        System.out.println("get delete Answer req : "+id);
+        if(managerService.deleteAnswer(id))
             return "Success";
         else
             return "Fail";

@@ -7,6 +7,7 @@ import com.example.guess_music.repository.GameRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,11 +34,15 @@ public class ManagerService {
         else return 1L;
     }
     public boolean delete(Long gameIndex){
+        //해당 게임에 정답이 존재하면 참조 무결성 제약조건때문에 뭐,
         return gameRepository.delete(gameIndex);
     }
     public boolean delete(Long gameIndex,int seq){
         //audio에서 노래 삭제
-        String folder="/Users/sin-wongyun/Desktop/guess_music/src/main/resources/static/audio/";
+        //ec2서버용
+        //String folder="/home/ubuntu/audio/";
+        //Local 테스트용
+        String folder="/Users/sin-wongyun/Desktop/guessAudio/";
         String filename=gameIndex+"-"+seq+".mp3";
         File file=new File(folder+filename);
         if(file.exists()){
@@ -109,4 +114,27 @@ public class ManagerService {
         return true;
     }
 
+    public boolean addAnswer(Long gameIndex,int seq, String answer){
+        Answers answers=new Answers();
+        Optional<String> singerBySeq = answerRepository.findSingerBySeq(gameIndex, seq);
+        Optional<String> initialBySeq = answerRepository.findInitialBySeq(gameIndex, seq);
+        Optional<Game> gameByGameIndex = gameRepository.findGameByGameIndex(gameIndex);
+        if(!singerBySeq.isPresent())
+            return false;
+        if(!initialBySeq.isPresent())
+            return false;
+        if(!gameByGameIndex.isPresent())
+            return false;
+        answers.setAnswer(answer);
+        answers.setGameIndex(gameByGameIndex.get());
+        answers.setSeq(seq);
+        answers.setSinger(singerBySeq.get());
+        answers.setInitial(initialBySeq.get());
+
+        answerRepository.save(answers);
+        return true;
+    }
+    public boolean deleteAnswer(Long id){
+        return answerRepository.delete(id);
+    }
 }

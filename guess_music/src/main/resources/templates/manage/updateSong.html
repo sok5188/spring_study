@@ -12,6 +12,10 @@
 </div>
 <div>
   <input type="button" value="새 노래추가" id="addSongBtn" onclick="addSong()">
+  <br><br>
+</div>
+<!-- overflow: auto -->
+<div style="height:700px; overflow:auto" >
   <table class="table table-striped" id="mainTable">
     <tr>
       <th> 노래번호</th>
@@ -26,6 +30,13 @@
   </table>
 
 </div>
+<div>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+</div>
+<div>
+  <input type="button" id="returnBtn" onclick="goback()" value="돌아가기">
+</div>
+
 </body>
 <script src="/js/UpdateSong.js">
 

@@ -24,7 +24,7 @@
     fetch(url2).then(res=>res.text()).then(data=>{
     console.log("data fetched"+data);
     if(data!="False"){
-        window.location.href='http://localhost:8080';
+        window.location.href='/';
     }
     }).catch(err=>{
     console.log("login check api error");

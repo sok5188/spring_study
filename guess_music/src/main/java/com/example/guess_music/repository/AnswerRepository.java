@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface AnswerRepository {
     Answers save(Answers answers);
+    Optional<Answers> findById(Long id);
     Optional<List<Answers>> findAnswers(Long gameIndex);
     Optional<List<String>> findAnswerBySeq(Long gameIndex,int seq);
     Optional<String> findSingerBySeq(Long gameIndex,int seq);
@@ -18,4 +19,6 @@ public interface AnswerRepository {
     boolean delete(Long gameIndex,int seq);
 
     void updateAnswer(Long id,String answer);
+
+    boolean delete(Long id);
 }

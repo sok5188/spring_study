@@ -2,7 +2,8 @@
 //for timer
 var time=60;
 var sec="";
-var x=setInterval(function(){
+var x;
+const timerHandler=()=>{
     sec=time%60
     document.getElementById("timer").value=sec+"초";
     time--;
@@ -16,9 +17,11 @@ var x=setInterval(function(){
         clearInterval(x);
         skipSong();
     }
-},1000)
+};
+x=setInterval(timerHandler,1000);
+
 var audio=document.getElementById('musicPlayer');
-audio.volume=0.4;
+audio.volume=0.5;
 
 function checkAnswer(){
     var textBox=document.getElementById('answer');
@@ -72,10 +75,11 @@ function skipSong(){
     let endFlag=document.getElementById('endText').getAttribute("hidden");
     console.log("skip handler called");
     audio.pause();
+    clearInterval(x);
     if(!endFlag){
         //game end!
         //일단 홈으로 이동시킴
-        window.location.href='http://localhost:8080';
+        window.location.href='/';
     }
     else{
         //다음곡으로 이동
@@ -95,7 +99,7 @@ function skipSong(){
             });
         }
         else
-            window.location.href='http://localhost:8080/Game';
+            window.location.href='/Game';
     }
 }
 var hintDiv=document.getElementById('hintDiv');
@@ -118,5 +122,5 @@ function showInitialHint(){
         })
 }
 function goHome(){
-    window.location.href='http://localhost:8080';
+    window.location.href='/';
 }

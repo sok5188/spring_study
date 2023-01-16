@@ -21,7 +21,8 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String createLoginForm(){ return "/login/createLoginForm"; }
+    public String createLoginForm(){ return "login/createLoginForm"; }
+    @ResponseBody
     @PostMapping("/logout")
     public String logout(HttpServletRequest request){
         HttpSession session=request.getSession();
@@ -35,28 +36,29 @@ public class LoginController {
         String id = form.getId();
         String password = form.getPassword();
         Optional<Member> optional= memberService.findOne(id);
-        Member member=optional.get();
-        if(password.equals(member.getPassword())){
-            if(form.getId().equals("admin")){
-                session.setAttribute("login","manager");
-                System.out.println("Manager Log in");
-                return "redirect:/manage";
-            }
-            else{
-                session.setAttribute("login","user");
-                System.out.println("User Log in");
-                return "redirect:/";
+        if(optional.isPresent()){
+            Member member=optional.get();
+            if(password.equals(member.getPassword())){
+                if(form.getId().equals("admin")){
+                    session.setAttribute("login","manager");
+                    System.out.println("Manager Log in");
+                    return "redirect:/manage";
+                }
+                else{
+                    session.setAttribute("login","user");
+                    System.out.println("User Log in");
+                    return "redirect:/";
+                }
             }
         }
-        else {
-            //need to alert
-            //front에서 뭐 click listner같은 애들로 확인 여부체크하고 여기서는 redirect하지 않는 방향?? (나중에 체크)
-            return "redirect:/login";}
+        //need to alert
+        //front에서 뭐 click listner같은 애들로 확인 여부체크하고 여기서는 redirect하지 않는 방향?? (나중에 체크)
+        return "redirect:/login";
     }
 
     @GetMapping("/signIn")
     public String createSignInForm() {
-        return "/login/createSignInForm";
+        return "login/createSignInForm";
     }
     @PostMapping("/signIn")
     public String signIn(SignInForm form){

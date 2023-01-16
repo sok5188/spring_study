@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class GameController {
     private HttpSession session;
     @GetMapping("/select")
     public String selectGame(){
-        return "/game/select";
+        return "game/select";
     }
 
 
@@ -72,13 +73,14 @@ public class GameController {
         }else {
             //세션에 seq정보가 없는 경우
             session.setAttribute("seq",1);
+            seq=1;
         }
         String music=gameIndex+"-"+seq;
         Long gameSize = gameService.getGameSize(gameIndex);
         System.out.println("now target music is : "+music+"and game index,seq : "+gameIndex+" / "+seq);
         model.addAttribute("music",music).addAttribute("remainSong",gameSize-seq+1).addAttribute("totalSong",gameSize);
 
-        return "/game/Game";
+        return "game/Game";
     }
 
     @GetMapping("/Game/checkAnswer")

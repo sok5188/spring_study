@@ -58,6 +58,13 @@ public class ManagerController {
         model.addAttribute("idx",gameIndex);
         return "manage/updateSong";
     }
+    @ResponseBody
+    @PostMapping("/manage/modifyGame")
+    public String modifyGameTitle(@RequestParam("gameIndex") Long gameIndex, @RequestParam("newTitle") String title){
+        if(managerService.updateGameTitle(gameIndex,title))
+            return "Success";
+        else return "Fail";
+    }
     @DeleteMapping("/manage/modifyGame")
     @ResponseBody
     public String deleteSong(@RequestParam("gameIndex") Long gameIndex,@RequestParam("seq") int seq){
@@ -68,8 +75,7 @@ public class ManagerController {
     }
     @ResponseBody@GetMapping("/manage/songList")
     public List<Answers> modifySong(@RequestParam("gameIndex") Long gameIndex){
-        List<Answers> answerList = managerService.getAnswerList(gameIndex);
-        return answerList;
+        return managerService.getAnswerList(gameIndex);
     }
 
     @GetMapping("/manage/upload")

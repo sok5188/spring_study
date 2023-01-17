@@ -15,4 +15,6 @@ public interface GameRepository {
     void deleteSongInGame(Long gameIndex);
 
     boolean delete(Long gameIndex);
+
+    boolean updateGameTitle(Long gameIndex, String title);
 }

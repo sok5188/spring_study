@@ -62,4 +62,14 @@ public class JpaGameRepository implements GameRepository{
         }
 
     }
+
+    @Override
+    public boolean updateGameTitle(Long gameIndex, String title) {
+        try {
+            em.createQuery("update Game g set g.title=:title where g.gameIndex=:gameIndex").setParameter("title", title).setParameter("gameIndex", gameIndex).executeUpdate();
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

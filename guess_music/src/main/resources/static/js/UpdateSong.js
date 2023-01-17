@@ -30,6 +30,7 @@ function modifySong(answerId,trId,seq,type){
     ans.type="text";
     ans.placeholder="enter new answer";
     ans.id="newAnswer";
+    ans.style="width:200px; font-size: 65%";
     var tbody=document.getElementById("tableBody");
     let sendAns=document.createElement("input");
     sendAns.type="button";

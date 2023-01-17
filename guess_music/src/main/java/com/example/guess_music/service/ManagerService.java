@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 @Transactional
@@ -57,8 +58,11 @@ public class ManagerService {
 
     public List<Answers> getAnswerList(Long gameIndex){
         Optional<List<Answers>> opt = answerRepository.findAnswers(gameIndex);
-        if(opt.isPresent())
-            return opt.get();
+        if(opt.isPresent()){
+            List<Answers> answers = opt.get();
+            Collections.sort(answers);
+            return answers;
+        }
         else return new ArrayList<>();
     }
     public int storeFile(List<String> answer,String singer, String initial,Long gameIndex){
@@ -136,5 +140,9 @@ public class ManagerService {
     }
     public boolean deleteAnswer(Long id){
         return answerRepository.delete(id);
+    }
+
+    public boolean updateGameTitle(Long gameIndex, String title){
+        return gameRepository.updateGameTitle(gameIndex,title);
     }
 }

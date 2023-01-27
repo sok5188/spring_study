@@ -8,6 +8,6 @@ for study spring
 * Not completed Project
 * Will add multiplay, OAuth2
 * Will make ERD, Sequence Diagram, Simple PPT
-* Note : 
+* [Note](https://github.com/sok5188/spring_study/blob/master/guess_music_Note1.md)
 
 

@@ -4,6 +4,7 @@ import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;

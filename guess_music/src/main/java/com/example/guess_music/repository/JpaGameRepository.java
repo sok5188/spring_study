@@ -40,8 +40,17 @@ public class JpaGameRepository implements GameRepository{
     }
 
     @Override
-    public void addSongToGame(@Param("gameIndex") Long gameIndex){
-        em.createQuery("update Game g set g.songnum=g.songnum+1 where g.gameIndex=:gameIndex").setParameter("gameIndex",gameIndex).executeUpdate();
+    public int addSongToGame(@Param("gameIndex") Long gameIndex){
+        System.out.println("add song called");
+        int i = em.createQuery("update Game g set g.songnum=g.songnum+1 where g.gameIndex=:gameIndex").setParameter("gameIndex", gameIndex).executeUpdate();
+        if(i==1) {
+            Object index = em.createQuery("select g.songnum from Game g where g.gameIndex=:gameIndex").setParameter("gameIndex", gameIndex).getSingleResult();
+            Long result=(Long) index;
+
+            return result.intValue();
+        } else
+            return -1;
+
     }
 
     @Override

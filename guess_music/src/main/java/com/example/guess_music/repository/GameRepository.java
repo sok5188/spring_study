@@ -11,7 +11,7 @@ public interface GameRepository {
     Optional<List<Game>> findGameList();
     Optional<Long> findMaxGameIndex();
 
-    void addSongToGame(Long gameIndex);
+    int addSongToGame(Long gameIndex);
     void deleteSongInGame(Long gameIndex);
 
     boolean delete(Long gameIndex);

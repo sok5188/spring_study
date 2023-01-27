@@ -72,6 +72,7 @@ public class ManagerService {
         //게임 인덱스 설정
         Optional<Game> gameOpt = gameRepository.findGameByGameIndex(gameIndex);
         Game game;
+
         if(gameOpt.isPresent())
             game=gameOpt.get();
         else return -1;
@@ -95,10 +96,12 @@ public class ManagerService {
                 saveCount++;
             }
         }
-
-        gameRepository.addSongToGame(gameIndex);
+        // 유요한 정답이 없는 경우 -1리턴
         if(saveCount==0)
             return -1;
+
+        gameRepository.addSongToGame(gameIndex);
+        System.out.println("return normal");
         return maxSeq;
     }
     private boolean checkValidSong(String answer,String singer,Long gameIndex){

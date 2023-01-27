@@ -26,16 +26,26 @@ class GameServiceTest {
     @Autowired
     ManagerService managerService;
     @Test
-    void 정답확인() {
+    void 정답및오답확인() {
         Game game=new Game();
         game.setTitle("forTestGame");
         Long gameIndex = managerService.join(game);
-        List<String> ans=new ArrayList<>();
-        ans.add("ForTest2");
-        int i = managerService.storeFile(ans, "ForTest2", "ForTest2", gameIndex);
 
-        Result result = gameService.getResult("ForTest2", gameIndex, i);
+        List<String> ans=new ArrayList<>();
+        ans.add("ForTest1");
+        int i = managerService.storeFile(ans, "ForTest1", "ForTest1", gameIndex);
+        List<String> ans2=new ArrayList<>();
+        ans2.add("ForTest2");
+        int i2 = managerService.storeFile(ans2, "ForTest2", "ForTest2", gameIndex);
+        System.out.println("i is "+i+"/"+i2);
+
+        //정답
+        Result result = gameService.getResult("ForTest1", gameIndex, i);
         assertThat(result.getResult()).isEqualTo("Right");
+        //오답
+        Result result2 = gameService.getResult("ForTest2", gameIndex, i);
+        assertThat(result2.getResult()).isEqualTo("Wrong");
+        //게임크기는 이거 transactional한 특성 때문인지 크기 변경하고 조회하면 제대로 사이즈가 증가되는데 그거 이후에 사이즈가 초기화 됨..
     }
 
     @Test
@@ -52,5 +62,4 @@ class GameServiceTest {
         assertThat(gameService.getHint("initial",gameIndex,seq)).isEqualTo("ㅌㅅㅌㄱㅇ");
 
     }
-
 }

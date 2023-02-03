@@ -1,15 +1,16 @@
 package com.example.guess_music.service;
 
+import com.example.guess_music.domain.ChatRoom;
 import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 @Transactional
 public class GameService {
     public GameService(AnswerRepository answerRepository, GameRepository gameRepository) {
@@ -20,6 +21,12 @@ public class GameService {
     private final AnswerRepository answerRepository;
     private final GameRepository gameRepository;
 
+    private Map<String, ChatRoom> chatRooms;
+    @PostConstruct
+    //의존관게 주입완료되면 실행되는 코드
+    private void init() {
+        chatRooms = new LinkedHashMap<>();
+    }
     public Result getResult(String target, Long gameIndex, int seq){
         Result result=new Result();
         Optional<List<String>> opt = answerRepository.findAnswerBySeq(gameIndex, seq);
@@ -75,5 +82,25 @@ public class GameService {
         if(opt.isPresent())
             return opt.get();
         else return new ArrayList<Game>();
+    }
+
+    public List<ChatRoom> findAllRoom() {
+        //채팅방 최근 생성 순으로 반환
+        List<ChatRoom> result = new ArrayList<>(chatRooms.values());
+        Collections.reverse(result);
+
+        return result;
+    }
+
+    //채팅방 하나 불러오기
+    public ChatRoom findById(String roomId) {
+        return chatRooms.get(roomId);
+    }
+
+    //채팅방 생성
+    public ChatRoom createRoom(Long gameIndex,String name) {
+        ChatRoom chatRoom = ChatRoom.create(gameIndex,name);
+        chatRooms.put(chatRoom.getRoomId(), chatRoom);
+        return chatRoom;
     }
 }

@@ -22,7 +22,6 @@ public class ChatService {
         //채팅방 최근 생성 순으로 반환
         List<ChatRoom> result = new ArrayList<>(chatRooms.values());
         Collections.reverse(result);
-
         return result;
     }
 

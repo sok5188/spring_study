@@ -13,11 +13,15 @@ public class MessageController {
         this.sendingOperations = sendingOperations;
     }
 
-    @MessageMapping("/chat/message")
+    @MessageMapping("/Game/message")
     public void enter(ChatMessage message) {
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
             message.setMessage(message.getSender()+"님이 입장하였습니다.");
         }
         sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);
     }
+//    @MessageMapping("/Game/startGame")
+//    public void start(ChatMessage message) {
+//        sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);
+//    }
 }

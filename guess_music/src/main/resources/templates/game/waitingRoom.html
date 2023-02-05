@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Websocket ChatRoom</title>
   <!-- Required meta tags -->
@@ -15,10 +15,54 @@
     </style>
 </head>
 <body>
+
+
 <div class="container" id="app" v-cloak>
+  <div v-if="introDiv">
   <div>
-    <h2>{{room.name}}</h2>
+    <h2>방 제목 : {{room.roomName}}</h2>
+    <h4> 방장 : {{room.ownerName}} 선택된 게임 : {{room.gameTitle}} 전체 곡 수 : {{room.songNum}}</h4>
   </div>
+  <div>
+    <h2> 노래맞추기 </h2>
+    <h4> 모든 노래는 1분동안 재생됩니다. <br>
+      만약 정답을 모르겠다면 스킵버튼을 눌러주세요<br>
+      모든 정답은 한글 혹은 영어 소문자로 이루어져 있습니다<br>
+      30초가 남게되면 가수 힌트가 제공되고 15초가 남게되면 제목의 초성 힌트가 제공됩니다<br>
+    </h4>
+    <h3>
+      정답을 입력하실 때 띄어쓰기를 하지 말아주세요!
+    </h3>
+  </div>
+    <div v-if="startDiv">
+      <input type="button" @click="sendStart" value="Start">
+    </div>
+  </div>
+  <div>
+    {{tmp}}
+  </div>
+  <div v-if="gameDiv">
+    <div>
+      {{remainSong}} / {{totalSong}}
+    </div>
+    <h4> 남은 시간 : {{ countDown }} 초</h4>
+    <button class="btn btn-primary" type="button" @click="skipVote">스킵 투표하기</button>
+    <div v-if="gotAnswerDiv">
+      <div v-if="endGameDiv">
+        <h2>수고하셨습니다 게임이 종료되었습니다</h2>
+      </div>
+      <h3> 정답 : {{answerText}} </h3>
+    </div>
+    <div id="hintDiv">
+      <p v-if="singerDiv"> 가수 : {{singerHintText}}</p>
+      <p v-if="initialDiv"> 초성 : {{initialHintText}}</p>
+    </div>
+    <div>
+      <input type="button" id="homeBtn" value="Home" @click="goHome">
+    </div>
+
+  </div>
+
   <div class="input-group">
     <div class="input-group-prepend">
       <label class="input-group-text">내용</label>
@@ -40,64 +84,9 @@
 <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
 <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
-<script>
-    //alert(document.title);
-    // websocket & stomp initialize
-    var sock = new SockJS("/ws/chat");
-    var ws = Stomp.over(sock);
-    var reconnect = 0;
-    // vue.js
-    var vm = new Vue({
-        el: '#app',
-        data: {
-            roomId: '',
-            room: {},
-            sender: '',
-            message: '',
-            messages: []
-        },
-        created() {
-            this.roomId = localStorage.getItem('wschat.roomId');
-            this.sender = localStorage.getItem('wschat.sender');
-            this.findRoom();
-        },
-        methods: {
-            findRoom: function() {
-                axios.get('/room/'+this.roomId).then(response => { this.room = response.data;
-
-                  console.log("data is  :"+response.data);
-                });
-            },
-            sendMessage: function() {
-                ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
-                this.message = '';
-            },
-            recvMessage: function(recv) {
-                this.messages.unshift({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
-            }
-        }
-    });
-
-    function connect() {
-        // pub/sub event
-        ws.connect({}, function(frame) {
-            ws.subscribe("/topic/chat/room/"+vm.$data.roomId, function(message) {
-                var recv = JSON.parse(message.body);
-                vm.recvMessage(recv);
-            });
-            ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
-        }, function(error) {
-            if(reconnect++ <= 5) {
-                setTimeout(function() {
-                    console.log("connection reconnect");
-                    sock = new SockJS("/ws/chat");
-                    ws = Stomp.over(sock);
-                    connect();
-                },10*1000);
-            }
-        });
-    }
-    connect();
-</script>
+<script src="/js/newGame.js"></script>
 </body>
+
 </html>
+
+

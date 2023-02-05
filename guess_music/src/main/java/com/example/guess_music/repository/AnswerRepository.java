@@ -10,13 +10,13 @@ public interface AnswerRepository {
     Answers save(Answers answers);
     Optional<Answers> findById(Long id);
     Optional<List<Answers>> findAnswers(Long gameIndex);
-    Optional<List<String>> findAnswerBySeq(Long gameIndex,int seq);
-    Optional<String> findSingerBySeq(Long gameIndex,int seq);
-    Optional<String> findInitialBySeq(Long gameIndex,int seq);
+    Optional<List<String>> findAnswerBySeq(Long gameIndex,Long seq);
+    Optional<String> findSingerBySeq(Long gameIndex,Long seq);
+    Optional<String> findInitialBySeq(Long gameIndex,Long seq);
     Optional<List<String>> findSingerByAnswer(String answer);
 
-    int findMaxSeq(Long gameIndex);
-    boolean delete(Long gameIndex,int seq);
+    Long findMaxSeq(Long gameIndex);
+    boolean delete(Long gameIndex,Long seq);
 
     void updateAnswer(Long id,String answer);
 

@@ -78,12 +78,12 @@ public class ManagerServiceTest {
         answers.setSinger("ForTest");
         answers.setInitial("ForTest");
         answers.setGameIndex(gameByGameIndex.get());
-        answers.setSeq(1);
+        answers.setSeq(1L);
         Answers save = answerRepository.save(answers);
 
         List<String> ans=new ArrayList<>();
         ans.add("ForTest2");
-        int i = managerService.storeFile(ans, "ForTest2", "ForTest2", gameByGameIndex.get().getGameIndex());
+        Long i = managerService.storeFile(ans, "ForTest2", "ForTest2", gameByGameIndex.get().getGameIndex());
 
         assertThat(i).isEqualTo(2);
     }
@@ -138,7 +138,7 @@ public class ManagerServiceTest {
         answers.setSinger("ForTest");
         answers.setInitial("ForTest");
         answers.setGameIndex(gameByGameIndex.get());
-        answers.setSeq(1);
+        answers.setSeq(1L);
         Answers save = answerRepository.save(answers);
 
         Answers answers2=new Answers();
@@ -146,7 +146,7 @@ public class ManagerServiceTest {
         answers2.setSinger("ForTest");
         answers2.setInitial("ForTest");
         answers2.setGameIndex(gameByGameIndex.get());
-        answers2.setSeq(1);
+        answers2.setSeq(1L);
         Answers save2 = answerRepository.save(answers2);
 
         ansList.add(answers);
@@ -169,11 +169,11 @@ public class ManagerServiceTest {
         answers.setSinger("ForTest");
         answers.setInitial("ForTest");
         answers.setGameIndex(gameByGameIndex.get());
-        answers.setSeq(1);
+        answers.setSeq(1L);
         Answers save = answerRepository.save(answers);
 
         managerService.updateAnswer(save.getId(),"ForTest2");
 
-        assertThat(answerRepository.findAnswerBySeq(gameIndex,1).get().get(0)).isEqualTo("ForTest2");
+        assertThat(answerRepository.findAnswerBySeq(gameIndex,1L).get().get(0)).isEqualTo("ForTest2");
     }
 }

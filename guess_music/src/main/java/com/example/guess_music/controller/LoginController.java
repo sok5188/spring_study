@@ -45,7 +45,8 @@ public class LoginController {
                     return "redirect:/manage";
                 }
                 else{
-                    session.setAttribute("login","user");
+                    String name=member.getName();
+                    session.setAttribute("login",name);
                     System.out.println("User Log in");
                     return "redirect:/";
                 }

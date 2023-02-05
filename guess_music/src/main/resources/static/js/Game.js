@@ -5,7 +5,7 @@ var sec="";
 var x;
 const timerHandler=()=>{
     sec=time%60
-    document.getElementById("timer").value=sec+"초";
+    timer=document.getElementById("timer").value=sec+"초";
     time--;
     if(time==30){
         showSingerHint();

@@ -67,7 +67,7 @@ public class ManagerController {
     }
     @DeleteMapping("/manage/modifyGame")
     @ResponseBody
-    public String deleteSong(@RequestParam("gameIndex") Long gameIndex,@RequestParam("seq") int seq){
+    public String deleteSong(@RequestParam("gameIndex") Long gameIndex,@RequestParam("seq") Long seq){
         if(managerService.delete(gameIndex,seq))
             return "Success";
         else return "Fail";
@@ -92,7 +92,7 @@ public class ManagerController {
         String extension= split[split.length-1];
 
         if(extension.equals("mp3")&&split.length>1){
-            int result = managerService.storeFile(form.getAnswer(), form.getSinger(), form.getInitial(), gameIndex);
+            Long result = managerService.storeFile(form.getAnswer(), form.getSinger(), form.getInitial(), gameIndex);
             System.out.println("result is : "+result);
             if(result!=-1){
                 System.out.println("save success");
@@ -121,7 +121,7 @@ public class ManagerController {
 
     @ResponseBody
     @PostMapping("/manage/addAnswer")
-    public String addAnswer(@RequestParam("seq") int seq,@RequestParam("answer") String answer,@RequestParam("gameIndex") Long gameIndex){
+    public String addAnswer(@RequestParam("seq") Long seq,@RequestParam("answer") String answer,@RequestParam("gameIndex") Long gameIndex){
         System.out.println("get add Answer req : "+seq);
 
         if(managerService.addAnswer(gameIndex,seq,answer))

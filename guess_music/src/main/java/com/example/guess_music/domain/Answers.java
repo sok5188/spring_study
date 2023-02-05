@@ -5,7 +5,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-public class Answers implements Comparable<Answers>{
+public class Answers implements Comparable<Answers> {
     @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -25,7 +25,7 @@ public class Answers implements Comparable<Answers>{
 
 
 
-    private int seq;
+    private Long seq;
     private String answer;
 
     public Long getId() {
@@ -36,11 +36,11 @@ public class Answers implements Comparable<Answers>{
         this.id = id;
     }
 
-    public int getSeq() {
+    public Long getSeq() {
         return seq;
     }
 
-    public void setSeq(int seq) {
+    public void setSeq(Long seq) {
         this.seq = seq;
     }
 
@@ -74,6 +74,7 @@ public class Answers implements Comparable<Answers>{
 
     @Override
     public int compareTo(Answers o) {
-        return seq-o.seq;
+        return (int) (seq-o.seq);
     }
+
 }

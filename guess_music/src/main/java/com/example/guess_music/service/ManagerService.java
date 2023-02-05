@@ -38,7 +38,7 @@ public class ManagerService {
         //해당 게임에 정답이 존재하면 참조 무결성 제약조건때문에 뭐,
         return gameRepository.delete(gameIndex);
     }
-    public boolean delete(Long gameIndex,int seq){
+    public boolean delete(Long gameIndex,Long seq){
         //audio에서 노래 삭제
         //ec2서버용
         //String folder="/home/ubuntu/audio/";
@@ -65,19 +65,19 @@ public class ManagerService {
         }
         else return new ArrayList<>();
     }
-    public int storeFile(List<String> answer,String singer, String initial,Long gameIndex){
+    public Long storeFile(List<String> answer,String singer, String initial,Long gameIndex){
         //가수 초성힌트 저장
         if(singer==null||initial==null)
-            return -1;
+            return -1L;
         //게임 인덱스 설정
         Optional<Game> gameOpt = gameRepository.findGameByGameIndex(gameIndex);
         Game game;
 
         if(gameOpt.isPresent())
             game=gameOpt.get();
-        else return -1;
+        else return -1L;
         //노래 번호 설정
-        int maxSeq=answerRepository.findMaxSeq(gameIndex);
+        Long maxSeq=answerRepository.findMaxSeq(gameIndex);
         maxSeq=Math.max(++maxSeq,1);
 
         int saveCount=0;
@@ -98,7 +98,7 @@ public class ManagerService {
         }
         // 유요한 정답이 없는 경우 -1리턴
         if(saveCount==0)
-            return -1;
+            return -1L;
 
         gameRepository.addSongToGame(gameIndex);
         System.out.println("return normal");
@@ -121,7 +121,7 @@ public class ManagerService {
         return true;
     }
 
-    public boolean addAnswer(Long gameIndex,int seq, String answer){
+    public boolean addAnswer(Long gameIndex,Long seq, String answer){
         Answers answers=new Answers();
         Optional<String> singerBySeq = answerRepository.findSingerBySeq(gameIndex, seq);
         Optional<String> initialBySeq = answerRepository.findInitialBySeq(gameIndex, seq);

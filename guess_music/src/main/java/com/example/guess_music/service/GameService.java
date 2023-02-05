@@ -27,7 +27,7 @@ public class GameService {
     private void init() {
         chatRooms = new LinkedHashMap<>();
     }
-    public Result getResult(String target, Long gameIndex, int seq){
+    public Result getResult(String target, Long gameIndex, Long seq){
         Result result=new Result();
         Optional<List<String>> opt = answerRepository.findAnswerBySeq(gameIndex, seq);
         Optional<String> singerBySeq = answerRepository.findSingerBySeq(gameIndex, seq);
@@ -58,7 +58,11 @@ public class GameService {
         else return 0L;
     }
 
-    public String getHint(String type,Long gameIndex,int seq){
+    public String getHint(String type,String roomId){
+        ChatRoom room = this.findById(roomId);
+        Long gameIndex= room.getGameIndex();
+        Long seq=room.getSeq();
+
         if(type.equals("singer")){
             Optional<String> opt = answerRepository.findSingerBySeq(gameIndex, seq);
             if(opt.isPresent())
@@ -98,9 +102,26 @@ public class GameService {
     }
 
     //채팅방 생성
-    public ChatRoom createRoom(Long gameIndex,String name) {
-        ChatRoom chatRoom = ChatRoom.create(gameIndex,name);
+    public ChatRoom createRoom(Long gameIndex,String name,String ownerName) {
+        Optional<Game> opt = gameRepository.findGameByGameIndex(gameIndex);
+        Game game;
+        if(opt.isPresent())
+            game=opt.get();
+        else return new ChatRoom();
+        System.out.println("song num is : "+game.getSongNum());
+        ChatRoom chatRoom = ChatRoom.create(gameIndex,name,game.getTitle(),game.getSongNum(),ownerName);
         chatRooms.put(chatRoom.getRoomId(), chatRoom);
         return chatRoom;
+    }
+
+    public String findAnswerByRoomId(String roomId){
+        ChatRoom room = this.findById(roomId);
+        Long gameIndex= room.getGameIndex();
+        Long seq=room.getSeq();
+        Optional<List<String>> opt = answerRepository.findAnswerBySeq(gameIndex,seq);
+        if(opt.isPresent()){
+            return opt.get().get(0);
+        }
+        else return "False";
     }
 }

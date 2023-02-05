@@ -84,17 +84,14 @@
                         this.room_name = '';
                         this.findAllRoom();
                         //move to waiting room
+                        localStorage.setItem('wschat.roomId',res.data);
                         location.href="/Game/waitingRoom/"+res.data;
                     }).catch(err=>{alert("error");});
                 }
             },
             enterRoom: function(roomId) {
-                var sender = prompt('대화명을 입력해 주세요.');
-                if(sender !== "") {
-                    localStorage.setItem('wschat.sender',sender);
-                    localStorage.setItem('wschat.roomId',roomId);
-                    location.href="/Game/waitingRoom/"+roomId;
-                }
+                localStorage.setItem('wschat.roomId',roomId);
+                location.href="/Game/waitingRoom/"+roomId;
             },
             selectGame: function(){
                 console.log("clicked select button");

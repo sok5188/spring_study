@@ -31,19 +31,19 @@ public class JpaAnswerRepository implements AnswerRepository {
     }
 
     @Override
-    public Optional<List<String>> findAnswerBySeq(Long gameIndex, int seq) {
+    public Optional<List<String>> findAnswerBySeq(Long gameIndex, Long seq) {
         List<String> resultList = em.createQuery("select m.answer from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex",gameIndex).setParameter("seq",seq).getResultList();
         return Optional.ofNullable(resultList);
     }
 
     @Override
-    public Optional<String> findSingerBySeq(Long gameIndex, int seq) {
+    public Optional<String> findSingerBySeq(Long gameIndex, Long seq) {
         Optional<String> singleResult = em.createQuery("select m.singer from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
         return singleResult;
     }
 
     @Override
-    public Optional<String> findInitialBySeq(Long gameIndex, int seq) {
+    public Optional<String> findInitialBySeq(Long gameIndex, Long seq) {
         Optional<String> singleResult = em.createQuery("select m.initial from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
         return singleResult;
     }
@@ -55,15 +55,15 @@ public class JpaAnswerRepository implements AnswerRepository {
     }
 
     @Override
-    public int findMaxSeq(Long gameIndex) {
-        Integer result = em.createQuery("select max(a.seq) from Answers a where a.gameIndex.gameIndex=:gameIndex", int.class).setParameter("gameIndex", gameIndex).getSingleResult();
+    public Long findMaxSeq(Long gameIndex) {
+        Long result = em.createQuery("select max(a.seq) from Answers a where a.gameIndex.gameIndex=:gameIndex", Long.class).setParameter("gameIndex", gameIndex).getSingleResult();
         if(result!=null)
             return result;
-        else return 0;
+        else return 0L;
     }
 
     @Override
-    public boolean delete(Long gameIndex, int seq) {
+    public boolean delete(Long gameIndex, Long seq) {
         try {
             List<Answers> resultList = em.createQuery("select a from Answers a where a.gameIndex.gameIndex=:gameIndex and a.seq=:seq", Answers.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList();
             for(Answers ans:resultList){

@@ -1,30 +1,29 @@
 package com.example.guess_music.controller;
 
+import com.example.guess_music.domain.ChatRoom;
 import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
 import com.example.guess_music.domain.Room;
+import com.example.guess_music.service.ChatService;
 import com.example.guess_music.service.GameService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 public class GameController {
     private final GameService gameService;
-    private List<Room> room;
+    private final ChatService chatService;
     @Autowired
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, ChatService chatService) {
         this.gameService = gameService;
+        this.chatService = chatService;
     }
     @Autowired
     private HttpSession session;
@@ -129,13 +128,15 @@ public class GameController {
 
     @GetMapping("/roomList")
     public String Room(){
+
+        System.out.println("return room list html");
         return "game/RoomList";
     }
 
-    @PostMapping("/roomList")
+    @GetMapping("/Game/rooms")
     @ResponseBody
-    public List<Room> sendRoomList(){
-        return room;
+    public List<ChatRoom> room() {
+        return gameService.findAllRoom();
     }
 
     @GetMapping("/createRoom")
@@ -145,15 +146,22 @@ public class GameController {
 
     @PostMapping("/createRoom")
     @ResponseBody
-    public String createRooms(@RequestParam("gameIndex") Long gameIndex){
-        System.out.println("Got make room siganl"+gameIndex);
-        //세션에서 이용자의 id를 받아온다?
-        //그리고, id랑 gameIndex로 room을 생성하고 추가한다
-        return "Success";
+    public String createRooms(@RequestParam Map<String,Object>map){
+        String roomName= (String) map.get("name");
+        Long gameIndex = Long.parseLong((String) map.get("gameIndex"));
+        ChatRoom room = gameService.createRoom(gameIndex, roomName);
+        System.out.println("room"+room);
+        return room.getRoomId();
     }
 
-    @GetMapping("/Game/waitingRoom")
-    public String waitingRoom(){
+    @GetMapping("/Game/waitingRoom/{roomId}")
+    public String waitingRoom(Model model, @PathVariable String roomId){
+        model.addAttribute("roomId", roomId);
         return "game/waitingRoom";
+    }
+    @GetMapping("/room/{roomId}")
+    @ResponseBody
+    public ChatRoom roomInfo(@PathVariable String roomId) {
+        return gameService.findById(roomId);
     }
 }

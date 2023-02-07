@@ -1,7 +1,7 @@
 package com.example.guess_music.domain;
 public class ChatMessage {
     public enum MessageType {
-        ENTER, TALK,START,LEAVE,ANSWER
+        ENTER, TALK,START,LEAVE,ANSWER,SKIP
     }
 
     private MessageType type;

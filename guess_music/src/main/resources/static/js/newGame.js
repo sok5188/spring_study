@@ -69,12 +69,12 @@ var vm = new Vue({
                 this.startGame();
             }
             else{
-                if(recv.type=='ANSWER'){
+                if(recv.type=='ANSWER'||recv.type=='SKIP'){
                 //원래는 skip하는 동작과 같이 만들어야 하지만 일단 skipvote로 처리
                 // 추후에 skip에서 3초 딜레이를 걸고 타이머랑 vote에서 딜레이 없애는 식으로 변경 필요
                     this.skipSong();
                 }
-                this.messages.unshift({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
+                this.messages.unshift({"type":recv.type,"sender":recv.type!='TALK'?'[알림]':recv.sender,"message":recv.message})
             }
             console.log(recv);
             console.log(recv.message);
@@ -181,7 +181,10 @@ var vm = new Vue({
 
         },
         skipVote: function() {
-           this.skipSong();
+            console.log("in skip vote");
+            //뭐 스킵 투표 받고 일정 인원 넘으면 skip song을 호출하는게 아니라 message를 보내서 구독자들이 모두 skipSong을 호출하게 끔 수정
+            //스킵 투표 받고 뭐 어쩌고 저쩌고 해서 스킵하게 된 경우를 가정
+            ws.send("/app/Game/message", {}, JSON.stringify({type:'SKIP', roomId:this.roomId, sender:this.sender, message:"skipvote"}));
         },
         endGame : function(){
             //game end

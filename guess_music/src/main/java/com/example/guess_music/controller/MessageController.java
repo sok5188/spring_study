@@ -33,6 +33,9 @@ public class MessageController {
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
             message.setMessage(message.getSender()+"님이 입장하였습니다.");
         }
+        if(ChatMessage.MessageType.SKIP.equals(message.getType())){
+            message.setMessage("투표로 인해 노래가 스킵됩니다");
+        }
         sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);
 //        System.out.println("called message controller");
 //        this.find(message);

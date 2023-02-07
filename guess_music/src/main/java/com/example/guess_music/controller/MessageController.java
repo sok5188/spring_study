@@ -1,6 +1,7 @@
 package com.example.guess_music.controller;
 
 import com.example.guess_music.domain.ChatMessage;
+import com.example.guess_music.domain.ChatRoom;
 import com.example.guess_music.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -35,6 +36,10 @@ public class MessageController {
         }
         if(ChatMessage.MessageType.SKIP.equals(message.getType())){
             message.setMessage("투표로 인해 노래가 스킵됩니다");
+        }
+        if(ChatMessage.MessageType.START.equals(message.getType())){
+            ChatRoom room = gameService.findById(message.getRoomId());
+            room.setRoomStatus("START");
         }
         sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);
 //        System.out.println("called message controller");

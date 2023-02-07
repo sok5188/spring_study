@@ -100,7 +100,15 @@ public class GameService {
     public ChatRoom findById(String roomId) {
         return chatRooms.get(roomId);
     }
+    public void deleteById(String roomId) {
+        chatRooms.remove(roomId);
+    }
+    private boolean checkRoom() {
+        if(chatRooms.size()==0)
+            return false;
+        return true;
 
+    }
     //채팅방 생성
     public ChatRoom createRoom(Long gameIndex,String name,String ownerName) {
         Optional<Game> opt = gameRepository.findGameByGameIndex(gameIndex);
@@ -115,6 +123,8 @@ public class GameService {
     }
 
     public String findAnswerByRoomId(String roomId){
+        if(!checkRoom())
+            return "False";
         ChatRoom room = this.findById(roomId);
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();

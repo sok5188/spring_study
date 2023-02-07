@@ -27,7 +27,20 @@ var vm = new Vue({
         initialDiv:false,
         singerDiv:false,
         answerText:'',
-        tmp:''
+    },
+    mounted() {
+        window.addEventListener('beforeunload', this.unLoadEvent);
+        window.onpageshow = function(event) {
+            if ( event.persisted || (window.performance && window.performance.navigation.type == 2)) {
+                // Back Forward Cache로 브라우저가 로딩될 경우 혹은 브라우저 뒤로가기 했을 경우
+
+                alert("해당 기능은 현재 페이지에서 제한되어 있습니다 게임 목록에서 다시 입장해 주세요");
+                location.href="/Game/roomList";
+            }
+        }
+    },
+    beforeUnmount() {
+        window.removeEventListener('beforeunload', this.unLoadEvent);
     },
     created() {
         this.roomId = localStorage.getItem('wschat.roomId');
@@ -35,6 +48,10 @@ var vm = new Vue({
         this.findUser();
     },
     methods: {
+        unLoadEvent: function (event) {
+          event.preventDefault();
+          event.returnValue = '';
+        },
         findRoom: function() {
             axios.get('/Game/room/'+this.roomId).then(response => { this.room = response.data;
               console.log("in room"+this.sender+" / " + this.room.ownerName);
@@ -88,7 +105,6 @@ var vm = new Vue({
         },
         startGame : function(){
           console.log("start game !");
-          this.tmp="wowowowowo";
           this.introDiv=!this.introDiv;
           this.timer()
           this.gameDiv=!this.gameDiv;
@@ -189,8 +205,17 @@ var vm = new Vue({
         endGame : function(){
             //game end
             this.endGameDiv=!this.endGameDiv;
+            this.gameDiv=!this.gameDiv;
+            setTimeout(() => {
+                axios.post('/Game/deleteRoom/'+this.roomId).then(response=>{
+
+                })
+                window.removeEventListener('beforeunload', this.unLoadEvent);
+                location.href="/Game/roomList";
+            }, 5000)
         },
         goHome : function(){
+            window.removeEventListener('beforeunload', this.unLoadEvent);
             location.href="/";
         }
 
@@ -218,6 +243,16 @@ function connect() {
 }
 connect();
 
+function NotReload(){
+    console.log("in Not Reload");
+    if( (event.ctrlKey == true && (event.keyCode == 78 || event.keyCode == 82)) || (event.keyCode == 116)||(event.metaKey&&event.key==='r') ) {
+        console.log("prevent reload");
+        event.keyCode = 0;
+        event.cancelBubble = true;
+        event.returnValue = false;
+    }
+}
+window.document.onkeydown = NotReload;
 //var audio=document.getElementById('musicPlayer');
 //    audio.volume=0.5;
 //    audio.src="/1-1.mp3";

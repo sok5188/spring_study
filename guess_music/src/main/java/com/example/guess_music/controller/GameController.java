@@ -137,7 +137,7 @@ public class GameController {
     public String Room(){
 
         System.out.println("return room list html");
-        return "game/RoomList";
+        return "game/roomList";
     }
 
     @GetMapping("/rooms")
@@ -157,7 +157,7 @@ public class GameController {
         String roomName= (String) map.get("name");
         Long gameIndex = Long.parseLong((String) map.get("gameIndex"));
         ChatRoom room = gameService.createRoom(gameIndex, roomName, (String) session.getAttribute("login"));
-
+        room.setRoomStatus("WAITING");
         return room.getRoomId();
     }
 
@@ -172,6 +172,12 @@ public class GameController {
         return gameService.findById(roomId);
     }
 
+    @PostMapping("/deleteRoom/{roomId}")
+    @ResponseBody
+    public String deleteRoom(@PathVariable String roomId){
+        gameService.deleteById(roomId);
+        return "success";
+    }
     @GetMapping("/getUser")
     @ResponseBody
     public String getUser(){

@@ -14,7 +14,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false">
 
 
 <div class="container" id="app" v-cloak>
@@ -38,9 +38,11 @@
       <input type="button" @click="sendStart" value="Start">
     </div>
   </div>
+
   <div>
-    {{tmp}}
+    <input type="button" id="homeBtn" value="Home" @click="goHome">
   </div>
+
   <div v-if="gameDiv">
     <div>
       {{remainSong}} / {{totalSong}}
@@ -48,21 +50,17 @@
     <h4> 남은 시간 : {{ countDown }} 초</h4>
     <button class="btn btn-primary" type="button" @click="skipVote">스킵 투표하기</button>
     <div v-if="gotAnswerDiv">
-      <div v-if="endGameDiv">
-        <h2>수고하셨습니다 게임이 종료되었습니다</h2>
-      </div>
       <h3> 정답 : {{answerText}} </h3>
     </div>
     <div id="hintDiv">
       <p v-if="singerDiv"> 가수 : {{singerHintText}}</p>
       <p v-if="initialDiv"> 초성 : {{initialHintText}}</p>
     </div>
-    <div>
-      <input type="button" id="homeBtn" value="Home" @click="goHome">
-    </div>
 
   </div>
-
+  <div v-if="endGameDiv">
+    <h2>수고하셨습니다 게임이 종료되었습니다 5초후 게임 목록 페이지로 이동 됩니다.</h2>
+  </div>
   <div class="input-group">
     <div class="input-group-prepend">
       <label class="input-group-text">내용</label>

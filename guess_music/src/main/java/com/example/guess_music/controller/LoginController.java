@@ -8,11 +8,13 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
 
 @Controller
+@RequestMapping("/auth")
 public class LoginController {
     private final MemberService memberService;
 
@@ -21,7 +23,9 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String createLoginForm(){ return "login/createLoginForm"; }
+    public String createLoginForm(){
+        System.out.println("login called");
+        return "login/createLoginForm"; }
     @ResponseBody
     @PostMapping("/logout")
     public String logout(HttpServletRequest request){
@@ -63,12 +67,13 @@ public class LoginController {
     }
     @PostMapping("/signIn")
     public String signIn(SignInForm form){
+        System.out.println("got signal to sign in");
         Member member = new Member();
         member.setId(form.getId());
         member.setPassword(form.getPassword());
         member.setName(form.getName());
         memberService.join(member);
-
+        System.out.println("wille return to home");
         return "redirect:/";
     }
 

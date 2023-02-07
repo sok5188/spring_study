@@ -1,4 +1,4 @@
-let url='/checkLogin'
+let url='/auth/checkLogin'
 let notLoginDiv=document.getElementById('notLoginHome');
 let loginDiv=document.getElementById('loginHome');
 fetch(url).then(res=>res.text()).then(data=>{
@@ -14,6 +14,6 @@ fetch(url).then(res=>res.text()).then(data=>{
 })
 
 function logoutHandler(){
-    fetch('/logout',{method :"POST"});
+    fetch('/auth/logout',{method :"POST"});
     location.reload();
 }

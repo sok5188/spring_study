@@ -1,4 +1,4 @@
-const url='/gameList'
+const url='/Game/gameList'
 const parentNode=document.getElementById("gameList");
 const listDiv=document.getElementById("listDiv");
 fetch(url).then(res=>res.json()).then(data=>{
@@ -21,7 +21,7 @@ function create(){
         }
     }
     //방 생성 후 대기방으로 이동
-    let urls="/createRoom?gameIndex="+gameIndex;
+    let urls="/Game/createRoom?gameIndex="+gameIndex;
     fetch(urls,{method:"POST"}).then(res=>res.text()).then(data=>{
         if(data=="Success"){
             //대기방으로 이동

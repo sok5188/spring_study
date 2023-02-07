@@ -1,4 +1,4 @@
-let url2='/checkLogin'
+let url2='/auth/checkLogin'
 fetch(url2).then(res=>res.text()).then(data=>{
     console.log("data fetched"+data);
     if(data=="False"){

@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container">
-    <form action="/signIn" method="post">
+    <form action="/auth/signIn" method="post">
         <div class="form-group">
             <label for="id">아이디</label>
             <input type="text" id="id" name="id" placeholder="id"> </div>
@@ -21,7 +21,7 @@
 </div> <!-- /container -->
 </body>
 <script>
-    let url2='/checkLogin'
+    let url2='/auth/checkLogin'
     fetch(url2).then(res=>res.text()).then(data=>{
     console.log("data fetched"+data);
     if(data!="False"){

@@ -1,9 +1,14 @@
 package com.example.guess_music.service;
 
 import com.example.guess_music.domain.Member;
+import com.example.guess_music.domain.MemberDetail;
 import com.example.guess_music.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -20,6 +25,7 @@ public class MemberService {
     public String join(Member member){
 
         validateMember(member);
+        //member.setPassword(getEncodedPassword(member.getPassword()));
         memberRepository.save(member);
         return member.getId();
     }
@@ -42,4 +48,17 @@ public class MemberService {
     }
 
 
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        System.out.println("in loadUserByUsername : "+username);
+//        Optional<Member> member=memberRepository.findById(username);
+//        if(member.isPresent()){
+//            System.out.println("ok it is present");
+//            return new MemberDetail(member.get());
+//        }
+//        else return (UserDetails) new UsernameNotFoundException("cant find : "+username);
+//    }
+//    private String getEncodedPassword(String password) {
+//        return ("{noop}" + password);
+//    }
 }

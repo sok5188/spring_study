@@ -1,4 +1,4 @@
-const url='/gameList'
+const url='/Game/gameList'
 const table=document.getElementById("tableBody");
 var ansCount=0;
 fetch(url).then(res=>res.json()).then(data=>{

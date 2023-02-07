@@ -64,7 +64,7 @@
                 axios.get('/Game/rooms').then(response => { this.chatrooms = response.data; });
             },
             findAllGame: function(){
-                axios.get('/gameList').then(response => {
+                axios.get('/Game/gameList').then(response => {
                 console.log("got all game List");
                 this.gameList = response.data; });
             }
@@ -78,7 +78,7 @@
                     var params = new URLSearchParams();
                     params.append("name",this.room_name);
                     params.append("gameIndex",gameIndex);
-                    axios.post('/createRoom',params).then(res=>{
+                    axios.post('/Game/createRoom',params).then(res=>{
                         console.log("res : "+res.data);
                         alert("room created");
                         this.room_name = '';

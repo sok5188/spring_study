@@ -62,7 +62,7 @@ public class GameService {
         ChatRoom room = this.findById(roomId);
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
-
+        System.out.println("in service get hint seq : "+seq);
         if(type.equals("singer")){
             Optional<String> opt = answerRepository.findSingerBySeq(gameIndex, seq);
             if(opt.isPresent())

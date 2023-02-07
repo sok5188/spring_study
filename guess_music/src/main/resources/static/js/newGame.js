@@ -36,7 +36,7 @@ var vm = new Vue({
     },
     methods: {
         findRoom: function() {
-            axios.get('/room/'+this.roomId).then(response => { this.room = response.data;
+            axios.get('/Game/room/'+this.roomId).then(response => { this.room = response.data;
               console.log("in room"+this.sender+" / " + this.room.ownerName);
               if(this.sender==this.room.ownerName){
                 console.log("you are owner!");
@@ -69,6 +69,11 @@ var vm = new Vue({
                 this.startGame();
             }
             else{
+                if(recv.type=='ANSWER'){
+                //원래는 skip하는 동작과 같이 만들어야 하지만 일단 skipvote로 처리
+                // 추후에 skip에서 3초 딜레이를 걸고 타이머랑 vote에서 딜레이 없애는 식으로 변경 필요
+                    this.skipSong();
+                }
                 this.messages.unshift({"type":recv.type,"sender":recv.type=='ENTER'?'[알림]':recv.sender,"message":recv.message})
             }
             console.log(recv);
@@ -150,40 +155,33 @@ var vm = new Vue({
             })
         },
         skipSong: function() {
+            console.log("in skip song");
+            this.showAnswer();
+            setTimeout(() => {
+                 this.countDown = 60;
+                 this.stopAudio();
+                 this.room.seq=this.room.seq+1;
+                 this.remainSong=this.remainSong-1;
+                 this.answerText='';
+                 this.gotAnswerDiv=false;
+                 if(this.remainSong==0){
+                     //game end
+                     this.endGame();
+                 }else{
+                     //send skip message to server for change seq and hints
+                     //뭐 다른 방식으로 구현하는게 더 좋을 듯 이러면 방장 나가고 나면 안되니깐..
+                     if(this.room.ownerName==this.sender){
+                         axios.post('/Game/skip/'+this.roomId).then(response=>{});
+                     }
+                     this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
+                     this.playAudio();
+                 }
+           }, 3000)
 
-            this.stopAudio();
-            this.room.seq=this.room.seq+1;
-            this.remainSong=this.remainSong-1;
 
-            this.answerText='';
-            this.gotAnswerDiv=false;
-            if(this.remainSong==0){
-                //game end
-                this.endGame();
-            }else{
-                //send skip message to server for change seq and hints
-                axios.post('/Game/skip/'+this.roomId).then(response=>{});
-                this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
-                this.playAudio();
-            }
         },
         skipVote: function() {
-            //일단 바로 skip
-           this.showAnswer();
-           setTimeout(() => {
-                 this.skipSong();
-                 this.countDown = 60;
-                 //this.timer();
-           }, 3000)
-        },
-        checkAnswer : function(msg){
-          //if game is now on going return nothing
-
-          //else check answer
-
-          // if correct stop checking answer and show the full ans
-
-          // else just keep going
+           this.skipSong();
         },
         endGame : function(){
             //game end

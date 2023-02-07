@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Controller
+@RequestMapping("/Game")
 public class GameController {
     private final GameService gameService;
     @Autowired
@@ -24,10 +25,6 @@ public class GameController {
     }
     @Autowired
     private HttpSession session;
-    @GetMapping("/select")
-    public String selectGame(){
-        return "game/select";
-    }
 
 
     @ResponseBody
@@ -62,7 +59,7 @@ public class GameController {
 //
 //        return "game/intro";
 //    }
-    @GetMapping("/Game")
+    @GetMapping("/")
     public String createGame(Model model){
         int seq;
         Long gameIndex;
@@ -83,20 +80,21 @@ public class GameController {
 
         return "game/Game";
     }
-    @PostMapping("/Game/skip/{roomId}")
+    @PostMapping("/skip/{roomId}")
     @ResponseBody
     public String skipGame(@PathVariable String roomId){
         ChatRoom room = gameService.findById(roomId);
         room.setSeq(room.getSeq()+1);
+        System.out.println("Now Room:"+room.getGameTitle()+" / "+room.getSeq());
         return "success";
     }
 
-    @GetMapping("/Game/getAnswer/{roomId}")
+    @GetMapping("/getAnswer/{roomId}")
     @ResponseBody
     public String getAnswer(@PathVariable String roomId){
         return gameService.findAnswerByRoomId(roomId);
     }
-    @GetMapping("/Game/checkAnswer")
+    @GetMapping("/checkAnswer")
     @ResponseBody
     public Result getGameAnswer(@RequestParam("target") String target){
         System.out.println("Got target : "+target);
@@ -126,7 +124,7 @@ public class GameController {
         return result;
     }
 
-    @GetMapping("/Game/hint")
+    @GetMapping("/hint")
     @ResponseBody
     public String Hint(@RequestParam Map<String,Object>map){
         String roomId = (String) map.get("roomId");
@@ -142,7 +140,7 @@ public class GameController {
         return "game/RoomList";
     }
 
-    @GetMapping("/Game/rooms")
+    @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoom> room() {
         return gameService.findAllRoom();
@@ -163,7 +161,7 @@ public class GameController {
         return room.getRoomId();
     }
 
-    @GetMapping("/Game/waitingRoom/{roomId}")
+    @GetMapping("/waitingRoom/{roomId}")
     public String waitingRoom(Model model, @PathVariable String roomId){
         model.addAttribute("roomId", roomId);
         return "game/waitingRoom";
@@ -174,7 +172,7 @@ public class GameController {
         return gameService.findById(roomId);
     }
 
-    @GetMapping("/Game/getUser")
+    @GetMapping("/getUser")
     @ResponseBody
     public String getUser(){
         String username = (String) session.getAttribute("login");

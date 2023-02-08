@@ -92,7 +92,13 @@ public class GameController {
     @GetMapping("/getAnswer/{roomId}")
     @ResponseBody
     public String getAnswer(@PathVariable String roomId){
-        return gameService.findAnswerByRoomId(roomId);
+         List<String> answerByRoomId = gameService.findAnswerByRoomId(roomId);
+        if(answerByRoomId==null){
+            return "False";
+        }else{
+            List<String> ans=(List<String>)answerByRoomId;
+            return ans.get(0);
+        }
     }
     @GetMapping("/checkAnswer")
     @ResponseBody

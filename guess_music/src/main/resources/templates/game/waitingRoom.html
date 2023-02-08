@@ -7,7 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">
+<!--  <link rel="stylesheet" href="/webjars/bootstrap/4.3.1/dist/css/bootstrap.min.css">-->
+<!--  <link rel="stylesheet" href="/css/main.css">-->
+  <link rel="stylesheet" href="/css/bootstrap.css">
   <style>
         [v-cloak] {
             display: none;
@@ -19,28 +21,31 @@
 
 <div class="container" id="app" v-cloak>
   <div v-if="introDiv">
+
   <div>
     <h2>방 제목 : {{room.roomName}}</h2>
     <h4> 방장 : {{room.ownerName}} 선택된 게임 : {{room.gameTitle}} 전체 곡 수 : {{room.songNum}}</h4>
   </div>
-  <div>
-    <h2> 노래맞추기 </h2>
-    <h4> 모든 노래는 1분동안 재생됩니다. <br>
-      만약 정답을 모르겠다면 스킵버튼을 눌러주세요<br>
-      모든 정답은 한글 혹은 영어 소문자로 이루어져 있습니다<br>
-      30초가 남게되면 가수 힌트가 제공되고 15초가 남게되면 제목의 초성 힌트가 제공됩니다<br>
-    </h4>
-    <h3>
-      정답을 입력하실 때 띄어쓰기를 하지 말아주세요!
-    </h3>
-  </div>
+    <div class="card text-white bg-info mb-3" style="max-width: 20rem;">
+      <div class="card-header"> 노래 맞추기 </div>
+      <div class="card-body">
+        <h4 class="card-title">게임 진행 방법</h4>
+        <p class="card-text">모든 노래는 1분동안 재생됩니다. <br>
+          만약 정답을 모르겠다면 스킵버튼을 눌러주세요<br>
+          모든 정답은 한글 혹은 영어 소문자로 이루어져 있습니다<br>
+          30초가 남게되면 가수 힌트가 제공되고 15초가 남게되면 제목의 초성 힌트가 제공됩니다<br></p>
+      </div>
+    </div>
+    <h3 class="text-warning"> 정답을 입력하실 때 띄어쓰기를 하지 말아주세요! </h3>
+
+
     <div v-if="startDiv">
-      <input type="button" @click="sendStart" value="Start">
+      <input class="btn btn-primary" type="button" @click="sendStart" value="Start">
     </div>
   </div>
 
   <div>
-    <input type="button" id="homeBtn" value="Home" @click="goHome">
+    <input class="btn btn-light" type="button" id="homeBtn" value="Home" @click="goHome">
   </div>
 
   <div v-if="gameDiv">

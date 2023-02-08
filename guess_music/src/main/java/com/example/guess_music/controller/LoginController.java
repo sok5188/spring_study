@@ -58,7 +58,7 @@ public class LoginController {
         }
         //need to alert
         //front에서 뭐 click listner같은 애들로 확인 여부체크하고 여기서는 redirect하지 않는 방향?? (나중에 체크)
-        return "redirect:/login";
+        return "redirect:/auth/login";
     }
 
     @GetMapping("/signIn")

@@ -6,7 +6,6 @@ import com.example.guess_music.domain.Result;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -122,16 +121,16 @@ public class GameService {
         return chatRoom;
     }
 
-    public String findAnswerByRoomId(String roomId){
+    public List<String> findAnswerByRoomId(String roomId){
         if(!checkRoom())
-            return "False";
+            return null;
         ChatRoom room = this.findById(roomId);
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
         Optional<List<String>> opt = answerRepository.findAnswerBySeq(gameIndex,seq);
         if(opt.isPresent()){
-            return opt.get().get(0);
+            return opt.get();
         }
-        else return "False";
+        else return null;
     }
 }

@@ -4,7 +4,7 @@ fetch(url2).then(res=>res.text()).then(data=>{
     if(data=="False"){
         console.log("Not logined");
         alert("로그인 후 이용해 주세요");
-        window.location.href='/login';
+        window.location.href='/auth/login';
     }
 }).catch(err=>{
     console.log("login check api error");

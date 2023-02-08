@@ -17,3 +17,14 @@ function logoutHandler(){
     fetch('/auth/logout',{method :"POST"});
     location.reload();
 }
+
+function goLogIn(){
+    location.href='/auth/login';
+}
+
+function goSignIn(){
+    location.href='/auth/signIn';
+}
+function playGame(){
+    location.href='/Game/roomList';
+}

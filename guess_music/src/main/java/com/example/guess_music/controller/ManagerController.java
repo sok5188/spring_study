@@ -97,9 +97,9 @@ public class ManagerController {
             if(result!=-1){
                 System.out.println("save success");
                 //ec2서버용
-                //String folder="/home/ubuntu/audio/";
+                String folder="/home/ubuntu/audio/";
                 //Local 테스트용
-                String folder="/Users/sin-wongyun/Desktop/guessAudio/";
+                //String folder="/Users/sin-wongyun/Desktop/guessAudio/";
                 String filename=gameIndex+"-"+result+".mp3";
                 form.getMp3().transferTo(new File(folder+filename));
                 String red="redirect:/manage/upload?gameIndex="+gameIndex;

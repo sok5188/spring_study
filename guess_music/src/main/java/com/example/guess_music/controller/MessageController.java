@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -45,8 +46,12 @@ public class MessageController {
 //        System.out.println("called message controller");
 //        this.find(message);
 //        this.getUsers();
-        String answerByRoomId = gameService.findAnswerByRoomId(message.getRoomId());
-        if(message.getMessage().equals(answerByRoomId)) {
+        List<String> answers = gameService.findAnswerByRoomId(message.getRoomId());
+        if(answers== null){
+            return;
+        }
+
+        if(answers.stream().filter(ans->ans.equals(message.getMessage())).findAny().isPresent()) {
             message.setMessage(message.getSender()+"님이 정답을 맞추셨습니다!");
             message.setType(ChatMessage.MessageType.ANSWER);
             sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);

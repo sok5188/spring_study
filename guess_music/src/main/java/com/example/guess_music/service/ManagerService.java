@@ -41,9 +41,9 @@ public class ManagerService {
     public boolean delete(Long gameIndex,Long seq){
         //audio에서 노래 삭제
         //ec2서버용
-        //String folder="/home/ubuntu/audio/";
+        String folder="/home/ubuntu/audio/";
         //Local 테스트용
-        String folder="/Users/sin-wongyun/Desktop/guessAudio/";
+        //String folder="/Users/sin-wongyun/Desktop/guessAudio/";
         String filename=gameIndex+"-"+seq+".mp3";
         File file=new File(folder+filename);
         if(file.exists()){

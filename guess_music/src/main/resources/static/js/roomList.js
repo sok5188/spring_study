@@ -52,9 +52,7 @@ var vm = new Vue({
 
             },
             selectGame: function(){
-                console.log("clicked select button");
                 this.listStatus=!this.listStatus;
-                console.log("false hidden");
             }
         }
     });

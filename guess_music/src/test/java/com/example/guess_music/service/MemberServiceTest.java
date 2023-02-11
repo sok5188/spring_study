@@ -24,7 +24,7 @@ public class MemberServiceTest {
     void 회원가입() {
         //given
         Member member=new Member();
-        member.setId("sirong_test");
+        member.setUsername("sirong_test");
         member.setPassword("123");
         member.setName("Tester");
         //when
@@ -38,12 +38,12 @@ public class MemberServiceTest {
     void 중복회원_예외() throws Exception{
         Member member=new Member();
         member.setName("test1");
-        member.setId("test1");
+        member.setUsername("test1");
         member.setPassword("123");
 
         Member member2=new Member();
         member2.setName("test1");
-        member2.setId("test1");
+        member2.setUsername("test1");
         member2.setPassword("123");
 
         memberService.join(member);
@@ -56,7 +56,7 @@ public class MemberServiceTest {
     void 로그인(){
         Member member=new Member();
         member.setName("test1");
-        member.setId("test1");
+        member.setUsername("test1");
         member.setPassword("123");
         memberService.join(member);
 
@@ -72,7 +72,7 @@ public class MemberServiceTest {
     void 로그인_아이디오류(){
         Member member=new Member();
         member.setName("test1");
-        member.setId("test1");
+        member.setUsername("test1");
         member.setPassword("123");
         memberService.join(member);
 

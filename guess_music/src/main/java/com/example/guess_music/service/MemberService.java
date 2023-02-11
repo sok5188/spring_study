@@ -8,14 +8,13 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Transactional
-public class MemberService {
+public class MemberService implements UserDetailsService {
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
@@ -27,17 +26,17 @@ public class MemberService {
         validateMember(member);
         //member.setPassword(getEncodedPassword(member.getPassword()));
         memberRepository.save(member);
-        return member.getId();
+        return member.getUsername();
     }
     private void validateMember(Member member){
-        memberRepository.findById(member.getId()).ifPresent(m->{
+        memberRepository.findbyUsername(member.getUsername()).ifPresent(m->{
             throw new IllegalStateException("already exist id");});
     }
     public List<Member> findMembers(){
         return memberRepository.findAll();
     }
 
-    public Optional<Member> findOne(String id){ return memberRepository.findById(id); }
+    public Optional<Member> findOne(String id){ return memberRepository.findbyUsername(id); }
 
     public String checkLogin(HttpServletRequest request) {
         HttpSession session=request.getSession();
@@ -45,6 +44,15 @@ public class MemberService {
             return "False";
         }
         return session.getAttribute("login").toString();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Member> byUsername = memberRepository.findbyUsername(username);
+        if(byUsername.isPresent()){
+            return new MemberDetail(byUsername.get());
+        }
+        return null;
     }
 
 

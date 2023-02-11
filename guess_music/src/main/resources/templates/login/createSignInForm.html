@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <link rel="stylesheet" href="/css/bootstrap.css">
     <meta charset="UTF-8">
@@ -9,26 +9,20 @@
 <div class="container">
     <form action="/auth/signIn" method="post">
         <div class="form-group">
-            <label for="id" class="form-label mt-4">아이디</label>
-            <input class="form-control" type="text" id="id" name="id" placeholder="id"> </div>
+            <label for="username" class="form-label mt-4">아이디</label>
+            <input class="form-control" type="text" id="username" name="username" placeholder="username"> </div>
         <div class="form-group">
             <label for="password" class="form-label mt-4">비밀번호</label>
             <input class="form-control" type="password" id="password" name="password" placeholder="password"> </div>
         <div class="form-group">
             <label for="name" class="form-label mt-4">이름</label>
             <input class="form-control" type="text" id="name" name="name" placeholder="name"> </div>
+        <div class="form-group">
+            <label for="email" class="form-label mt-4">이메일</label>
+            <input type="email" id="email" name="email" placeholder="Email"/> <br/>
+        </div>
         <button class="btn btn-primary" type="submit">Enter</button> </form>
-</div> <!-- /container -->
+</div>
 </body>
-<script>
-    let url2='/auth/checkLogin'
-    fetch(url2).then(res=>res.text()).then(data=>{
-    console.log("data fetched"+data);
-    if(data!="False"){
-        window.location.href='/';
-    }
-    }).catch(err=>{
-    console.log("login check api error");
-    })
-</script>
+
 </html>

@@ -3,7 +3,6 @@ package com.example.guess_music.controller;
 import com.example.guess_music.domain.ChatRoom;
 import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
-import com.example.guess_music.service.ChatService;
 import com.example.guess_music.service.GameService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/Game")

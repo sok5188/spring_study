@@ -1,15 +1,24 @@
 package com.example.guess_music.controller;
 
 public class SignInForm {
-    private String id,password,name;
+    private String username,password,name;
+    private String email;
 
-    public String getId() {
-
-        return id;
+    public String getEmail() {
+        return email;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

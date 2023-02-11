@@ -1,37 +1,46 @@
 package com.example.guess_music.domain;
 
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@ToString
 public class MemberDetail implements UserDetails {
-    private Member member;
+    public Member getUser() {
+        return user;
+    }
 
-    public MemberDetail(Member member) {
-        this.member = member;
+    private Member user;
+
+    public MemberDetail(Member user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collectors = new ArrayList<>();
-        collectors.add(() -> {
-            return "ROLE_USER";
+
+        Collection<GrantedAuthority> collect = new ArrayList<>();
+        collect.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return user.getRole().toString();
+            }
         });
-        return collectors;
+        return collect;
     }
+
 
     @Override
     public String getPassword() {
-        System.out.println(member.getPassword());
-        return member.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        System.out.println(member.getId());
-        return member.getId();
+        return user.getUsername();
     }
 
     @Override

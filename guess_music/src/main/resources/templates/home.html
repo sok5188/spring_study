@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <link rel="stylesheet" href="/css/bootstrap.css">
     <meta charset="UTF-8">
@@ -11,16 +11,19 @@
     <br><br><br><br><br><br>
     <a href="/manage">관리자 페이지로 이동</a>
     <br><br><br><br><br><br>
-<div id="notLoginHome">
+
+</div>
+<div sec:authorize="isAnonymous()" style="background-color:pink; padding:1em;">
     <p> 시작을 위해 로그인 하여 주세요 </p>
     <button class="btn btn-success" type="button" onclick="goLogIn()"> 로그인 </button>
     <br><br><br>
     <button class="btn btn-info" type="button" onclick="goSignIn()"> 회원 가입 </button>
+    <a href="/joinForm">회원가입하기</a><br>
 </div>
-<div id="loginHome" hidden="hidden">
+
+<div sec:authorize="isAuthenticated()" style="background-color:pink; padding:1em;">
     <button class="btn btn-secondary" type="button" onclick="playGame()"> 게임하러 가기</button>
     <input class="btn btn-danger" type="button" value="logoutTMP" id="logoutBtn" onclick="logoutHandler()">
-</div>
 </div>
 </body>
 <script src="js/Login.js"></script>

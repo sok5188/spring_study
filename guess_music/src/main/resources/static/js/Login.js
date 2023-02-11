@@ -14,16 +14,15 @@ fetch(url).then(res=>res.text()).then(data=>{
 })
 
 function logoutHandler(){
-    fetch('/auth/logout',{method :"POST"});
-    location.reload();
+    location.href='/logout';
 }
 
 function goLogIn(){
-    location.href='/auth/login';
+    location.href='/auth/loginForm';
 }
 
 function goSignIn(){
-    location.href='/auth/signIn';
+    location.href='/auth/joinForm';
 }
 function playGame(){
     location.href='/Game/roomList';

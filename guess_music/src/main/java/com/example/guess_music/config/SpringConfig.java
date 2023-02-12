@@ -1,4 +1,4 @@
-package com.example.guess_music;
+package com.example.guess_music.config;
 
 import com.example.guess_music.repository.*;
 import com.example.guess_music.service.GameService;

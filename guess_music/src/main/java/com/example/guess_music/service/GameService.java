@@ -3,12 +3,18 @@ package com.example.guess_music.service;
 import com.example.guess_music.domain.ChatRoom;
 import com.example.guess_music.domain.Game;
 import com.example.guess_music.domain.Result;
+import com.example.guess_music.domain.User;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.messaging.simp.user.SimpSubscription;
+import org.springframework.messaging.simp.user.SimpSubscriptionMatcher;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 public class GameService {
@@ -21,10 +27,12 @@ public class GameService {
     private final GameRepository gameRepository;
 
     private Map<String, ChatRoom> chatRooms;
+    private ArrayList<User> users;
     @PostConstruct
     //의존관게 주입완료되면 실행되는 코드
     private void init() {
         chatRooms = new LinkedHashMap<>();
+        users = new ArrayList<>();
     }
     public Result getResult(String target, Long gameIndex, Long seq){
         Result result=new Result();
@@ -61,7 +69,6 @@ public class GameService {
         ChatRoom room = this.findById(roomId);
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
-        System.out.println("in service get hint seq : "+seq);
         if(type.equals("singer")){
             Optional<String> opt = answerRepository.findSingerBySeq(gameIndex, seq);
             if(opt.isPresent())
@@ -81,7 +88,6 @@ public class GameService {
     }
     public List<Game> getGameList(){
         Optional<List<Game>> opt = gameRepository.findGameList();
-        System.out.println("got list from repo");
         if(opt.isPresent())
             return opt.get();
         else return new ArrayList<Game>();
@@ -108,6 +114,26 @@ public class GameService {
         return true;
 
     }
+    public List<User> findAllUserByRoomId(String roomId) {
+        List<User> result = users.stream().filter(target -> target.getRoomId().equals(roomId)).collect(Collectors.toList());
+        return result;
+    }
+    public User findUserByUsername(String username) {
+        Optional<User> result = users.stream().filter(target -> target.getName().equals(username)).findAny();
+        if(result.isPresent())
+            return result.get();
+        else return null;
+    }
+    public void deleteUserByUsername(String username) {
+        Iterator it=users.iterator();
+        while(it.hasNext()){
+            User next = (User) it.next();
+            if(next.getName().equals(username)){
+                it.remove();
+                break;
+            }
+        }
+    }
     //채팅방 생성
     public ChatRoom createRoom(Long gameIndex,String name,String ownerName) {
         Optional<Game> opt = gameRepository.findGameByGameIndex(gameIndex);
@@ -115,9 +141,12 @@ public class GameService {
         if(opt.isPresent())
             game=opt.get();
         else return new ChatRoom();
-        System.out.println("song num is : "+game.getSongNum());
         ChatRoom chatRoom = ChatRoom.create(gameIndex,name,game.getTitle(),game.getSongNum(),ownerName);
+        chatRoom.setRoomUserNum(0);
         chatRooms.put(chatRoom.getRoomId(), chatRoom);
+        //create User(방장)
+        //this.createUser(ownerName,chatRoom.getRoomId());
+
         return chatRoom;
     }
 
@@ -132,5 +161,11 @@ public class GameService {
             return opt.get();
         }
         else return null;
+    }
+
+    public User createUser(String roomId, String username) {
+        User user = User.create(username, roomId, 0L);
+        users.add(user);
+        return user;
     }
 }

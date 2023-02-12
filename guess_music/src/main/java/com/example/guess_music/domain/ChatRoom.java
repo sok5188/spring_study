@@ -9,6 +9,16 @@ public class ChatRoom {
     private Long seq;
     private String roomStatus;
 
+    public int getRoomUserNum() {
+        return roomUserNum;
+    }
+
+    public void setRoomUserNum(int roomUserNum) {
+        this.roomUserNum = roomUserNum;
+    }
+
+    private int roomUserNum;
+
     public String getRoomStatus() {
         return roomStatus;
     }

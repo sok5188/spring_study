@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 <head>
   <title>Websocket ChatRoom</title>
   <!-- Required meta tags -->
@@ -25,6 +25,7 @@
   <div>
     <h2>방 제목 : {{room.roomName}}</h2>
     <h4> 방장 : {{room.ownerName}} 선택된 게임 : {{room.gameTitle}} 전체 곡 수 : {{room.songNum}}</h4>
+    <h4> 참여자 수 : {{userNum}}</h4>
   </div>
     <div class="card text-white bg-info mb-3" style="max-width: 20rem;">
       <div class="card-header"> 노래 맞추기 </div>
@@ -50,8 +51,16 @@
 
   <div v-if="gameDiv">
     <div>
+      <ul class="list-group">
+        <li class="list-group-item list-group-item-action" v-for="item in users" v-bind:key="item.name">
+          {{item.name}} : {{item.score}}
+        </li>
+      </ul>
+    </div>
+    <div>
       {{remainSong}} / {{totalSong}}
     </div>
+
     <h4> 남은 시간 : {{ countDown }} 초</h4>
     <button class="btn btn-primary" type="button" @click="skipVote">스킵 투표하기</button>
     <div v-if="gotAnswerDiv">
@@ -70,9 +79,9 @@
     <div class="input-group-prepend">
       <label class="input-group-text">내용</label>
     </div>
-    <input type="text" class="form-control" v-model="message" v-on:keypress.enter="sendMessage">
+    <input type="text" class="form-control" v-model="message" v-on:keypress.enter="sendMessage('TALK')">
     <div class="input-group-append">
-      <button class="btn btn-primary" type="button" @click="sendMessage">보내기</button>
+      <button class="btn btn-primary" type="button" @click="sendMessage('TALK')">보내기</button>
     </div>
   </div>
   <ul class="list-group">

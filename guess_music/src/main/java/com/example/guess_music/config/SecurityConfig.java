@@ -1,4 +1,4 @@
-package com.example.guess_music;
+package com.example.guess_music.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,9 +45,12 @@ public class SecurityConfig {
                 .requestMatchers("/manage/**").hasRole("MANAGER")
                 .anyRequest().permitAll()
                 .and().formLogin()
-                .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/")
+                .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName());
+                    res.sendRedirect("/");})
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
-                .and().csrf().disable();
+                .and().csrf().disable()
+
+        ;
 
         return http.build();
     }

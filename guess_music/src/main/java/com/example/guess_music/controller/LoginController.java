@@ -2,6 +2,7 @@ package com.example.guess_music.controller;
 
 import com.example.guess_music.domain.Member;
 import com.example.guess_music.domain.Role;
+import com.example.guess_music.domain.SignInForm;
 import com.example.guess_music.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

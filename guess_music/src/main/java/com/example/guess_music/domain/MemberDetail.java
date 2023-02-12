@@ -62,4 +62,16 @@ public class MemberDetail implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public static class CreateGameForm {
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        private String title;
+    }
 }

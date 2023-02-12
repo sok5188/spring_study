@@ -1,4 +1,4 @@
-package com.example.guess_music;
+package com.example.guess_music.config;
 
 import org.apache.catalina.Context;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -13,9 +13,9 @@ public class TomcatConfig {
         return (TomcatServletWebServerFactory container) -> {
             container.addContextCustomizers((Context context) -> {
                 //ec2서버용
-                context.setDocBase("/home/ubuntu/audio");
+                //context.setDocBase("/home/ubuntu/audio");
                 //local테스트 용
-                //context.setDocBase("/Users/sin-wongyun/Desktop/guessAudio");
+                context.setDocBase("/Users/sin-wongyun/Desktop/guessAudio");
                 context.setPath("/");
                 context.setReloadable(true);
             });

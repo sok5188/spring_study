@@ -14,7 +14,8 @@ var vm = new Vue({
         methods: {
             findAllRoom: function() {
                 console.log("will load room list");
-                axios.get('/Game/rooms').then(response => { this.chatrooms = response.data; });
+                axios.get('/Game/rooms').then(response => { this.chatrooms = response.data;
+                });
             },
             findAllGame: function(){
                 axios.get('/Game/gameList').then(response => {

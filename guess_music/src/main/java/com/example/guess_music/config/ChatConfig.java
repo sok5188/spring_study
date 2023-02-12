@@ -1,4 +1,4 @@
-package com.example.guess_music;
+package com.example.guess_music.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -49,7 +49,7 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
                     String user = accessor.getFirstNativeHeader("user");
                     if (user != null) {
                         List<GrantedAuthority> authorities = new ArrayList<>();
-                        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                        authorities.add(new SimpleGrantedAuthority("USER"));
                         Authentication auth = new UsernamePasswordAuthenticationToken(user, user, authorities);
                         SecurityContextHolder.getContext().setAuthentication(auth);
                         accessor.setUser(auth);
@@ -60,5 +60,6 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
+
 
 }

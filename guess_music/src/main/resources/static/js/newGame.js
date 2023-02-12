@@ -27,6 +27,9 @@ var vm = new Vue({
         initialDiv:false,
         singerDiv:false,
         answerText:'',
+        userNum:0,
+        users:[],
+        block:false
     },
     mounted() {
         window.addEventListener('beforeunload', this.unLoadEvent);
@@ -50,7 +53,9 @@ var vm = new Vue({
     methods: {
         unLoadEvent: function (event) {
           event.preventDefault();
-          event.returnValue = '';
+          //event.returnValue = '';
+          //ws.send("/app/Game/message", {}, JSON.stringify({type:'LEAVE',roomId:this.roomId,sender:this.sender,message:this.message}));
+          this.sendMessage('LEAVE');
         },
         findRoom: function() {
             axios.get('/Game/room/'+this.roomId).then(response => { this.room = response.data;
@@ -66,20 +71,31 @@ var vm = new Vue({
         findUser: function(){
           axios.get('/Game/getUser').then(response=>{
             this.sender=response.data;
-            console.log("in user"+this.sender+" / " + this.room.ownerName);
             if(this.sender==this.room.ownerName){
               console.log("you are owner!");
               this.startDiv=!this.startDiv;
             }
           });
         },
-        sendMessage: function() {
-            ws.send("/app/Game/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
+        findUsers:function(){
+            axios.get("/Game/getUsers/"+this.roomId).then(response=>{
+                            this.users=response.data;
+                       })
+        },
+        sendMessage: function(MsgType) {
+            if(this.block){
+                this.message = '';
+                return;
+            }
+
+            ws.send("/app/Game/message", {}, JSON.stringify({type:MsgType, roomId:this.roomId, sender:this.sender, message:this.message}));
             //checkAnswer(message);
             this.message = '';
         },
         recvMessage: function(recv) {
-            console.log("!!recv!!"+recv.type);
+            axios.get('/Game/getUserCount/'+this.roomId).then(response=>{
+                this.userNum=response.data;
+            })
 
             if(recv.type=='START'){
                 console.log("in recv it is START");
@@ -90,18 +106,20 @@ var vm = new Vue({
                 //원래는 skip하는 동작과 같이 만들어야 하지만 일단 skipvote로 처리
                 // 추후에 skip에서 3초 딜레이를 걸고 타이머랑 vote에서 딜레이 없애는 식으로 변경 필요
                     this.skipSong();
+                    if(recv.type=='ANSWER'){
+                        this.findUsers();
+                    }
                 }
                 this.messages.unshift({"type":recv.type,"sender":recv.type!='TALK'?'[알림]':recv.sender,"message":recv.message})
             }
-            console.log(recv);
-            console.log(recv.message);
-            console.log(recv.message.message);
+
 
 
         },
         sendStart : function(){
            console.log("send start");
-           ws.send("/app/Game/message", {}, JSON.stringify({type:'START',roomId:this.roomId,sender:this.sender,message:this.message}));
+           this.sendMessage('START');
+           this.findUsers();
         },
         startGame : function(){
           console.log("start game !");
@@ -173,6 +191,7 @@ var vm = new Vue({
         skipSong: function() {
             console.log("in skip song");
             this.showAnswer();
+            this.block=true;
             setTimeout(() => {
                  this.countDown = 60;
                  this.stopAudio();
@@ -180,6 +199,7 @@ var vm = new Vue({
                  this.remainSong=this.remainSong-1;
                  this.answerText='';
                  this.gotAnswerDiv=false;
+                 this.block=false;
                  if(this.remainSong==0){
                      //game end
                      this.endGame();
@@ -200,7 +220,8 @@ var vm = new Vue({
             console.log("in skip vote");
             //뭐 스킵 투표 받고 일정 인원 넘으면 skip song을 호출하는게 아니라 message를 보내서 구독자들이 모두 skipSong을 호출하게 끔 수정
             //스킵 투표 받고 뭐 어쩌고 저쩌고 해서 스킵하게 된 경우를 가정
-            ws.send("/app/Game/message", {}, JSON.stringify({type:'SKIP', roomId:this.roomId, sender:this.sender, message:"skipvote"}));
+            //ws.send("/app/Game/message", {}, JSON.stringify({type:'SKIP', roomId:this.roomId, sender:this.sender, message:"skipvote"}));
+            this.sendMessage('SKIP');
         },
         endGame : function(){
             //game end

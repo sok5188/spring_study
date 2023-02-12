@@ -2,20 +2,15 @@ package com.example.guess_music.controller;
 
 import com.example.guess_music.domain.Answers;
 import com.example.guess_music.domain.Game;
+import com.example.guess_music.domain.MemberDetail;
+import com.example.guess_music.domain.SaveSongForm;
 import com.example.guess_music.service.ManagerService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -45,7 +40,7 @@ public class ManagerController {
     }
 
     @PostMapping("/manage/createGame")
-    public String createGame(CreateGameForm form){
+    public String createGame(MemberDetail.CreateGameForm form){
         System.out.println("in");
         Game game = new Game();
         game.setTitle(form.getTitle());

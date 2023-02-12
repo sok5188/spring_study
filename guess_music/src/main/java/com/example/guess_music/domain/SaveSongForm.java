@@ -1,4 +1,4 @@
-package com.example.guess_music.controller;
+package com.example.guess_music.domain;
 
 import org.springframework.web.multipart.MultipartFile;
 

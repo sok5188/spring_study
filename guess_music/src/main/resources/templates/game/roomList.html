@@ -40,7 +40,7 @@
     </div>
     <ul class="list-group">
         <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId,item.roomStatus)">
-            {{item.roomName}} 상태 : {{item.roomStatus}}    참여 인원 {{item.roomUserNum}}
+            <span style="display:inline; width:95%; text-align:left">방 제목 : {{item.roomName}}</span>  <span style="float:right; padding-right:10px; padding-left:20px">상태 : {{item.roomStatus}} </span> <span style="float:right; padding-left:10px; padding-right:10px"> 참여 인원 : {{item.roomUserNum}}</span>
         </li>
     </ul>
 </div>

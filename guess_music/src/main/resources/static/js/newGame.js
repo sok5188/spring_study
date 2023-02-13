@@ -29,7 +29,13 @@ var vm = new Vue({
         answerText:'',
         userNum:0,
         users:[],
-        block:false
+        block:false,
+        skipDiv:false,
+        nowVote:0,
+        voteLimit:0,
+        skipBtnMsg:'',
+        skipStatus:'',
+        skipText:'',
     },
     mounted() {
         window.addEventListener('beforeunload', this.unLoadEvent);
@@ -53,8 +59,6 @@ var vm = new Vue({
     methods: {
         unLoadEvent: function (event) {
           event.preventDefault();
-          //event.returnValue = '';
-          //ws.send("/app/Game/message", {}, JSON.stringify({type:'LEAVE',roomId:this.roomId,sender:this.sender,message:this.message}));
           this.sendMessage('LEAVE');
         },
         findRoom: function() {
@@ -62,7 +66,7 @@ var vm = new Vue({
               console.log("in room"+this.sender+" / " + this.room.ownerName);
               if(this.sender==this.room.ownerName){
                 console.log("you are owner!");
-                this.startDiv=!this.startDiv;
+                this.startDiv=true;
               }
               this.totalSong=this.room.songNum;
               this.remainSong=this.room.songNum;
@@ -73,7 +77,7 @@ var vm = new Vue({
             this.sender=response.data;
             if(this.sender==this.room.ownerName){
               console.log("you are owner!");
-              this.startDiv=!this.startDiv;
+              this.startDiv=true;
             }
           });
         },
@@ -98,28 +102,40 @@ var vm = new Vue({
         recvMessage: function(recv) {
             axios.get('/Game/getUserCount/'+this.roomId).then(response=>{
                 this.userNum=response.data;
+                var half= Math.floor(this.userNum/2);
+                this.voteLimit=half +1;
+                console.log("now voteLimit:"+this.voteLimit+ " usernum :  "+this.userNum+ " / half : "+half);
             })
 
             if(recv.type=='START'){
                 console.log("in recv it is START");
                 this.startGame();
             }else{
-                if(recv.type=='ANSWER'||recv.type=='SKIP'){
-                //원래는 skip하는 동작과 같이 만들어야 하지만 일단 skipvote로 처리
-                // 추후에 skip에서 3초 딜레이를 걸고 타이머랑 vote에서 딜레이 없애는 식으로 변경 필요
-                    this.skipSong();
-                    if(recv.type=='ANSWER'){
-                        this.findUsers();
-                    }
-                }
-                if(recv.type=='LEAVE'){
+                if(recv.type=='VOTE'){
+                    this.nowVote=this.nowVote+1;
+                    //누군가가 skip을 누르면 skipDiv를 보여준다
+                    this.skipDiv=true;
+                    this.checkSkip();
+                }else if(recv.type=='ANSWER'){
                     this.findUsers();
+                    this.skipSong();
+                }
+                else if(recv.type=='LEAVE'){
+                    this.findUsers();
+                    this.checkSkip();
                 }
                 this.messages.unshift({"type":recv.type,"sender":recv.type!='TALK'?'[알림]':recv.sender,"message":recv.message})
             }
 
 
 
+        },
+        checkSkip :function(){
+            console.log("now vote in checkSKip:"+this.nowVote+" voteLimit:"+this.voteLimit);
+            if(this.nowVote>=this.voteLimit){
+                console.log("vote is over the limit nowVote:"+this.nowVote+" voteLimit:"+this.voteLimit);
+                this.skipSong();
+            }
         },
         sendStart : function(){
            console.log("send start");
@@ -128,10 +144,11 @@ var vm = new Vue({
         startGame : function(){
           console.log("start game !");
           this.findUsers();
-          this.introDiv=!this.introDiv;
+          this.introDiv=false;
           this.timer()
-          this.gameDiv=!this.gameDiv;
+          this.gameDiv=true;
           this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
+          this.skipBtnMsg="스킵 투표";
           this.playAudio();
         },
         timer(){
@@ -148,13 +165,12 @@ var vm = new Vue({
               }, 1000)
 
           }else{
-            //show answer message
-            this.showAnswer();
-            setTimeout(() => {
-                  this.skipSong();
-                  this.countDown = 60;
-                  this.timer();
-            }, 3000)
+
+            if(this.skipStatus!="skipping"){
+                this.skipSong();
+            }else{
+                console.log("now skipping by vote : "+this.skipStatus);
+            }
           }
 
         },
@@ -170,34 +186,51 @@ var vm = new Vue({
             }
         },
         showSingerHint: function() {
+            if(this.skipStatus=='skipping'){
+                return;
+            }
             axios.get('/Game/hint',{params:{roomId:this.roomId,type:"singer"}}).then(response=>{
                 console.log("response data is : "+response.data);
                 this.singerHintText=response.data;
-                this.singerDiv=!this.singerDiv;
+                this.singerDiv=true;
             })
         },
         showInitialHint: function() {
+            if(this.skipStatus=='skipping'){
+                return;
+            }
             axios.get("/Game/hint",{params:{roomId:this.roomId,type:"initial"}}).then(response=>{
                 console.log("response data is : "+response.data);
                 this.initialHintText=response.data;
-                this.initialDiv=!this.initialDiv;
+                this.initialDiv=true;
             })
         },
         showAnswer: function() {
+
             this.singerHintText='';
             this.initialHintText='';
             this.singerDiv=false;
             this.initialDiv=false;
             this.gotAnswerDiv=true;
             axios.get("/Game/getAnswer/"+this.roomId).then(response=>{
-                this.answerText=response.data;
+                console.log("response data is : "+response.data);
+                this.answerText=response.data[0];
+                this.singerHintText=response.data[1];
             })
         },
         skipSong: function() {
             console.log("in skip song");
             this.showAnswer();
             this.block=true;
+            this.skipStatus="skipping";
+            this.skipText="투표로 인해 노래가 스킵됩니다 !"
             setTimeout(() => {
+                this.skipStatus="";
+                this.skipText="";
+                var flag=false;
+                if(this.countDown>0){
+                    flag=true;
+                }
                  this.countDown = 60;
                  this.stopAudio();
                  this.room.seq=this.room.seq+1;
@@ -205,15 +238,17 @@ var vm = new Vue({
                  this.answerText='';
                  this.gotAnswerDiv=false;
                  this.block=false;
+                 this.skipDiv=false;
+                 this.skipBtnMsg='스킵 투표';
+                 this.nowVote=0;
                  if(this.remainSong==0){
                      //game end
                      this.endGame();
                  }else{
-                     //send skip message to server for change seq and hints
-                     //뭐 다른 방식으로 구현하는게 더 좋을 듯 이러면 방장 나가고 나면 안되니깐..
-                     if(this.room.ownerName==this.sender){
-                         axios.post('/Game/skip/'+this.roomId).then(response=>{});
-                     }
+                    console.log("name is"+this.room.ownerName+" / "+this.sender);
+                    if(!flag){
+                     this.timer();
+                    }
                      this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
                      this.playAudio();
                  }
@@ -222,16 +257,14 @@ var vm = new Vue({
 
         },
         skipVote: function() {
-            console.log("in skip vote");
-            //뭐 스킵 투표 받고 일정 인원 넘으면 skip song을 호출하는게 아니라 message를 보내서 구독자들이 모두 skipSong을 호출하게 끔 수정
-            //스킵 투표 받고 뭐 어쩌고 저쩌고 해서 스킵하게 된 경우를 가정
-            //ws.send("/app/Game/message", {}, JSON.stringify({type:'SKIP', roomId:this.roomId, sender:this.sender, message:"skipvote"}));
-            this.sendMessage('SKIP');
+            //버튼 누르면 투표 수 증가
+            this.skipBtnMsg='투표완료';
+            this.sendMessage('VOTE');
         },
         endGame : function(){
             //game end
-            this.endGameDiv=!this.endGameDiv;
-            this.gameDiv=!this.gameDiv;
+            this.endGameDiv=true;
+            this.gameDiv=false;
             setTimeout(() => {
                 axios.post('/Game/deleteRoom/'+this.roomId).then(response=>{
 
@@ -280,7 +313,5 @@ function NotReload(){
     }
 }
 window.document.onkeydown = NotReload;
-//var audio=document.getElementById('musicPlayer');
-//    audio.volume=0.5;
-//    audio.src="/1-1.mp3";
+
 

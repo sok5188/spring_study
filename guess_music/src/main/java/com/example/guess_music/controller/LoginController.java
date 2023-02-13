@@ -40,7 +40,13 @@ public class LoginController {
         user.setEmail(form.getEmail());
         String encodePwd = bCryptPasswordEncoder.encode(form.getPassword());
         user.setPassword(encodePwd);
-        user.setRole(Role.USER);
+        if(user.getUsername().equals("admin"))
+            user.setRole(Role.ROLE_ADMIN);
+        else if(user.getUsername().equals("manager"))
+            user.setRole(Role.ROLE_MANAGER);
+        else
+            user.setRole(Role.ROLE_USER);
+
         System.out.println("user info :"+user.getUsername()+"  / "+user.getName()+"/ "+user.getEmail());
 
         memberService.join(user);

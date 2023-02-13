@@ -39,8 +39,8 @@ public class MessageController {
             room.setRoomUserNum(room.getRoomUserNum() + 1);
             message.setMessage(message.getSender()+"님이 입장하였습니다.");
         }
-        if(ChatMessage.MessageType.SKIP.equals(message.getType())){
-            message.setMessage("투표로 인해 노래가 스킵됩니다");
+        if(ChatMessage.MessageType.VOTE.equals(message.getType())){
+            message.setMessage("누군가가 스킵에 투표하였습니다");
         }
         if(ChatMessage.MessageType.START.equals(message.getType())){
             room.setRoomStatus("START");
@@ -61,6 +61,17 @@ public class MessageController {
             if(room.getRoomUserNum() == 0){
                 //아무도 없으면 방 삭제
                 gameService.deleteById(message.getRoomId());
+                return;
+            }
+            if(room.getOwnerName().equals(message.getSender())){
+                //방장이 나간 경우 방장이 아닌 다른 사람을 새 방장으로 임명한다.
+                Set<SimpSubscription> subs = this.findSub(message.getRoomId());
+                for (SimpSubscription sub: subs) {
+                    String name = sub.getSession().getUser().getName();
+                    if(!name.equals(message.getSender())){
+                        room.setOwnerName(name);
+                    }
+                }
             }
             message.setMessage(message.getSender()+"님이 퇴장하셨습니다.");
         }

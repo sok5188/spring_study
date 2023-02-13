@@ -55,18 +55,4 @@ public class MemberService implements UserDetailsService {
         throw new UsernameNotFoundException("cant find : "+username);
     }
 
-
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        System.out.println("in loadUserByUsername : "+username);
-//        Optional<Member> member=memberRepository.findById(username);
-//        if(member.isPresent()){
-//            System.out.println("ok it is present");
-//            return new MemberDetail(member.get());
-//        }
-//        else return (UserDetails) new UsernameNotFoundException("cant find : "+username);
-//    }
-//    private String getEncodedPassword(String password) {
-//        return ("{noop}" + password);
-//    }
 }

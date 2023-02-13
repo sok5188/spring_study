@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -56,13 +58,17 @@ public class GameController {
 
     @GetMapping("/getAnswer/{roomId}")
     @ResponseBody
-    public String getAnswer(@PathVariable String roomId){
+    public List<String> getAnswer(@PathVariable String roomId){
          List<String> answerByRoomId = gameService.findAnswerByRoomId(roomId);
-        if(answerByRoomId==null){
-            return "False";
-        }else{
+        String singer = gameService.getHint("singer", roomId);
+        if(answerByRoomId!=null&&singer!=null){
             List<String> ans=(List<String>)answerByRoomId;
-            return ans.get(0);
+            List<String> result=new ArrayList<>();
+            result.add(ans.get(0));
+            result.add(singer);
+            return result;
+        }else{
+            return Collections.singletonList("False");
         }
     }
 

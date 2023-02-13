@@ -52,9 +52,11 @@ public class MessageController {
             }
         }
         if(ChatMessage.MessageType.LEAVE.equals(message.getType())){
-            //유저 퇴장 시 해당 User객체 삭제
-            gameService.deleteUserByUsername(message.getSender());
-            //및 게임 방의 유저 수 --
+            if(room.getRoomStatus().equals("START")){
+                //유저 퇴장 시 해당 User객체 삭제
+                gameService.deleteUserByUsername(message.getSender());
+            }
+            //게임 방의 유저 수 --
             room.setRoomUserNum(room.getRoomUserNum() - 1);
             if(room.getRoomUserNum() == 0){
                 //아무도 없으면 방 삭제

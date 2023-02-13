@@ -53,7 +53,10 @@ public class LoginController {
     public String checkLogin(HttpServletRequest request){
         return memberService.checkLogin(request);
     }
-
+    @GetMapping("/accessDenied")
+    public String accessDeny(){
+        return "login/accessDenied";
+    }
     @GetMapping("/findId")
     public String findId(){
         //나중에 인증기능 추가하고 구현

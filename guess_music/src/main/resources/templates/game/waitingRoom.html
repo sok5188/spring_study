@@ -46,11 +46,11 @@
   </div>
 
   <div>
-    <input class="btn btn-light" type="button" id="homeBtn" value="Home" @click="goHome">
+    <input class="btn btn-light" type="button" id="homeBtn" value="나가기" @click="goHome">
   </div>
 
   <div v-if="gameDiv">
-    <div>
+    <div style="display:flex">
       <ul class="list-group">
         <li class="list-group-item list-group-item-action" v-for="item in users" v-bind:key="item.name">
           {{item.name}} : {{item.score}}

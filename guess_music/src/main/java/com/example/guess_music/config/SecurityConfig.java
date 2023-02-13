@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,11 +40,16 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> {rsp.sendError(401); System.out.println("oh1");})
-                .accessDeniedHandler((req, rsp, e) -> {rsp.sendError(403); System.out.println("oh2");})
+        http.addFilterBefore(new CustomLoginPageFilter(), DefaultLoginPageGeneratingFilter.class);
+        http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> {rsp.sendRedirect("/auth/loginForm"); System.out.println("authenticationEntryPoint Error");})
+                .accessDeniedHandler((req, rsp, e) -> {rsp.sendRedirect("/auth/accessDenied"); System.out.println("accessDenied Error");
+
+                })
                 .and().authorizeRequests().requestMatchers("/Game/**").authenticated()
                 .requestMatchers("/manage/**").hasRole("MANAGER")
-                .anyRequest().permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/").permitAll()
+                .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName());
                     res.sendRedirect("/");})

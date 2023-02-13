@@ -80,6 +80,9 @@ var vm = new Vue({
         findUsers:function(){
             axios.get("/Game/getUsers/"+this.roomId).then(response=>{
                             this.users=response.data;
+                            this.users.sort((a,b)=>{
+                                return b.score-a.score;
+                            })
                        })
         },
         sendMessage: function(MsgType) {
@@ -100,8 +103,7 @@ var vm = new Vue({
             if(recv.type=='START'){
                 console.log("in recv it is START");
                 this.startGame();
-            }
-            else{
+            }else{
                 if(recv.type=='ANSWER'||recv.type=='SKIP'){
                 //원래는 skip하는 동작과 같이 만들어야 하지만 일단 skipvote로 처리
                 // 추후에 skip에서 3초 딜레이를 걸고 타이머랑 vote에서 딜레이 없애는 식으로 변경 필요
@@ -109,6 +111,9 @@ var vm = new Vue({
                     if(recv.type=='ANSWER'){
                         this.findUsers();
                     }
+                }
+                if(recv.type=='LEAVE'){
+                    this.findUsers();
                 }
                 this.messages.unshift({"type":recv.type,"sender":recv.type!='TALK'?'[알림]':recv.sender,"message":recv.message})
             }
@@ -119,10 +124,10 @@ var vm = new Vue({
         sendStart : function(){
            console.log("send start");
            this.sendMessage('START');
-           this.findUsers();
         },
         startGame : function(){
           console.log("start game !");
+          this.findUsers();
           this.introDiv=!this.introDiv;
           this.timer()
           this.gameDiv=!this.gameDiv;
@@ -237,6 +242,7 @@ var vm = new Vue({
         },
         goHome : function(){
             window.removeEventListener('beforeunload', this.unLoadEvent);
+            this.sendMessage('LEAVE');
             location.href="/";
         }
 

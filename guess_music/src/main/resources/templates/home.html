@@ -9,7 +9,7 @@
 <div class="container">
     <h1> 노래 맞추기 !</h1>
     <br><br><br><br><br><br>
-    <a href="/manage">관리자 페이지로 이동</a>
+    <a href="/manage" sec:authorize="hasRole('MANAGER') or hasRole('ADMIN')">관리자 페이지로 이동</a>
     <br><br><br><br><br><br>
 
 </div>

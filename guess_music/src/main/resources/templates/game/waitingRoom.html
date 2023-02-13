@@ -58,13 +58,20 @@
       </ul>
     </div>
     <div>
-      {{remainSong}} / {{totalSong}}
+      남은 곡 : {{remainSong}} / 전체 곡 : {{totalSong}}
+    </div>
+    <br><br>
+    <h4> 남은 시간 : {{ countDown }} 초</h4>
+    <br><br>
+    <div v-if="skipDiv">
+      {{nowVote}} / {{voteLimit}}
+      <br><br>
+      <h3>{{skipText}}</h3>
     </div>
 
-    <h4> 남은 시간 : {{ countDown }} 초</h4>
-    <button class="btn btn-primary" type="button" @click="skipVote">스킵 투표하기</button>
+    <button v-if="!block" class="btn btn-primary" type="button" @click="skipVote" v-bind:disabled="skipBtnMsg=='투표완료'">{{skipBtnMsg}}</button>
     <div v-if="gotAnswerDiv">
-      <h3> 정답 : {{answerText}} </h3>
+      <h3> 정답 : {{singerHintText}} - {{answerText}} </h3>
     </div>
     <div id="hintDiv">
       <p v-if="singerDiv"> 가수 : {{singerHintText}}</p>

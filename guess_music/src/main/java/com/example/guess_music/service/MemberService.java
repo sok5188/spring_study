@@ -52,7 +52,7 @@ public class MemberService implements UserDetailsService {
         if(byUsername.isPresent()){
             return new MemberDetail(byUsername.get());
         }
-        return null;
+        throw new UsernameNotFoundException("cant find : "+username);
     }
 
 

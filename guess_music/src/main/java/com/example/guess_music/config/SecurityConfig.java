@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .and().formLogin()
                 .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName());
                     res.sendRedirect("/");})
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
+                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/").invalidateHttpSession(false)
                 .and().csrf().disable()
         ;
 

@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .and().sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true).and()
                 .invalidSessionUrl("/auth/invalidSession")
                 .and().authorizeRequests().requestMatchers("/Game/**").authenticated()
-                .requestMatchers("/manage/**").hasRole("MANAGER")
+                .requestMatchers("/manage/**").access("hasRole('MANAGER') or hasRole('ADMIN')")
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/").permitAll()
                 .anyRequest().authenticated()

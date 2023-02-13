@@ -34,7 +34,6 @@ var vm = new Vue({
                     params.append("gameIndex",gameIndex);
                     axios.post('/Game/createRoom',params).then(res=>{
                         console.log("res : "+res.data);
-                        alert("room created");
                         this.room_name = '';
                         this.findAllRoom();
                         //move to waiting room

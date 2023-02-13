@@ -74,4 +74,15 @@ public class MemberDetail implements UserDetails {
 
         private String title;
     }
+    @Override
+    public int hashCode() {
+        return this.getUsername().hashCode();
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof MemberDetail){
+            return this.getUsername().equals(((MemberDetail)obj).getUsername());
+        }
+        return false;
+    }
 }

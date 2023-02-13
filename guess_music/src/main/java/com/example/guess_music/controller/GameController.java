@@ -137,7 +137,7 @@ public class GameController {
     @GetMapping("/session")
     @ResponseBody
     public String getSession(){
-        System.out.println("session : "+session.getId() + " / "+ session);
+        System.out.println("session : "+session.getId() + " / "+ session.getServletContext().getContextPath());
         String name = (String) session.getAttribute("name");
         System.out.println("name ! "+name);
         return session.toString();

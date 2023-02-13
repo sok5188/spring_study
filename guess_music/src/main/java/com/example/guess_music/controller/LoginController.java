@@ -57,6 +57,11 @@ public class LoginController {
     public String accessDeny(){
         return "login/accessDenied";
     }
+    @GetMapping("/invalidSession")
+    public String invalidSession(){
+        System.out.println("Invalid Session Found");
+        return "redirect:/auth/loginForm";
+    }
     @GetMapping("/findId")
     public String findId(){
         //나중에 인증기능 추가하고 구현

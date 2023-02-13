@@ -18,12 +18,11 @@
     <button class="btn btn-success" type="button" onclick="goLogIn()"> 로그인 </button>
     <br><br><br>
     <button class="btn btn-info" type="button" onclick="goSignIn()"> 회원 가입 </button>
-    <a href="/joinForm">회원가입하기</a><br>
 </div>
 
 <div sec:authorize="isAuthenticated()" style="background-color:pink; padding:1em;">
     <button class="btn btn-secondary" type="button" onclick="playGame()"> 게임하러 가기</button>
-    <input class="btn btn-danger" type="button" value="logoutTMP" id="logoutBtn" onclick="logoutHandler()">
+    <input class="btn btn-danger" type="button" value="로그아웃" id="logoutBtn" onclick="logoutHandler()">
 </div>
 </body>
 <script src="js/Login.js"></script>

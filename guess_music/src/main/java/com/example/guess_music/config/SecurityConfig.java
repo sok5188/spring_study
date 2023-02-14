@@ -1,5 +1,7 @@
 package com.example.guess_music.config;
 
+import com.example.guess_music.service.CustomOAuth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +18,8 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    CustomOAuth2UserService customOAuth2UserService;
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
@@ -55,7 +59,8 @@ public class SecurityConfig {
                 .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName());
                     res.sendRedirect("/");})
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/").invalidateHttpSession(false)
-                .and().csrf().disable()
+                .and().oauth2Login().loginPage("/auth/loginForm").defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName()); res.sendRedirect("/");}).userInfoEndpoint().userService(customOAuth2UserService)
+                .and().and().csrf().disable()
         ;
 
         return http.build();

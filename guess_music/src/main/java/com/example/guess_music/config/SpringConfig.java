@@ -1,6 +1,7 @@
 package com.example.guess_music.config;
 
 import com.example.guess_music.repository.*;
+import com.example.guess_music.service.CustomOAuth2UserService;
 import com.example.guess_music.service.GameService;
 import com.example.guess_music.service.ManagerService;
 import com.example.guess_music.service.MemberService;
@@ -23,6 +24,8 @@ public class SpringConfig {
 
     @Bean
     public MemberService memberService(){return new MemberService(memberRepository());}
+    @Bean
+    public CustomOAuth2UserService customOAuth2UserService(){return new CustomOAuth2UserService(memberRepository());}
 
     @Bean
     public MemberRepository memberRepository(){

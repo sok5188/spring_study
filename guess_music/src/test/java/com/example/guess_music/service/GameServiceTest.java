@@ -1,22 +1,11 @@
 package com.example.guess_music.service;
 
-import com.example.guess_music.domain.Answers;
-import com.example.guess_music.domain.Game;
-import com.example.guess_music.domain.Result;
-import com.example.guess_music.repository.AnswerRepository;
-import com.example.guess_music.repository.GameRepository;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class GameServiceTest {

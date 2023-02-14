@@ -1,6 +1,6 @@
 package com.example.guess_music.repository;
 
-import com.example.guess_music.domain.Member;
+import com.example.guess_music.domain.auth.Member;
 
 import java.util.List;
 import java.util.Optional;

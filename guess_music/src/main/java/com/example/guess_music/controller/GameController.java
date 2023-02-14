@@ -1,8 +1,8 @@
 package com.example.guess_music.controller;
 
-import com.example.guess_music.domain.ChatRoom;
-import com.example.guess_music.domain.Game;
-import com.example.guess_music.domain.User;
+import com.example.guess_music.domain.game.ChatRoom;
+import com.example.guess_music.domain.game.Game;
+import com.example.guess_music.domain.game.User;
 import com.example.guess_music.service.GameService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;

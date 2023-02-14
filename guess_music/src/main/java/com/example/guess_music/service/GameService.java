@@ -1,17 +1,12 @@
 package com.example.guess_music.service;
 
-import com.example.guess_music.domain.ChatRoom;
-import com.example.guess_music.domain.Game;
-import com.example.guess_music.domain.Result;
-import com.example.guess_music.domain.User;
+import com.example.guess_music.domain.game.ChatRoom;
+import com.example.guess_music.domain.game.Game;
+import com.example.guess_music.domain.game.User;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.messaging.simp.user.SimpSubscription;
-import org.springframework.messaging.simp.user.SimpSubscriptionMatcher;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
 import java.util.stream.Collectors;

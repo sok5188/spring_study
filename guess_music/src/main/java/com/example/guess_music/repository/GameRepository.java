@@ -1,6 +1,6 @@
 package com.example.guess_music.repository;
 
-import com.example.guess_music.domain.Game;
+import com.example.guess_music.domain.game.Game;
 
 import java.util.List;
 import java.util.Optional;

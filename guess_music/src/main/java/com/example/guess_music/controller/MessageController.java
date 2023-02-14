@@ -1,8 +1,8 @@
 package com.example.guess_music.controller;
 
-import com.example.guess_music.domain.ChatMessage;
-import com.example.guess_music.domain.ChatRoom;
-import com.example.guess_music.domain.User;
+import com.example.guess_music.domain.game.ChatMessage;
+import com.example.guess_music.domain.game.ChatRoom;
+import com.example.guess_music.domain.game.User;
 import com.example.guess_music.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController

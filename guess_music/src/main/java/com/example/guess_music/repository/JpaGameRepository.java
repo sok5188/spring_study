@@ -1,9 +1,7 @@
 package com.example.guess_music.repository;
 
-import com.example.guess_music.domain.Game;
+import com.example.guess_music.domain.game.Game;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;

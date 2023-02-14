@@ -1,7 +1,7 @@
 package com.example.guess_music.service;
 
-import com.example.guess_music.domain.Member;
-import com.example.guess_music.domain.MemberDetail;
+import com.example.guess_music.domain.auth.Member;
+import com.example.guess_music.domain.auth.MemberDetail;
 import com.example.guess_music.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

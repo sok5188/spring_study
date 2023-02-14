@@ -1,13 +1,12 @@
 package com.example.guess_music.service;
 
-import com.example.guess_music.domain.Answers;
-import com.example.guess_music.domain.Game;
+import com.example.guess_music.domain.game.Answers;
+import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

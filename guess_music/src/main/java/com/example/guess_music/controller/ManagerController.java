@@ -1,9 +1,10 @@
 package com.example.guess_music.controller;
 
-import com.example.guess_music.domain.Answers;
-import com.example.guess_music.domain.Game;
-import com.example.guess_music.domain.MemberDetail;
-import com.example.guess_music.domain.SaveSongForm;
+import com.example.guess_music.domain.game.Answers;
+import com.example.guess_music.domain.game.Game;
+import com.example.guess_music.domain.auth.MemberDetail;
+import com.example.guess_music.domain.manage.CreateGameForm;
+import com.example.guess_music.domain.manage.SaveSongForm;
 import com.example.guess_music.service.ManagerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,7 +41,7 @@ public class ManagerController {
     }
 
     @PostMapping("/manage/createGame")
-    public String createGame(MemberDetail.CreateGameForm form){
+    public String createGame(CreateGameForm form){
         System.out.println("in");
         Game game = new Game();
         game.setTitle(form.getTitle());

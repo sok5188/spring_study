@@ -1,4 +1,4 @@
-package com.example.guess_music.domain;
+package com.example.guess_music.domain.game;
 
 public class User {
     String name;

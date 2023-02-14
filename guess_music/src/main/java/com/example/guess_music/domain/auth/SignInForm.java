@@ -1,4 +1,4 @@
-package com.example.guess_music.domain;
+package com.example.guess_music.domain.auth;
 
 public class SignInForm {
     private String username,password,name;

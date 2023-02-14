@@ -1,4 +1,4 @@
-package com.example.guess_music.domain;
+package com.example.guess_music.domain.auth;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -77,11 +77,33 @@ public class Member {
 
     @CreationTimestamp  //자동으로 만들어준다
     private Timestamp createTime;
+
+    private String provider;    // oauth2를 이용할 경우 어떤 플랫폼을 이용하는지
+    private String providerId;  // oauth2를 이용할 경우 아이디값
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
     @Builder(builderClassName = "UserDetailRegister", builderMethodName = "userDetailRegister")
     public Member(String username, String password, String email, Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
+    }
+
+    @Builder(builderClassName = "OAuth2Register", builderMethodName = "oauth2Register")
+    public Member(String username, String password, String email, Role role, String provider, String providerId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.guess_music.domain;
+package com.example.guess_music.domain.game;
 public class ChatMessage {
     public enum MessageType {
         ENTER, TALK,START,LEAVE,ANSWER,SKIP,VOTE

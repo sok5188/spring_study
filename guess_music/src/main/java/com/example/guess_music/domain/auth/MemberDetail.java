@@ -1,24 +1,30 @@
-package com.example.guess_music.domain;
+package com.example.guess_music.domain.auth;
 
+import com.example.guess_music.domain.userInfo.OAuthUserInfo;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @ToString
-public class MemberDetail implements UserDetails {
+public class MemberDetail implements UserDetails, OAuth2User {
     public Member getUser() {
         return user;
     }
 
     private Member user;
-
     public MemberDetail(Member user) {
         this.user = user;
     }
-
+    public MemberDetail(Member user, OAuthUserInfo oAuthUserInfo) {
+        this.user = user;
+        this.oAuthUserInfo=oAuthUserInfo;
+    }
+    private OAuthUserInfo oAuthUserInfo;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
@@ -63,17 +69,16 @@ public class MemberDetail implements UserDetails {
         return true;
     }
 
-    public static class CreateGameForm {
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        private String title;
+    @Override
+    public Map<String, Object> getAttributes() {
+        return oAuthUserInfo.getAttributes();
     }
+
+    @Override
+    public String getName() {
+        return oAuthUserInfo.getProviderId();
+    }
+
     @Override
     public int hashCode() {
         return this.getUsername().hashCode();

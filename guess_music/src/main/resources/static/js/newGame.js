@@ -15,8 +15,8 @@ var vm = new Vue({
         startDiv: false,
         introDiv: true,
         gameDiv: false,
-        remainSong:'',
-        totalSong:'',
+        remainSong:0,
+        totalSong:0,
         audioSource:'',
         countDown:60,
         gotAnswerDiv:false,
@@ -64,21 +64,25 @@ var vm = new Vue({
         findRoom: function() {
             axios.get('/Game/room/'+this.roomId).then(response => { this.room = response.data;
               console.log("in room"+this.sender+" / " + this.room.ownerName);
-              if(this.sender==this.room.ownerName){
+              if(this.room.roomStatus=="WAITING"){
+               this.totalSong=this.room.songNum;
+               this.remainSong=this.room.songNum;
+              }
+
+              if(this.sender==this.room.ownerName&&this.room.roomStatus=="WAITING"){
                 console.log("you are owner!");
                 this.startDiv=true;
+
               }
-              this.totalSong=this.room.songNum;
-              this.remainSong=this.room.songNum;
+
+
             });
         },
         findUser: function(){
           axios.get('/Game/getUser').then(response=>{
             this.sender=response.data;
-            if(this.sender==this.room.ownerName){
-              console.log("you are owner!");
-              this.startDiv=true;
-            }
+            if(this.sender==this.room.ownerName&&this.room.roomStatus=="WAITING")
+                this.startDiv=true;
           });
         },
         findUsers:function(){
@@ -121,7 +125,9 @@ var vm = new Vue({
                     this.skipSong();
                 }
                 else if(recv.type=='LEAVE'){
+                    this.findRoom();
                     this.findUsers();
+                    this.findUser();
                     this.checkSkip();
                 }
                 this.messages.unshift({"type":recv.type,"sender":recv.type!='TALK'?'[알림]':recv.sender,"message":recv.message})
@@ -245,10 +251,15 @@ var vm = new Vue({
                      //game end
                      this.endGame();
                  }else{
-                    console.log("name is"+this.room.ownerName+" / "+this.sender);
                     if(!flag){
                      this.timer();
                     }
+                    if(this.sender==this.room.ownerName){
+                        axios.post("/Game/skip/"+this.roomId).then(res=>{
+                        })
+                    }
+
+
                      this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
                      this.playAudio();
                  }

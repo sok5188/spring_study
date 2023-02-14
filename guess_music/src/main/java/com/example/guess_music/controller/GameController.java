@@ -2,12 +2,10 @@ package com.example.guess_music.controller;
 
 import com.example.guess_music.domain.ChatRoom;
 import com.example.guess_music.domain.Game;
-import com.example.guess_music.domain.Result;
 import com.example.guess_music.domain.User;
 import com.example.guess_music.service.GameService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,11 +47,11 @@ public class GameController {
 
     @PostMapping("/skip/{roomId}")
     @ResponseBody
-    public String skipGame(@PathVariable String roomId){
+    public Long skipGame(@PathVariable String roomId){
         ChatRoom room = gameService.findById(roomId);
         room.setSeq(room.getSeq()+1);
         System.out.println("Now Room:"+room.getGameTitle()+" / "+room.getSeq());
-        return "success";
+        return room.getSeq();
     }
 
     @GetMapping("/getAnswer/{roomId}")

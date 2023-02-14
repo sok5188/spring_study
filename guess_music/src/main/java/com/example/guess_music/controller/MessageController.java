@@ -76,9 +76,7 @@ public class MessageController {
             message.setMessage(message.getSender()+"님이 퇴장하셨습니다.");
         }
         sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);
-        System.out.println("called message controller");
-        //this.find(message);
-        //this.getUsers();
+
         List<String> answers = gameService.findAnswerByRoomId(message.getRoomId());
         if(answers== null){
             return;
@@ -113,7 +111,6 @@ public class MessageController {
             public boolean match(SimpSubscription subscription) {
                 String target="/topic/room/"+roomId;
                 if(subscription.getDestination().equals(target)){
-                    System.out.println(roomId+"'s memeber is : "+subscription.getSession().getUser().getName());
                     return true;
                 }
                 return false;

@@ -1,16 +1,14 @@
 package com.example.guess_music.service;
 
-import com.example.guess_music.domain.Answers;
-import com.example.guess_music.domain.Game;
+import com.example.guess_music.domain.game.Answers;
+import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.thymeleaf.spring6.context.SpringContextUtils.getApplicationContext;
 
 
 @SpringBootTest

@@ -2,6 +2,7 @@ package com.example.guess_music.service;
 
 import com.example.guess_music.domain.auth.Member;
 import com.example.guess_music.domain.auth.MemberDetail;
+import com.example.guess_music.domain.auth.MemberForm;
 import com.example.guess_music.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -53,6 +54,10 @@ public class MemberService implements UserDetailsService {
             return new MemberDetail(byUsername.get());
         }
         throw new UsernameNotFoundException("cant find : "+username);
+    }
+
+    public void updateName(String name,String username){
+        memberRepository.updateName(name,username);
     }
 
 }

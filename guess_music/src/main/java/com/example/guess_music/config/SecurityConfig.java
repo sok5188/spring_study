@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName());
                     res.sendRedirect("/");})
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/").invalidateHttpSession(false)
-                .and().oauth2Login().loginPage("/auth/loginForm").defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName()); res.sendRedirect("/");}).userInfoEndpoint().userService(customOAuth2UserService)
+                .and().oauth2Login().loginPage("/auth/loginForm").defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("name",auth.getName()); res.sendRedirect("/auth/oAuthUserCheck");}).userInfoEndpoint().userService(customOAuth2UserService)
                 .and().and().csrf().disable()
         ;
 

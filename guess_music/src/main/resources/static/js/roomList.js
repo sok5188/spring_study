@@ -38,7 +38,7 @@ var vm = new Vue({
                         this.findAllRoom();
                         //move to waiting room
                         localStorage.setItem('wschat.roomId',res.data);
-                        location.href="/Game/waitingRoom/"+res.data;
+                        location.href="/Game/gameRoom/"+res.data;
                     }).catch(err=>{alert("error");});
                 }
             },
@@ -47,7 +47,7 @@ var vm = new Vue({
                     alert("게임이 이미 진행중 입니다.");
                 }else{
                     localStorage.setItem('wschat.roomId',roomId);
-                    location.href="/Game/waitingRoom/"+roomId;
+                    location.href="/Game/gameRoom/"+roomId;
                 }
 
             },

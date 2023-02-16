@@ -115,10 +115,10 @@ public class GameController {
         return room.getRoomId();
     }
 
-    @GetMapping("/waitingRoom/{roomId}")
-    public String waitingRoom(Model model, @PathVariable String roomId){
+    @GetMapping("/gameRoom/{roomId}")
+    public String gameRoom(Model model, @PathVariable String roomId){
         model.addAttribute("roomId", roomId);
-        return "game/waitingRoom";
+        return "game/gameRoom";
     }
     @GetMapping("/room/{roomId}")
     @ResponseBody

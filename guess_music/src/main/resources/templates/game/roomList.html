@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Websocket Chat</title>
     <meta charset="utf-8">
@@ -15,13 +15,14 @@
     </style>
 </head>
 <body>
-
+<div th:insert="~{fragments/navbar}">  </div>
 <div class="container" id="app" v-cloak>
     <div class="row">
         <div class="col-md-12">
             <h3>게임 리스트</h3>
         </div>
     </div>
+
     <div class="input-group">
         <div class="input-group-prepend">
             <label class="input-group-text">방제목</label>
@@ -37,6 +38,9 @@
                 {{item.title}}
             </li>
         </ul>
+    </div>
+    <div>
+        <a onClick="window.location.reload()" style="cursor: pointer;"><img src="/images/reload.png"></a>
     </div>
     <ul class="list-group">
         <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId,item.roomStatus)">

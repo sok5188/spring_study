@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <link rel="stylesheet" href="/css/bootstrap.css">
     <meta charset="UTF-8">
     <title>SignIn</title>
 </head>
 <body>
+<div th:insert="~{fragments/navbar}">  </div>
 <div class="container">
     <form action="/auth/signIn" method="post">
         <div class="form-group">

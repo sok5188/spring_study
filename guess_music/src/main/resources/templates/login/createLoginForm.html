@@ -22,10 +22,20 @@
 <div>
     <a href="/oauth2/authorization/google">구글 로그인(임시)</a>
     <a href="/oauth2/authorization/naver">네이버 로그인</a>
-    <!-- /oauth2/authorization/{registrationId}에 요청이 들어오면,
-    스프링 시큐리티가 provider의 authorization-uri로 요청을 전달한다-->
 </div>
 
 </body>
-
+<script th:inline="javascript">
+    var exception=[[${exception}]];
+    var errText='';
+    switch(exception){
+        case '1': alert("아이디가 틀렸습니다(Not Happen)"); break;
+        case '2': alert("아이디 혹은 비밀번호를 확인해주세요"); break;
+        case '3': alert("내부 인증 서비스 오류"); break;
+        case '4': alert("disabled Exception(Not happen)"); break;
+        case '5': alert("인증 만료"); break;
+        case '6': alert("중복 로그인은 금지 됩니다"); break;
+        default : break;
+    }
+</script>
 </html>

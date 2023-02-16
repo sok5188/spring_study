@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -27,9 +28,19 @@ public class LoginController {
     }
 
     @GetMapping("/loginForm")
-    public String createLoginForm(){
-        System.out.println("login called");
-        return "login/createLoginForm"; }
+    public String createLoginForm(@RequestParam(value = "error", required = false) String error,
+                                  @RequestParam(value = "exception", required = false) String exception,
+                                  Model model){
+        if(error!= null){
+            System.out.println("error : "+error);
+        }
+        if(exception!= null){
+            System.out.println("exception : "+exception);
+        }
+        model.addAttribute("error",error);
+        model.addAttribute("exception",exception);
+        return "login/createLoginForm";
+    }
 
     @GetMapping("/joinForm")
     public String createSignInForm() {
@@ -72,9 +83,14 @@ public class LoginController {
         System.out.println("Invalid Session Found");
         return "redirect:/auth/loginForm";
     }
+    @GetMapping("/expired")
+    public String expiredSession(){
+        System.out.println("Expired Session Found");
+        return "redirect:/auth/loginForm";
+    }
     @GetMapping("/oAuthUserCheck")
     public String oAuthUsercheck(HttpSession session){
-        String username = (String) session.getAttribute("name");
+        String username = (String) session.getAttribute("username");
         Optional<Member> opt = memberService.findOne(username);
         //해당 유저가 존재할 때 해당 유저의 이름이 설정되어 있지 않으면 설정 페이지로 이동
         //이미 존재한다면 홈으로 이동
@@ -88,11 +104,13 @@ public class LoginController {
     }
     @PostMapping("/oAuthSignUp")
     public String oAuthSignUp(OAuthSingUpForm form,HttpSession session){
-        String username = (String) session.getAttribute("name");
+        String username = (String) session.getAttribute("username");
         Optional<Member> opt = memberService.findOne(username);
         if(opt.isPresent()){
             //입력한 이름으로 해당 유저 설정 후 홈으로 이동
             memberService.updateName(form.getName(),username);
+            //세션에 name 저장
+            session.setAttribute("name",form.getName());
             return "redirect:/";
         }else
             return "OAuth User Check Error..";

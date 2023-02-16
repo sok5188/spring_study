@@ -4,6 +4,7 @@ import com.example.guess_music.domain.game.Answers;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+@Slf4j
 @Transactional
 public class ManagerService {
     private final AnswerRepository answerRepository;
@@ -47,9 +49,9 @@ public class ManagerService {
         File file=new File(folder+filename);
         if(file.exists()){
             if(file.delete())
-                System.out.println("file deleted");
-            else System.out.println("file delete fail");
-        }else System.out.println("file doesn't exist");
+                log.info("File deleted");
+            else log.warn("File not deleted");
+        }else log.error("File not found");
         //game repo에 노래 수 감소
         gameRepository.deleteSongInGame(gameIndex);
         return answerRepository.delete(gameIndex,seq);
@@ -62,19 +64,28 @@ public class ManagerService {
             Collections.sort(answers);
             return answers;
         }
-        else return new ArrayList<>();
+        else {
+            log.warn("No answers found");
+            return new ArrayList<>();
+        }
     }
     public Long storeFile(List<String> answer,String singer, String initial,Long gameIndex){
         //가수 초성힌트 저장
         if(singer==null||initial==null)
+        {
+            log.error("singer or initial is null");
             return -1L;
+        }
         //게임 인덱스 설정
         Optional<Game> gameOpt = gameRepository.findGameByGameIndex(gameIndex);
         Game game;
 
         if(gameOpt.isPresent())
             game=gameOpt.get();
-        else return -1L;
+        else {
+            log.error("game not found");
+            return -1L;
+        }
         //노래 번호 설정
         Long maxSeq=answerRepository.findMaxSeq(gameIndex);
         maxSeq=Math.max(++maxSeq,1);
@@ -95,12 +106,14 @@ public class ManagerService {
                 saveCount++;
             }
         }
-        // 유요한 정답이 없는 경우 -1리턴
+        // 유효한 정답이 없는 경우 -1리턴
         if(saveCount==0)
+        {
+            log.error("No valid answer found");
             return -1L;
+        }
 
         gameRepository.addSongToGame(gameIndex);
-        System.out.println("return normal");
         return maxSeq;
     }
     private boolean checkValidSong(String answer,String singer,Long gameIndex){
@@ -111,7 +124,10 @@ public class ManagerService {
             Optional<String> result = singers.stream().filter(s -> s.equals(singer)).findAny();
             //singer가 존재하는 경우 노래정답과 가수가 같다는 것이고, 그렇다면 중복된 노래이다.
             if(result.isPresent())
+            {
+                log.error("Song is duplicated");
                 return false;
+            }
         }
         return true;
     }
@@ -125,12 +141,11 @@ public class ManagerService {
         Optional<String> singerBySeq = answerRepository.findSingerBySeq(gameIndex, seq);
         Optional<String> initialBySeq = answerRepository.findInitialBySeq(gameIndex, seq);
         Optional<Game> gameByGameIndex = gameRepository.findGameByGameIndex(gameIndex);
-        if(!singerBySeq.isPresent())
+        if(!singerBySeq.isPresent()||!initialBySeq.isPresent()||!gameByGameIndex.isPresent())
+        {
+            log.error("singer or initial or game not found");
             return false;
-        if(!initialBySeq.isPresent())
-            return false;
-        if(!gameByGameIndex.isPresent())
-            return false;
+        }
         answers.setAnswer(answer);
         answers.setGameIndex(gameByGameIndex.get());
         answers.setSeq(seq);

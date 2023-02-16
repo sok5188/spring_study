@@ -7,6 +7,7 @@ import com.example.guess_music.domain.auth.SignInForm;
 import com.example.guess_music.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-
+@Slf4j
 @Controller
 @RequestMapping("/auth")
 public class LoginController {
@@ -31,14 +32,11 @@ public class LoginController {
     public String createLoginForm(@RequestParam(value = "error", required = false) String error,
                                   @RequestParam(value = "exception", required = false) String exception,
                                   Model model){
-        if(error!= null){
-            System.out.println("error : "+error);
+        if(error!=null){
+            log.warn("Login error occurred");
+            model.addAttribute("error",error);
+            model.addAttribute("exception",exception);
         }
-        if(exception!= null){
-            System.out.println("exception : "+exception);
-        }
-        model.addAttribute("error",error);
-        model.addAttribute("exception",exception);
         return "login/createLoginForm";
     }
 
@@ -62,32 +60,15 @@ public class LoginController {
         else
             user.setRole(Role.ROLE_USER);
 
-        System.out.println("user info :"+user.getUsername()+"  / "+user.getName()+"/ "+user.getEmail());
-
         memberService.join(user);
 
         return "redirect:/auth/loginForm";
-    }
-
-    @GetMapping("/checkLogin")
-    @ResponseBody
-    public String checkLogin(HttpServletRequest request){
-        return memberService.checkLogin(request);
     }
     @GetMapping("/accessDenied")
     public String accessDeny(){
         return "login/accessDenied";
     }
-    @GetMapping("/invalidSession")
-    public String invalidSession(){
-        System.out.println("Invalid Session Found");
-        return "redirect:/auth/loginForm";
-    }
-    @GetMapping("/expired")
-    public String expiredSession(){
-        System.out.println("Expired Session Found");
-        return "redirect:/auth/loginForm";
-    }
+
     @GetMapping("/oAuthUserCheck")
     public String oAuthUsercheck(HttpSession session){
         String username = (String) session.getAttribute("username");
@@ -98,8 +79,10 @@ public class LoginController {
             if(opt.get().getName()==null)
                 return "login/oAuthSignUp";
             else return "redirect:/";
-        }else
+        }else{
+            log.error("OAuth user Not Found Error");
             return "OAuth User Check Error..";
+        }
 
     }
     @PostMapping("/oAuthSignUp")
@@ -112,18 +95,10 @@ public class LoginController {
             //세션에 name 저장
             session.setAttribute("name",form.getName());
             return "redirect:/";
-        }else
+        }else{
+            log.error("OAuth user Not Found Error in Sign Up");
             return "OAuth User Check Error..";
+        }
 
-    }
-    @GetMapping("/findId")
-    public String findId(){
-        //나중에 인증기능 추가하고 구현
-        return "Not Implemented";
-    }
-    @GetMapping("/findPwd")
-    public String findPwd(){
-        //나중에 인증기능 추가하고 구현
-        return "Not Implemented";
     }
 }

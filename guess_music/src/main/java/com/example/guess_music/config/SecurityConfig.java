@@ -58,8 +58,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.addFilterBefore(new CustomLoginPageFilter(), DefaultLoginPageGeneratingFilter.class);
         http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> { System.out.println("authenticationEntryPoint Error:"+req.getAuthType()); rsp.sendRedirect("/auth/loginForm");})
-                .accessDeniedHandler((req, rsp, e) -> {  System.out.println("accessDenied Error"); rsp.sendRedirect("/auth/accessDenied");
-                })
+                .accessDeniedHandler((req, rsp, e) -> {  System.out.println("accessDenied Error"); rsp.sendRedirect("/?error=accessDenied");})
                 .and().sessionManagement().maximumSessions(1).expiredUrl("/auth/loginForm").maxSessionsPreventsLogin(true)
                 .and()
                 .and().authorizeRequests().requestMatchers("/Game/**").authenticated()

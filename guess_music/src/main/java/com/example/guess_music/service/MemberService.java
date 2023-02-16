@@ -6,6 +6,7 @@ import com.example.guess_music.domain.auth.MemberForm;
 import com.example.guess_music.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Transactional
 public class MemberService implements UserDetailsService {
     public MemberService(MemberRepository memberRepository) {
@@ -39,22 +40,12 @@ public class MemberService implements UserDetailsService {
 
     public Optional<Member> findOne(String id){ return memberRepository.findbyUsername(id); }
 
-    public String checkLogin(HttpServletRequest request) {
-        HttpSession session=request.getSession();
-        if(session.getAttribute("login")==null){
-            return "False";
-        }
-        return session.getAttribute("login").toString();
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Member> byUsername = memberRepository.findbyUsername(username);
         if(byUsername.isPresent()){
-            System.out.println("Found User");
             return new MemberDetail(byUsername.get());
         }
-        System.out.println("Not Found User");
         throw new UsernameNotFoundException("cant find : "+username);
     }
 

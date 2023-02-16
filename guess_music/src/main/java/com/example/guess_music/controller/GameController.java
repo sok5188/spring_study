@@ -1,28 +1,30 @@
 package com.example.guess_music.controller;
 
+import com.example.guess_music.domain.auth.Member;
 import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.game.User;
 import com.example.guess_music.service.GameService;
+import com.example.guess_music.service.MemberService;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+@Slf4j
 @Controller
 @RequestMapping("/Game")
 public class GameController {
     private final GameService gameService;
+    private final MemberService memberService;
     @Autowired
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, MemberService memberService) {
         this.gameService = gameService;
+        this.memberService = memberService;
     }
     @Autowired
     private HttpSession session;
@@ -35,12 +37,8 @@ public class GameController {
     public List<Game> gameList(){
         List<Game> gameList = gameService.getGameList();
 
-        for (Game g :
-                gameList) {
-            System.out.println(g.getGameIndex()+" / "+g.getTitle()+" / "+g.getSongNum());
-        }
         if(gameList.isEmpty()){
-            //??
+            log.warn("Game List is empty..");
         }
         return gameList;
     }
@@ -50,7 +48,7 @@ public class GameController {
     public Long skipGame(@PathVariable String roomId){
         ChatRoom room = gameService.findById(roomId);
         room.setSeq(room.getSeq()+1);
-        System.out.println("Now Room:"+room.getGameTitle()+" / "+room.getSeq());
+        log.info("Skipped Song in Room:"+roomId+"room's game:"+room.getGameTitle()+ "Now Sequence:"+room.getSeq());
         return room.getSeq();
     }
 
@@ -66,6 +64,7 @@ public class GameController {
             result.add(singer);
             return result;
         }else{
+            log.error("can't find answer by room id:"+roomId);
             return Collections.singletonList("False");
         }
     }
@@ -76,14 +75,22 @@ public class GameController {
     public String Hint(@RequestParam Map<String,Object>map){
         String roomId = (String) map.get("roomId");
         String type= (String) map.get("type");
-        System.out.println("at controller in Hint : "+roomId+ " / "+type);
+        log.info("hint type:"+type+"roomId:"+roomId);
         return gameService.getHint(type,roomId);
     }
 
     @GetMapping("/roomList")
     public String Room(){
-
-        System.out.println("return room list html");
+        //세션에 저장했던 username으로 멤버를 찾아 nmae을 설정
+        Optional<Member> opt = memberService.findOne(session.getAttribute("username").toString());
+        if(opt.isPresent()){
+            Member member = opt.get();
+            session.setAttribute("name", member.getName());
+        }
+        else {
+            log.error("can't find member from session");
+            return "invalid Member";
+        }
         return "game/roomList";
     }
 
@@ -129,6 +136,9 @@ public class GameController {
     @ResponseBody
     public String getUser(){
         String username = (String) session.getAttribute("name");
+        if(username==null){
+            log.error("can't find user's name from session");
+        }
         return username;
     }
 

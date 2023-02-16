@@ -26,4 +26,8 @@
 </div>
 </body>
 <script src="js/Home.js"></script>
+<script th:inline="javascript">
+    var err=[[${error}]];
+    alert(err+"\n 권한이 없습니다.");
+</script>
 </html>

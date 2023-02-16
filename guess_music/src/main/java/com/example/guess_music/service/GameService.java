@@ -6,11 +6,12 @@ import com.example.guess_music.domain.game.User;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Transactional
 public class GameService {
     public GameService(AnswerRepository answerRepository, GameRepository gameRepository) {
@@ -38,24 +39,32 @@ public class GameService {
             Optional<String> opt = answerRepository.findSingerBySeq(gameIndex, seq);
             if(opt.isPresent())
                 return opt.get();
-            else
+            else{
+                log.error("Cant find singer");
                 return "Nothing";
+            }
         }
         if(type.equals("initial")){
             Optional<String> opt = answerRepository.findInitialBySeq(gameIndex, seq);
             if(opt.isPresent())
                 return opt.get();
-            else
+            else{
+                log.error("Cant find initial");
                 return "Nothing";
+            }
 
         }
+        log.error("Invalid hint type");
         return "False type";
     }
     public List<Game> getGameList(){
         Optional<List<Game>> opt = gameRepository.findGameList();
         if(opt.isPresent())
             return opt.get();
-        else return new ArrayList<Game>();
+        else {
+            log.error("Cant find game list");
+            return new ArrayList<Game>();
+        }
     }
 
     public List<ChatRoom> findAllRoom() {
@@ -68,10 +77,19 @@ public class GameService {
 
     //채팅방 하나 불러오기
     public ChatRoom findById(String roomId) {
-        return chatRooms.get(roomId);
+        if(checkRoom())
+            return chatRooms.get(roomId);
+        else{
+            log.error("No room in server memory");
+            return new ChatRoom();
+        }
     }
     public void deleteById(String roomId) {
-        chatRooms.remove(roomId);
+        if(checkRoom())
+            chatRooms.remove(roomId);
+        else{
+            log.error("No room in server memory");
+        }
     }
     private boolean checkRoom() {
         if(chatRooms.size()==0)
@@ -87,7 +105,10 @@ public class GameService {
         Optional<User> result = users.stream().filter(target -> target.getName().equals(username)).findAny();
         if(result.isPresent())
             return result.get();
-        else return null;
+        else {
+            log.error("No Playing user in server memory");
+            return null;
+        }
     }
     public void deleteUserByUsername(String username) {
         Iterator it=users.iterator();
@@ -105,12 +126,14 @@ public class GameService {
         Game game;
         if(opt.isPresent())
             game=opt.get();
-        else return new ChatRoom();
+        else {
+            log.error("Cannot find game in GameDB");
+            return new ChatRoom();
+        }
         ChatRoom chatRoom = ChatRoom.create(gameIndex,name,game.getTitle(),game.getSongNum(),ownerName);
         chatRoom.setRoomUserNum(0);
         chatRooms.put(chatRoom.getRoomId(), chatRoom);
-        //create User(방장)
-        //this.createUser(ownerName,chatRoom.getRoomId());
+
 
         return chatRoom;
     }
@@ -125,7 +148,10 @@ public class GameService {
         if(opt.isPresent()){
             return opt.get();
         }
-        else return null;
+        else {
+            log.error("Cant find answer in Answer DB");
+            return null;
+        }
     }
 
     public User createUser(String roomId, String username) {

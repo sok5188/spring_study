@@ -71,7 +71,7 @@ public class LoginController {
 
     @GetMapping("/oAuthUserCheck")
     public String oAuthUsercheck(HttpSession session){
-        String username = (String) session.getAttribute("username");
+        String username = String.valueOf(session.getAttribute("username"));
         Optional<Member> opt = memberService.findOne(username);
         //해당 유저가 존재할 때 해당 유저의 이름이 설정되어 있지 않으면 설정 페이지로 이동
         //이미 존재한다면 홈으로 이동
@@ -87,7 +87,7 @@ public class LoginController {
     }
     @PostMapping("/oAuthSignUp")
     public String oAuthSignUp(OAuthSingUpForm form,HttpSession session){
-        String username = (String) session.getAttribute("username");
+        String username = String.valueOf(session.getAttribute("username"));
         Optional<Member> opt = memberService.findOne(username);
         if(opt.isPresent()){
             //입력한 이름으로 해당 유저 설정 후 홈으로 이동

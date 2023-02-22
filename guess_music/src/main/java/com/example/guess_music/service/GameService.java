@@ -1,12 +1,18 @@
 package com.example.guess_music.service;
 
+import com.example.guess_music.domain.auth.Member;
+import com.example.guess_music.domain.game.Answers;
 import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.game.User;
+import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
+import com.example.guess_music.repository.MemberRepository;
+import com.example.guess_music.repository.MusicRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -14,13 +20,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional
 public class GameService {
-    public GameService(AnswerRepository answerRepository, GameRepository gameRepository) {
+    @Autowired
+    private MusicRepository musicRepository;
+    public GameService(AnswerRepository answerRepository, GameRepository gameRepository, MemberRepository memberRepository) {
         this.answerRepository = answerRepository;
         this.gameRepository = gameRepository;
+        this.memberRepository = memberRepository;
     }
 
     private final AnswerRepository answerRepository;
     private final GameRepository gameRepository;
+    private final MemberRepository memberRepository;
 
     private Map<String, ChatRoom> chatRooms;
     private ArrayList<User> users;
@@ -36,18 +46,18 @@ public class GameService {
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
         if(type.equals("singer")){
-            Optional<String> opt = answerRepository.findSingerBySeq(gameIndex, seq);
+            Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
             if(opt.isPresent())
-                return opt.get();
+                return opt.get().getSinger();
             else{
                 log.error("Cant find singer");
                 return "Nothing";
             }
         }
         if(type.equals("initial")){
-            Optional<String> opt = answerRepository.findInitialBySeq(gameIndex, seq);
+            Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
             if(opt.isPresent())
-                return opt.get();
+                return opt.get().getInitial();
             else{
                 log.error("Cant find initial");
                 return "Nothing";
@@ -153,10 +163,36 @@ public class GameService {
             return null;
         }
     }
-
     public User createUser(String roomId, String username) {
-        User user = User.create(username, roomId, 0L);
-        users.add(user);
-        return user;
+        Optional<Member> member = memberRepository.findbyUsername(username);
+        if(member.isPresent()){
+            User user = User.create(member.get().getName(), roomId, 0L);
+            users.add(user);
+            return user;
+        }else{
+            log.error("Cannot find user in Member DB");
+            return null;
+        }
+    }
+
+    public Member findMemberByUsername(String username){
+        Optional<Member> member = memberRepository.findbyUsername(username);
+        if(member.isPresent())
+            return member.get();
+        else return null;
+    }
+
+    public Music findMusicByRoomId(String roomId){
+        ChatRoom room = this.findById(roomId);
+        Long gameIndex= room.getGameIndex();
+        Long seq=room.getSeq();
+        log.info("gameIndex: "+gameIndex+" seq: "+seq);
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+        if(opt.isPresent()){
+            Optional<Music> byId = musicRepository.findById(opt.get().getMusic().getId());
+            if(byId.isPresent())
+                return byId.get();
+        }
+        return null;
     }
 }

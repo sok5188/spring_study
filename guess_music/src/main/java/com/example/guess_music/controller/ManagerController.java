@@ -2,8 +2,8 @@ package com.example.guess_music.controller;
 
 import com.example.guess_music.domain.game.Answers;
 import com.example.guess_music.domain.game.Game;
-import com.example.guess_music.domain.auth.MemberDetail;
 import com.example.guess_music.domain.manage.CreateGameForm;
+import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.domain.manage.SaveSongForm;
 import com.example.guess_music.service.ManagerService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import java.util.List;
 @Controller
 public class ManagerController {
     private final ManagerService managerService;
-    private Long gameIndex;
     public ManagerController(ManagerService manageService) {
         this.managerService = manageService;
     }
@@ -31,6 +30,7 @@ public class ManagerController {
     @ResponseBody
     @DeleteMapping("/manage")
     public String deleteGame(@RequestParam("gameIndex") Long gameIndex){
+        //해당 게임 DB에서 삭제 -> Cascade로 해당 게임의 answers전부 삭제
         if(managerService.delete(gameIndex))
             return "Success";
         else {
@@ -84,27 +84,24 @@ public class ManagerController {
 
     @GetMapping("/manage/upload")
     public String uploadSong(@RequestParam("gameIndex")Long gameIndex,Model model){
-        this.gameIndex=gameIndex;
         model.addAttribute("gameIndex",gameIndex);
         return "manage/uploadSong";
     }
 
     @PostMapping("/manage/upload")
-    public String saveSong(SaveSongForm form) throws IOException {
+    public String saveSong(SaveSongForm form,Model model) throws IOException {
+        Long gameIndex = form.getGameIndex();
+        log.info("gameIndex : "+gameIndex);
         String[] split = form.getMp3().getOriginalFilename().split("\\.");
         String extension= split[split.length-1];
-
+        //mp3 파일만 허용
         if(extension.equals("mp3")&&split.length>1){
-            Long result = managerService.storeFile(form.getAnswer(), form.getSinger(), form.getInitial(), gameIndex);
+            //파일을 file db에 저장
+            Music store = managerService.storeMusic(form.getMp3(),gameIndex);
+            //입력한 노래 정보를 db에 저장
+            Long result = managerService.storeAnswers(form.getAnswer(), form.getSinger(), form.getInitial(), gameIndex, store);
             log.info("store file result: "+result);
             if(result!=-1){
-                //ec2서버용
-                String folder="/home/ubuntu/audio/";
-                //Local 테스트용
-                //String folder="/Users/sin-wongyun/Desktop/guessAudio/";
-
-                String filename=gameIndex+"-"+result+".mp3";
-                form.getMp3().transferTo(new File(folder+filename));
                 String red="redirect:/manage/upload?gameIndex="+gameIndex;
                 return red;
             }else{
@@ -146,14 +143,14 @@ public class ManagerController {
     @ResponseBody
     @DeleteMapping("/manage/updateAnswer")
     public String deleteAnswer(@RequestParam("ansId") Long id){
-        System.out.println("get delete Answer req : "+id);
-        if(managerService.deleteAnswer(id))
-            return "Success";
-        else
-        {
-            log.error("Fail to delete answer");
+        Answers answerById = managerService.findAnswerById(id);
+        if(answerById==null)
             return "Fail";
-        }
+        managerService.deleteAnswer(id);
+        String musicId = answerById.getMusic().getId();
+        Long gameIndex = answerById.getGameIndex().getGameIndex();
+        managerService.validateMusic(musicId,gameIndex);
+        return "Success";
     }
 
 }

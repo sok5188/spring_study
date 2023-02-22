@@ -26,6 +26,16 @@ public class JpaAnswerRepository implements AnswerRepository {
     }
 
     @Override
+    public Optional<Answers> findByIdxSeq(Long gameIndex, Long seq) {
+        return em.createQuery("select m from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", Answers.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
+    }
+
+    @Override
+    public Optional<Answers> findByMusicIndex(String musicIndex) {
+        return em.createQuery("select m from Answers m where m.music.id=:musicIndex", Answers.class).setParameter("musicIndex",musicIndex).getResultList().stream().findAny();
+    }
+
+    @Override
     public Optional<List<Answers>> findAnswers(Long gameIndex) {
         return Optional.ofNullable(em.createQuery("select m from Answers m where m.gameIndex.gameIndex=:gameIndex", Answers.class).setParameter("gameIndex",gameIndex).getResultList());
     }
@@ -36,21 +46,11 @@ public class JpaAnswerRepository implements AnswerRepository {
         return Optional.ofNullable(resultList);
     }
 
-    @Override
-    public Optional<String> findSingerBySeq(Long gameIndex, Long seq) {
-        Optional<String> singleResult = em.createQuery("select m.singer from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
-        return singleResult;
-    }
+
 
     @Override
-    public Optional<String> findInitialBySeq(Long gameIndex, Long seq) {
-        Optional<String> singleResult = em.createQuery("select m.initial from Answers m where m.gameIndex.gameIndex= :gameIndex and m.seq=:seq", String.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList().stream().findAny();
-        return singleResult;
-    }
-
-    @Override
-    public Optional<List<String>> findSingerByAnswer(String answer) {
-        List<String> list = em.createQuery("select a.singer from Answers a where a.answer=:answer", String.class).setParameter("answer", answer).getResultList();
+    public Optional<List<String>> findSingerByAnswer(String answer,Long gameIndex) {
+        List<String> list = em.createQuery("select a.singer from Answers a where a.answer=:answer and a.gameIndex.gameIndex=:gameIndex", String.class).setParameter("answer", answer).setParameter("gameIndex",gameIndex).getResultList();
         return Optional.ofNullable(list);
     }
 
@@ -62,18 +62,6 @@ public class JpaAnswerRepository implements AnswerRepository {
         else return 0L;
     }
 
-    @Override
-    public boolean delete(Long gameIndex, Long seq) {
-        try {
-            List<Answers> resultList = em.createQuery("select a from Answers a where a.gameIndex.gameIndex=:gameIndex and a.seq=:seq", Answers.class).setParameter("gameIndex", gameIndex).setParameter("seq", seq).getResultList();
-            for(Answers ans:resultList){
-                em.remove(ans);
-            }
-            return true;
-        }catch (Exception e){
-            return false;
-        }
-    }
 
     @Override
     public void updateAnswer(Long id,String answer) {

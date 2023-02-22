@@ -2,12 +2,17 @@ package com.example.guess_music.service;
 
 import com.example.guess_music.domain.game.Answers;
 import com.example.guess_music.domain.game.Game;
+import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
+import com.example.guess_music.repository.MusicRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +22,9 @@ import java.util.Optional;
 public class ManagerService {
     private final AnswerRepository answerRepository;
     private final GameRepository gameRepository;
+
+    @Autowired
+    private MusicRepository musicRepository;
 
     public ManagerService(AnswerRepository answerRepository, GameRepository gameRepository) {
         this.answerRepository = answerRepository;
@@ -36,25 +44,22 @@ public class ManagerService {
         else return 1L;
     }
     public boolean delete(Long gameIndex){
-        //해당 게임에 정답이 존재하면 참조 무결성 제약조건때문에 뭐,
         return gameRepository.delete(gameIndex);
     }
     public boolean delete(Long gameIndex,Long seq){
-        //audio에서 노래 삭제
-        //ec2서버용
-        String folder="/home/ubuntu/audio/";
-        //Local 테스트용
-        //String folder="/Users/sin-wongyun/Desktop/guessAudio/";
-        String filename=gameIndex+"-"+seq+".mp3";
-        File file=new File(folder+filename);
-        if(file.exists()){
-            if(file.delete())
-                log.info("File deleted");
-            else log.warn("File not deleted");
-        }else log.error("File not found");
+        //file db에서 노래 삭제 -> cascade설정으로 answer 전부 같이 연쇄적으로 삭제 됨
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+        if(!opt.isPresent()){
+            //삭제할 노래가 없으면 false
+            return false;
+        }
+        Music music = opt.get().getMusic();
+        musicRepository.delete(music);
+
         //game repo에 노래 수 감소
         gameRepository.deleteSongInGame(gameIndex);
-        return answerRepository.delete(gameIndex,seq);
+
+        return true;
     }
 
     public List<Answers> getAnswerList(Long gameIndex){
@@ -69,7 +74,7 @@ public class ManagerService {
             return new ArrayList<>();
         }
     }
-    public Long storeFile(List<String> answer,String singer, String initial,Long gameIndex){
+    public Long storeAnswers(List<String> answer, String singer, String initial, Long gameIndex, Music music){
         //가수 초성힌트 저장
         if(singer==null||initial==null)
         {
@@ -101,7 +106,7 @@ public class ManagerService {
                 answers.setGameIndex(game);
                 answers.setSeq(maxSeq);
                 answers.setAnswer(ans);
-
+                answers.setMusic(music);
                 answerRepository.save(answers);
                 saveCount++;
             }
@@ -118,7 +123,7 @@ public class ManagerService {
     }
     private boolean checkValidSong(String answer,String singer,Long gameIndex){
         //gameIndex에 맞는 게임에서 정답이 같고 가수도 같으면 중복으로 처리 false return
-        Optional<List<String>> opt = answerRepository.findSingerByAnswer(answer);
+        Optional<List<String>> opt = answerRepository.findSingerByAnswer(answer,gameIndex);
         if(!opt.isEmpty()){
             List<String> singers = opt.get();
             Optional<String> result = singers.stream().filter(s -> s.equals(singer)).findAny();
@@ -138,10 +143,9 @@ public class ManagerService {
 
     public boolean addAnswer(Long gameIndex,Long seq, String answer){
         Answers answers=new Answers();
-        Optional<String> singerBySeq = answerRepository.findSingerBySeq(gameIndex, seq);
-        Optional<String> initialBySeq = answerRepository.findInitialBySeq(gameIndex, seq);
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
         Optional<Game> gameByGameIndex = gameRepository.findGameByGameIndex(gameIndex);
-        if(!singerBySeq.isPresent()||!initialBySeq.isPresent()||!gameByGameIndex.isPresent())
+        if(!opt.isPresent()||!gameByGameIndex.isPresent())
         {
             log.error("singer or initial or game not found");
             return false;
@@ -149,9 +153,9 @@ public class ManagerService {
         answers.setAnswer(answer);
         answers.setGameIndex(gameByGameIndex.get());
         answers.setSeq(seq);
-        answers.setSinger(singerBySeq.get());
-        answers.setInitial(initialBySeq.get());
-
+        answers.setSinger(opt.get().getSinger());
+        answers.setInitial(opt.get().getInitial());
+        answers.setMusic(opt.get().getMusic());
         answerRepository.save(answers);
         return true;
     }
@@ -161,5 +165,36 @@ public class ManagerService {
 
     public boolean updateGameTitle(Long gameIndex, String title){
         return gameRepository.updateGameTitle(gameIndex,title);
+    }
+
+    public Music storeMusic(MultipartFile file,Long gameIndex) throws IOException {
+        Optional<Game> gameOpt = gameRepository.findGameByGameIndex(gameIndex);
+        Game game;
+
+        if(gameOpt.isPresent())
+            game=gameOpt.get();
+        else {
+            log.error("game not found");
+            return null;
+        }
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Music music = new Music(fileName, file.getContentType(), file.getBytes(),game);
+        Music save = musicRepository.save(music);
+        return save;
+    }
+    public Answers findAnswerById(Long id){
+        Optional<Answers> opt = answerRepository.findById(id);
+        if(opt.isPresent()){
+            return opt.get();
+        }
+        return null;
+    }
+    public void validateMusic(String musicId,Long gameIndex){
+        //정답 삭제로 만약 노래의 정답이 없어진 경우 노래 삭제 및 게임 노래 수 감소 필요
+        Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(musicId);
+        if(!byMusicIndex.isPresent()){
+            musicRepository.deleteById(musicId);
+            gameRepository.deleteSongInGame(gameIndex);
+        }
     }
 }

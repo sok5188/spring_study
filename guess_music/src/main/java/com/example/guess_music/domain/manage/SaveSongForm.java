@@ -43,4 +43,14 @@ public class SaveSongForm {
     }
 
     private MultipartFile mp3;
+
+    public Long getGameIndex() {
+        return gameIndex;
+    }
+
+    public void setGameIndex(Long gameIndex) {
+        this.gameIndex = gameIndex;
+    }
+
+    private Long gameIndex;
 }

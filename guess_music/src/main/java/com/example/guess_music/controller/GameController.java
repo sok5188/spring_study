@@ -4,11 +4,14 @@ import com.example.guess_music.domain.auth.Member;
 import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.game.User;
+import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.service.GameService;
 import com.example.guess_music.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,12 +46,28 @@ public class GameController {
         return gameList;
     }
 
-    @PostMapping("/skip/{roomId}")
+    @GetMapping("/hint")
     @ResponseBody
-    public Long skipGame(@PathVariable String roomId){
+    public String Hint(@RequestParam Map<String,Object>map){
+        String roomId = (String) map.get("roomId");
+        String type= (String) map.get("type");
+        log.info("hint type:"+type+"roomId:"+roomId);
+        return gameService.getHint(type,roomId);
+    }
+
+    @GetMapping("/skip")
+    @ResponseBody
+    public Long skipGame(@RequestParam Map<String,Object>map){
+        String roomId = (String) map.get("roomId");
+        String type= (String) map.get("type");
         ChatRoom room = gameService.findById(roomId);
-        room.setSeq(room.getSeq()+1);
-        log.info("Skipped Song in Room:"+roomId+"room's game:"+room.getGameTitle()+ "Now Sequence:"+room.getSeq());
+        log.info("skip type:"+type+"roomId:"+roomId);
+        if(type.equals("owner")){
+            log.info("you  are  Owner so room seq will be increase");
+            room.setSeq(room.getSeq()+1);
+            log.info("Skipped Song in Room:"+roomId+"room's game:"+room.getGameTitle()+ "Now Sequence:"+room.getSeq());
+        }
+
         return room.getSeq();
     }
 
@@ -70,19 +89,10 @@ public class GameController {
     }
 
 
-    @GetMapping("/hint")
-    @ResponseBody
-    public String Hint(@RequestParam Map<String,Object>map){
-        String roomId = (String) map.get("roomId");
-        String type= (String) map.get("type");
-        log.info("hint type:"+type+"roomId:"+roomId);
-        return gameService.getHint(type,roomId);
-    }
-
     @GetMapping("/roomList")
     public String Room(){
         //세션에 저장했던 username으로 멤버를 찾아 nmae을 설정
-        Optional<Member> opt = memberService.findOne(session.getAttribute("username").toString());
+        Optional<Member> opt = memberService.findOne(String.valueOf(session.getAttribute("username")));
         if(opt.isPresent()){
             Member member = opt.get();
             session.setAttribute("name", member.getName());
@@ -110,7 +120,7 @@ public class GameController {
     public String createRooms(@RequestParam Map<String,Object>map){
         String roomName= (String) map.get("name");
         Long gameIndex = Long.parseLong((String) map.get("gameIndex"));
-        ChatRoom room = gameService.createRoom(gameIndex, roomName, (String) session.getAttribute("name"));
+        ChatRoom room = gameService.createRoom(gameIndex, roomName, String.valueOf( session.getAttribute("name")));
         room.setRoomStatus("WAITING");
         return room.getRoomId();
     }
@@ -135,7 +145,7 @@ public class GameController {
     @GetMapping("/getUser")
     @ResponseBody
     public String getUser(){
-        String username = (String) session.getAttribute("name");
+        String username = String.valueOf( session.getAttribute("name"));
         if(username==null){
             log.error("can't find user's name from session");
         }
@@ -148,14 +158,15 @@ public class GameController {
         return gameService.findAllUserByRoomId(roomId);
     }
 
-    @GetMapping("/session")
-    @ResponseBody
-    public String getSession(){
-        System.out.println("session : "+session.getId() + " / "+ session.getServletContext().getContextPath());
-        String name = (String) session.getAttribute("name");
-        System.out.println("name ! "+name);
-        return session.toString();
+    @GetMapping("/getMusic/{roomId}")
+    public ResponseEntity<byte[]> getMusic(@PathVariable String roomId){
+        Music music = gameService.findMusicByRoomId(roomId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION)
+                .body(music.getData());
     }
+
 
 
 }

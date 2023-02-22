@@ -65,10 +65,11 @@ var vm = new Vue({
             axios.get('/Game/room/'+this.roomId).then(response => { this.room = response.data;
               console.log("in room"+this.sender+" / " + this.room.ownerName);
               if(this.room.roomStatus=="WAITING"){
+                console.log("now waiting");
                this.totalSong=this.room.songNum;
                this.remainSong=this.room.songNum;
               }
-
+                console.log(this.sender===this.room.ownerName);
               if(this.sender==this.room.ownerName&&this.room.roomStatus=="WAITING"){
                 console.log("you are owner!");
                 this.startDiv=true;
@@ -153,9 +154,8 @@ var vm = new Vue({
           this.introDiv=false;
           this.timer()
           this.gameDiv=true;
-          this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
+          this.fetchAudioSource();
           this.skipBtnMsg="스킵 투표";
-          this.playAudio();
         },
         timer(){
           if(this.countDown==30){
@@ -180,16 +180,29 @@ var vm = new Vue({
           }
 
         },
-        playAudio : function(){
-            if(this.audioSource){
-                this.audio=new Audio(this.audioSource);
-                this.audio.play();
-            }
-        },
-        stopAudio : function(){
-            if(this.audioSource){
-                this.audio.pause();
-            }
+        fetchAudioSource:function(){
+            this.audio=new Audio();
+            fetch("/Game/getMusic/"+this.roomId).then(response=>response.body).then(rs=>{
+                const reader = rs.getReader();
+                return new ReadableStream({
+                  async start(controller) {
+                    while (true) {
+                      const { done, value } = await reader.read();
+                      // When no more data needs to be consumed, break the reading
+                      if (done) {
+                        break;
+                      }
+                      // Enqueue the next data chunk into our target stream
+                      controller.enqueue(value);
+                    }
+                    // Close the stream
+                    controller.close();
+                    reader.releaseLock();
+                  }
+                })
+            }).then(rs=>new Response(rs)).then(response=>response.blob()).then(blob=>URL.createObjectURL(blob)).then(url=>{
+                this.audio.src=url;
+            }).then(rs=>this.audio.play()).catch(console.error);
         },
         showSingerHint: function() {
             if(this.skipStatus=='skipping'){
@@ -218,6 +231,7 @@ var vm = new Vue({
             this.singerDiv=false;
             this.initialDiv=false;
             this.gotAnswerDiv=true;
+
             axios.get("/Game/getAnswer/"+this.roomId).then(response=>{
                 console.log("response data is : "+response.data);
                 this.answerText=response.data[0];
@@ -226,11 +240,43 @@ var vm = new Vue({
         },
         skipSong: function() {
             console.log("in skip song");
-            this.showAnswer();
+            //this.showAnswer();
             this.block=true;
             this.skipStatus="skipping";
             this.skipText="투표로 인해 노래가 스킵됩니다 !"
+            this.singerHintText='';
+            this.initialHintText='';
+            this.singerDiv=false;
+            this.initialDiv=false;
+            this.gotAnswerDiv=true;
+
+            axios.get("/Game/getAnswer/"+this.roomId).then(response=>{
+                console.log("response data is : "+response.data);
+                this.answerText=response.data[0];
+                this.singerHintText=response.data[1];
+                if(this.remainSong==1){
+                     //game end
+                     //this.endGame();
+                     //3초 후 종료 되게 끔 기달기달
+                }else{
+                    let ownFlag='nope';
+                    if(this.sender==this.room.ownerName){
+                        console.log("owner will send owner flag")
+                        ownFlag='owner'
+                    }
+                    axios.get("/Game/skip",{params:{roomId:this.roomId,type:ownFlag}}).then(response=>{
+                        //서버로 바로 스킵 시그널 전송 클라이언트에선 3초 후 새로운 노래 load함
+                    });
+
+                }
+            })
+
+
             setTimeout(() => {
+                if(this.remainSong==1){
+                     //game end
+                     this.endGame();
+                }
                 this.skipStatus="";
                 this.skipText="";
                 var flag=false;
@@ -238,7 +284,6 @@ var vm = new Vue({
                     flag=true;
                 }
                  this.countDown = 60;
-                 this.stopAudio();
                  this.room.seq=this.room.seq+1;
                  this.remainSong=this.remainSong-1;
                  this.answerText='';
@@ -247,26 +292,23 @@ var vm = new Vue({
                  this.skipDiv=false;
                  this.skipBtnMsg='스킵 투표';
                  this.nowVote=0;
-                 if(this.remainSong==0){
-                     //game end
-                     this.endGame();
-                 }else{
-                    if(!flag){
-                     this.timer();
-                    }
-                    if(this.sender==this.room.ownerName){
-                        axios.post("/Game/skip/"+this.roomId).then(res=>{
-                        })
-                    }
-
-
-                     this.audioSource="/"+this.room.gameIndex+"-"+this.room.seq+".mp3";
-                     this.playAudio();
+                 if(!flag){
+                  this.timer();
                  }
+                 this.audio.pause();
+                 this.fetchAudioSource();
            }, 3000)
 
 
         },
+        sendSkip : function(){
+            if(this.sender==this.room.ownerName){
+                axios.post("/Game/skip/"+this.roomId).then(res=>{
+                })
+            }
+            return;
+        }
+        ,
         skipVote: function() {
             //버튼 누르면 투표 수 증가
             this.skipBtnMsg='투표완료';

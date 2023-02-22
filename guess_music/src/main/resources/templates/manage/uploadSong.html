@@ -7,11 +7,10 @@
 </head>
 <body>
 <div th:insert="~{fragments/navbar}">  </div>
-<div>
-    <p th:text="${gameIndex}" id="gameIndex" hidden="hidden">
-</div>
 
+<p hidden="hidden" id="gameIndex" th:text="${gameIndex}"></p>
 <form action="/manage/upload" method="post" enctype="multipart/form-data">
+    <input type="text" name="gameIndex" th:value="${gameIndex}" hidden="hidden">
     <input type="file" id="uploadedMusic" name="mp3">
     <p id="ansP" content="look">
         <input type="text" id="songAnswer" name="answer" placeholder="enterAnswer">

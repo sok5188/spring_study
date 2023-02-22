@@ -1,5 +1,6 @@
 package com.example.guess_music.controller;
 
+import com.example.guess_music.domain.auth.Member;
 import com.example.guess_music.domain.game.ChatMessage;
 import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.User;
@@ -64,9 +65,16 @@ public class MessageController {
             }
             if(room.getOwnerName().equals(message.getSender())){
                 //방장이 나간 경우 방장이 아닌 다른 사람을 새 방장으로 임명한다.
+                System.out.println("Room owner Leave.. New Owner wiil be set");
                 Set<SimpSubscription> subs = this.findSub(message.getRoomId());
                 for (SimpSubscription sub: subs) {
-                    String name = sub.getSession().getUser().getName();
+                    String username = sub.getSession().getUser().getName();
+                    Member mem = gameService.findMemberByUsername(username);
+                    if(mem==null){
+                        System.out.println("Couldn't find Member'");
+                        return;
+                    }
+                    String name=mem.getName();
                     if(!name.equals(message.getSender())){
                         room.setOwnerName(name);
                     }

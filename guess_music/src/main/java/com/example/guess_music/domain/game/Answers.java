@@ -1,5 +1,6 @@
 package com.example.guess_music.domain.game;
 
+import com.example.guess_music.domain.manage.Music;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -23,6 +24,17 @@ public class Answers implements Comparable<Answers> {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Game gameIndex;
 
+    public Music getMusic() {
+        return music;
+    }
+
+    public void setMusic(Music music) {
+        this.music = music;
+    }
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Music music;
 
 
     private Long seq;

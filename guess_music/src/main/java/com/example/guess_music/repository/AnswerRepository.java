@@ -8,14 +8,15 @@ import java.util.Optional;
 public interface AnswerRepository {
     Answers save(Answers answers);
     Optional<Answers> findById(Long id);
+
+    Optional<Answers> findByIdxSeq(Long gameIndex, Long seq);
+    Optional<Answers> findByMusicIndex(String musicIndex);
     Optional<List<Answers>> findAnswers(Long gameIndex);
     Optional<List<String>> findAnswerBySeq(Long gameIndex,Long seq);
-    Optional<String> findSingerBySeq(Long gameIndex,Long seq);
-    Optional<String> findInitialBySeq(Long gameIndex,Long seq);
-    Optional<List<String>> findSingerByAnswer(String answer);
+
+    Optional<List<String>> findSingerByAnswer(String answer,Long gameIndex);
 
     Long findMaxSeq(Long gameIndex);
-    boolean delete(Long gameIndex,Long seq);
 
     void updateAnswer(Long id,String answer);
 

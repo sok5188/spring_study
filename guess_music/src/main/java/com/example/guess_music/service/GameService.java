@@ -6,10 +6,7 @@ import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.game.User;
 import com.example.guess_music.domain.manage.Music;
-import com.example.guess_music.repository.AnswerRepository;
-import com.example.guess_music.repository.GameRepository;
-import com.example.guess_music.repository.MemberRepository;
-import com.example.guess_music.repository.MusicRepository;
+import com.example.guess_music.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +29,7 @@ public class GameService {
 
     @Autowired
     private AnswerRepository answerRepository;
-//    public GameService(AnswerRepository answerRepository, GameRepository gameRepository, MemberRepository memberRepository) {
-//        this.answerRepository = answerRepository;
-//        this.gameRepository = gameRepository;
-//        this.memberRepository = memberRepository;
-//    }
-//
-//    private final AnswerRepository answerRepository;
-//    private final GameRepository gameRepository;
-//    private final MemberRepository memberRepository;
+
 
     private Map<String, ChatRoom> chatRooms;
     private ArrayList<User> users;
@@ -158,14 +147,16 @@ public class GameService {
         return chatRoom;
     }
 
-    public List<String> findAnswerByRoomId(String roomId){
+    public List<AnswerListMapping> findAnswerByRoomId(String roomId){
         if(!checkRoom())
             return null;
         ChatRoom room = this.findById(roomId);
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
-        Optional<List<String>> opt = answerRepository.findAnswerBySeq(gameIndex,seq);
+        Optional<List<AnswerListMapping>> opt = answerRepository.findAnswerListByGameIndexAndSeq(gameIndex,seq);
         if(opt.isPresent()){
+//            List<String> result = new ArrayList<>();
+//            opt.get().forEach(answer -> result.add(answer.getAnswer()));
             return opt.get();
         }
         else {

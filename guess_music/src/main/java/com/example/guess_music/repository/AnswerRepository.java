@@ -17,10 +17,11 @@ public interface AnswerRepository extends JpaRepository<Answers, Long> {
     List<Answers> findByGameIndex(Long gameIndex);
     @Query("select a from Answers a join fetch a.music m where m.id=?1")
     Optional<Answers> findByMusicIndex(String musicIndex);
-    @Query("select a from Answers a join fetch a.game g where g.gameIndex=?1 and a.seq=?2")
-    Optional<List<String>> findAnswerBySeq(Long gameIndex,Long seq);
-    @Query("select a from Answers a join fetch a.game g where g.gameIndex=?1 and a.seq=?2")
-    Optional<List<String>> findSingerByAnswer(String answer,Long gameIndex);
+    //@Query(value = "select a.answer from Answers a join fetch a.game g where g.gameIndex=?1 and a.seq=?2",nativeQuery = true)
+    @Query(value = "select a.answer as answer from Answers a where a.game.gameIndex=?1 and a.seq=?2")
+    Optional<List<AnswerListMapping>> findAnswerListByGameIndexAndSeq(Long gameIndex, Long seq);
+    @Query(value = "select a.singer as singer from Answers a where a.game.gameIndex=?2 and a.answer=?1")
+    List<SingerListMapping> findAllSingerByAnswer(String answer, Long gameIndex);
 
     @Modifying(clearAutomatically = true)
     @Query("update Answers a set a.answer=?2 where a.id=?1")

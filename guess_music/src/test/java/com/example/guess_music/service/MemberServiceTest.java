@@ -1,81 +1,111 @@
 package com.example.guess_music.service;
 
+import com.example.guess_music.domain.auth.Member;
+import com.example.guess_music.domain.auth.Role;
 import com.example.guess_music.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-@SpringBootTest
-@Transactional
-public class MemberServiceTest {
-    @Autowired
+import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+
+@ExtendWith(MockitoExtension.class)
+class MemberServiceTest {
+    @Mock
+    MemberRepository memberRepository;
+    @InjectMocks
     MemberService memberService;
-    @Autowired
-    MemberRepository    memberRepository;
+    private Member getMember1() {
+        Member member=new Member();
+        member.setUsername("testUser1");
+        member.setName("testUser1");
+        member.setPassword("testPWD");
+        member.setEmail("lyhxr@example.com");
+        member.setRole(Role.ROLE_USER);
 
-//    @Test
-//    void 회원가입() {
-//        //given
-//        Member member=new Member();
-//        member.setUsername("sirong_test");
-//        member.setPassword("123");
-//        member.setName("Tester");
-//        //when
-//        String saveId=memberService.join(member);
-//        //then
-//        Member findMember= memberService.findOne(saveId).get();
-//        assertThat(member.getName()).isEqualTo(findMember.getName());
-//    }
+        return member;
+    }
 
-//    @Test
-//    void 중복회원_예외() throws Exception{
-//        Member member=new Member();
-//        member.setName("test1");
-//        member.setUsername("test1");
-//        member.setPassword("123");
-//
-//        Member member2=new Member();
-//        member2.setName("test1");
-//        member2.setUsername("test1");
-//        member2.setPassword("123");
-//
-//        memberService.join(member);
-//
-//        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
-//        assertThat(e.getMessage()).isEqualTo("already exist id");
-//    }
-//
-//    @Test
-//    void 로그인(){
-//        Member member=new Member();
-//        member.setName("test1");
-//        member.setUsername("test1");
-//        member.setPassword("123");
-//        memberService.join(member);
-//
-//        Optional<Member> test = memberService.findOne("test1");
-//
-//        assertThat(test.isPresent()).isEqualTo(true);
-//        assertThat(test.get().getPassword()).isEqualTo("123");
-//
-//        //비밀번호 오류는 위에 비밀번호 확인하는 부분만 다르기에 이 테스트로 비밀번호 오류도 테스팅이 된 것이라 간주.
-//    }
-//
-//    @Test
-//    void 로그인_아이디오류(){
-//        Member member=new Member();
-//        member.setName("test1");
-//        member.setUsername("test1");
-//        member.setPassword("123");
-//        memberService.join(member);
-//
-//        Optional<Member> test12345 = memberService.findOne("test12345");
-//
-//        assertThat(test12345.isPresent()).isEqualTo(false);
-//    }
 
+    @Test
+    void 회원가입() {
+        //given
+        Member member = getMember1();
+        given(memberRepository.save(member)).willReturn(member);
+
+        //when
+        String username = memberService.join(member);
+
+        //then
+        assertThat(username).isEqualTo(member.getUsername());
+    }
+
+
+    @Test
+    public void 회원가입_실패(){
+        //given
+        Member member= getMember1();
+        Member member2= getMember1();
+
+        given(memberRepository.save(member)).willReturn(member);
+
+        memberService.join(member);
+
+        given(memberRepository.findByUsername(member.getUsername())).willReturn(Optional.of(member));
+
+        //when
+        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+        //then
+        assertThat(e.getMessage()).isEqualTo("already exist id");
+    }
+
+    @Test
+    void 전체회원조회() {
+        //given
+        Member member=getMember1();
+        List<Member> members=new ArrayList<>();
+        members.add(member);
+        given(memberRepository.save(member)).willReturn(member);
+        given(memberRepository.findAll()).willReturn(members);
+        //when
+        memberService.join(member);
+        List<Member> findMembers = memberService.findMembers();
+
+        //then
+        assertThat(findMembers.size()).isEqualTo(1);
+    }
+
+    @Test
+    void 특정회원조회_findOne() {
+        //given
+        Member member=getMember1();
+        //given(memberRepository.save(member)).willReturn(member);
+        given(memberRepository.findByUsername(member.getUsername())).willReturn(Optional.of(member));
+        //when
+        Optional<Member> opt = memberService.findOne(member.getUsername());
+        //then
+        assertThat(opt).isNotNull();
+        assertThat(opt.get().getUsername()).isEqualTo(member.getUsername());
+    }
+    @Test
+    void 특정회원조회_loadUser() {
+        //given
+        Member member=getMember1();
+        //given(memberRepository.save(member)).willReturn(member);
+        given(memberRepository.findByUsername(member.getUsername())).willReturn(Optional.of(member));
+        //when
+        UserDetails opt = memberService.loadUserByUsername(member.getUsername());
+        //then
+        assertThat(opt.getUsername()).isEqualTo(member.getUsername());
+    }
 
 }

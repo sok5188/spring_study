@@ -4,6 +4,7 @@ import com.example.guess_music.domain.auth.Member;
 import com.example.guess_music.domain.game.ChatMessage;
 import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.User;
+import com.example.guess_music.repository.AnswerListMapping;
 import com.example.guess_music.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -84,12 +85,12 @@ public class MessageController {
         }
         sendingOperations.convertAndSend("/topic/room/"+message.getRoomId(),message);
 
-        List<String> answers = gameService.findAnswerByRoomId(message.getRoomId());
+        List<AnswerListMapping> answers = gameService.findAnswerByRoomId(message.getRoomId());
         if(answers== null){
             return;
         }
 
-        if(answers.stream().filter(ans->ans.equals(message.getMessage())).findAny().isPresent()) {
+        if(answers.stream().filter(ans->ans.getAnswer().equals(message.getMessage())).findAny().isPresent()) {
             //정답자 User객체 찾아서 score++
             User userByUsername = gameService.findUserByUsername(message.getSender());
             userByUsername.setScore(userByUsername.getScore() + 1);

@@ -29,7 +29,7 @@ public class Music {
         this.game = game;
     }
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "gameIndex")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;

@@ -6,6 +6,7 @@ import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.repository.AnswerRepository;
 import com.example.guess_music.repository.GameRepository;
 import com.example.guess_music.repository.MusicRepository;
+import com.example.guess_music.repository.SingerListMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,10 +123,10 @@ public class ManagerService {
     }
     private boolean checkValidSong(String answer,String singer,Long gameIndex){
         //gameIndex에 맞는 게임에서 정답이 같고 가수도 같으면 중복으로 처리 false return
-        Optional<List<String>> opt = answerRepository.findSingerByAnswer(answer,gameIndex);
+        Optional<List<SingerListMapping>> opt = Optional.ofNullable(answerRepository.findAllSingerByAnswer(answer, gameIndex));
         if(!opt.isEmpty()){
-            List<String> singers = opt.get();
-            Optional<String> result = singers.stream().filter(s -> s.equals(singer)).findAny();
+
+            Optional<SingerListMapping> result = opt.get().stream().filter(s -> s.getSinger().equals(singer)).findAny();
             //singer가 존재하는 경우 노래정답과 가수가 같다는 것이고, 그렇다면 중복된 노래이다.
             if(result.isPresent())
             {

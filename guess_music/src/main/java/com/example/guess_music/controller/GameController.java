@@ -5,6 +5,7 @@ import com.example.guess_music.domain.game.ChatRoom;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.game.User;
 import com.example.guess_music.domain.manage.Music;
+import com.example.guess_music.repository.AnswerListMapping;
 import com.example.guess_music.service.GameService;
 import com.example.guess_music.service.MemberService;
 import jakarta.servlet.http.HttpSession;
@@ -74,12 +75,11 @@ public class GameController {
     @GetMapping("/getAnswer/{roomId}")
     @ResponseBody
     public List<String> getAnswer(@PathVariable String roomId){
-         List<String> answerByRoomId = gameService.findAnswerByRoomId(roomId);
+         List<AnswerListMapping> answerByRoomId = gameService.findAnswerByRoomId(roomId);
         String singer = gameService.getHint("singer", roomId);
         if(answerByRoomId!=null&&singer!=null){
-            List<String> ans=(List<String>)answerByRoomId;
             List<String> result=new ArrayList<>();
-            result.add(ans.get(0));
+            result.add(answerByRoomId.get(0).getAnswer());
             result.add(singer);
             return result;
         }else{

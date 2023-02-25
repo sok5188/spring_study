@@ -2,47 +2,44 @@ package com.example.guess_music.service;
 
 import com.example.guess_music.domain.auth.Member;
 import com.example.guess_music.domain.auth.MemberDetail;
-import com.example.guess_music.domain.auth.MemberForm;
 import com.example.guess_music.repository.MemberRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 @Slf4j
 @Transactional
+@Service
 public class MemberService implements UserDetailsService {
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
-
-    private final MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     public String join(Member member){
 
         validateMember(member);
         //member.setPassword(getEncodedPassword(member.getPassword()));
-        memberRepository.save(member);
-        return member.getUsername();
+        Member save = memberRepository.save(member);
+        return save.getUsername();
     }
     private void validateMember(Member member){
-        memberRepository.findbyUsername(member.getUsername()).ifPresent(m->{
+        memberRepository.findByUsername(member.getUsername()).ifPresent(m->{
             throw new IllegalStateException("already exist id");});
     }
     public List<Member> findMembers(){
         return memberRepository.findAll();
     }
 
-    public Optional<Member> findOne(String id){ return memberRepository.findbyUsername(id); }
+    public Optional<Member> findOne(String id){ return memberRepository.findByUsername(id); }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Member> byUsername = memberRepository.findbyUsername(username);
+        Optional<Member> byUsername = memberRepository.findByUsername(username);
         if(byUsername.isPresent()){
             return new MemberDetail(byUsername.get());
         }

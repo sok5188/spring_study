@@ -20,16 +20,14 @@ import java.util.Optional;
 @Slf4j
 @Transactional
 public class ManagerService {
-    private final AnswerRepository answerRepository;
-    private final GameRepository gameRepository;
 
+    @Autowired
+    private GameRepository gameRepository;
     @Autowired
     private MusicRepository musicRepository;
 
-    public ManagerService(AnswerRepository answerRepository, GameRepository gameRepository) {
-        this.answerRepository = answerRepository;
-        this.gameRepository = gameRepository;
-    }
+    @Autowired
+    private AnswerRepository answerRepository;
 
     public Long join(Game game){
         game.setGameIndex(getValidGameIndex());
@@ -44,7 +42,8 @@ public class ManagerService {
         else return 1L;
     }
     public boolean delete(Long gameIndex){
-        return gameRepository.delete(gameIndex);
+        gameRepository.deleteById(gameIndex);
+        return true;
     }
     public boolean delete(Long gameIndex,Long seq){
         //file db에서 노래 삭제 -> cascade설정으로 answer 전부 같이 연쇄적으로 삭제 됨
@@ -57,13 +56,13 @@ public class ManagerService {
         musicRepository.delete(music);
 
         //game repo에 노래 수 감소
-        gameRepository.deleteSongInGame(gameIndex);
+        gameRepository.deleteSongToGame(gameIndex);
 
         return true;
     }
 
     public List<Answers> getAnswerList(Long gameIndex){
-        Optional<List<Answers>> opt = answerRepository.findAnswers(gameIndex);
+        Optional<List<Answers>> opt = Optional.ofNullable(answerRepository.findByGameIndex(gameIndex));
         if(opt.isPresent()){
             List<Answers> answers = opt.get();
             Collections.sort(answers);
@@ -82,7 +81,7 @@ public class ManagerService {
             return -1L;
         }
         //게임 인덱스 설정
-        Optional<Game> gameOpt = gameRepository.findGameByGameIndex(gameIndex);
+        Optional<Game> gameOpt = gameRepository.findById(gameIndex);
         Game game;
 
         if(gameOpt.isPresent())
@@ -91,8 +90,8 @@ public class ManagerService {
             log.error("game not found");
             return -1L;
         }
-        //노래 번호 설정
-        Long maxSeq=answerRepository.findMaxSeq(gameIndex);
+        //노래 번호 설정 in game Repo
+        Long maxSeq=gameRepository.findSongNum(gameIndex);
         maxSeq=Math.max(++maxSeq,1);
 
         int saveCount=0;
@@ -144,7 +143,7 @@ public class ManagerService {
     public boolean addAnswer(Long gameIndex,Long seq, String answer){
         Answers answers=new Answers();
         Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
-        Optional<Game> gameByGameIndex = gameRepository.findGameByGameIndex(gameIndex);
+        Optional<Game> gameByGameIndex = gameRepository.findById(gameIndex);
         if(!opt.isPresent()||!gameByGameIndex.isPresent())
         {
             log.error("singer or initial or game not found");
@@ -160,7 +159,8 @@ public class ManagerService {
         return true;
     }
     public boolean deleteAnswer(Long id){
-        return answerRepository.delete(id);
+        answerRepository.deleteById(id);
+        return true;
     }
 
     public boolean updateGameTitle(Long gameIndex, String title){
@@ -168,7 +168,7 @@ public class ManagerService {
     }
 
     public Music storeMusic(MultipartFile file,Long gameIndex) throws IOException {
-        Optional<Game> gameOpt = gameRepository.findGameByGameIndex(gameIndex);
+        Optional<Game> gameOpt = gameRepository.findById(gameIndex);
         Game game;
 
         if(gameOpt.isPresent())
@@ -194,7 +194,7 @@ public class ManagerService {
         Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(musicId);
         if(!byMusicIndex.isPresent()){
             musicRepository.deleteById(musicId);
-            gameRepository.deleteSongInGame(gameIndex);
+            gameRepository.deleteSongToGame(gameIndex);
         }
     }
 }

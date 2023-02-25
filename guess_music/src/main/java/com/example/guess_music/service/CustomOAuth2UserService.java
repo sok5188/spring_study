@@ -7,26 +7,31 @@ import com.example.guess_music.domain.userInfo.GoogleUserInfo;
 import com.example.guess_music.domain.userInfo.NaverUserInfo;
 import com.example.guess_music.domain.userInfo.OAuthUserInfo;
 import com.example.guess_music.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Transactional
+@RequiredArgsConstructor
+@Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-    private MemberRepository userRepository;
+    //private MemberRepository userRepository;
+    private final MemberRepository userRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public CustomOAuth2UserService(MemberRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+//    public CustomOAuth2UserService(MemberRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
 
     @Override
     public OAuth2User loadUser (OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -47,7 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = oAuthUserInfo.getEmail();
         Role role = Role.ROLE_USER;
-        Optional<Member> opt = userRepository.findbyUsername(username);
+        Optional<Member> opt = userRepository.findByUsername(username);
         //DB에 없는 사용자라면 회원가입처리
         if(opt.isPresent()){
             return new MemberDetail(opt.get(),oAuthUserInfo);

@@ -13,24 +13,34 @@ import com.example.guess_music.repository.MusicRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 @Slf4j
 @Transactional
+@Service
 public class GameService {
     @Autowired
     private MusicRepository musicRepository;
-    public GameService(AnswerRepository answerRepository, GameRepository gameRepository, MemberRepository memberRepository) {
-        this.answerRepository = answerRepository;
-        this.gameRepository = gameRepository;
-        this.memberRepository = memberRepository;
-    }
 
-    private final AnswerRepository answerRepository;
-    private final GameRepository gameRepository;
-    private final MemberRepository memberRepository;
+    @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
+//    public GameService(AnswerRepository answerRepository, GameRepository gameRepository, MemberRepository memberRepository) {
+//        this.answerRepository = answerRepository;
+//        this.gameRepository = gameRepository;
+//        this.memberRepository = memberRepository;
+//    }
+//
+//    private final AnswerRepository answerRepository;
+//    private final GameRepository gameRepository;
+//    private final MemberRepository memberRepository;
 
     private Map<String, ChatRoom> chatRooms;
     private ArrayList<User> users;
@@ -68,7 +78,7 @@ public class GameService {
         return "False type";
     }
     public List<Game> getGameList(){
-        Optional<List<Game>> opt = gameRepository.findGameList();
+        Optional<List<Game>> opt = Optional.of(gameRepository.findAll());
         if(opt.isPresent())
             return opt.get();
         else {
@@ -132,7 +142,7 @@ public class GameService {
     }
     //채팅방 생성
     public ChatRoom createRoom(Long gameIndex,String name,String ownerName) {
-        Optional<Game> opt = gameRepository.findGameByGameIndex(gameIndex);
+        Optional<Game> opt = gameRepository.findById(gameIndex);
         Game game;
         if(opt.isPresent())
             game=opt.get();
@@ -164,7 +174,7 @@ public class GameService {
         }
     }
     public User createUser(String roomId, String username) {
-        Optional<Member> member = memberRepository.findbyUsername(username);
+        Optional<Member> member = memberRepository.findByUsername(username);
         if(member.isPresent()){
             User user = User.create(member.get().getName(), roomId, 0L);
             users.add(user);
@@ -176,7 +186,7 @@ public class GameService {
     }
 
     public Member findMemberByUsername(String username){
-        Optional<Member> member = memberRepository.findbyUsername(username);
+        Optional<Member> member = memberRepository.findByUsername(username);
         if(member.isPresent())
             return member.get();
         else return null;

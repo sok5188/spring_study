@@ -12,17 +12,17 @@ public class Answers implements Comparable<Answers> {
 
 
     public Game getGameIndex() {
-        return gameIndex;
+        return game;
     }
 
     public void setGameIndex(Game gameIndex) {
-        this.gameIndex = gameIndex;
+        this.game = gameIndex;
     }
 
     @ManyToOne
     @JoinColumn(name = "gameIndex")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Game gameIndex;
+    private Game game;
 
     public Music getMusic() {
         return music;

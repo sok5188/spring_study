@@ -21,7 +21,7 @@ public interface GameRepository extends JpaRepository<Game,Long> {
     void deleteSongToGame(Long gameIndex);
     @Modifying(clearAutomatically = true)
     @Query("update Game g set g.title=?2 where g.gameIndex=?1")
-    boolean updateGameTitle(Long gameIndex, String title);
+    void updateGameTitle(Long gameIndex, String title);
 
     @Query("select g.songnum from Game g where g.gameIndex=?1")
     Long findSongNum(Long gameIndex);

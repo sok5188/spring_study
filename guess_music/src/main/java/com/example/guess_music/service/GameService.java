@@ -36,10 +36,15 @@ public class GameService {
     @PostConstruct
     //의존관게 주입완료되면 실행되는 코드
     private void init() {
+        log.info("GameService init");
         chatRooms = new LinkedHashMap<>();
         users = new ArrayList<>();
     }
-
+    public void testinit(){
+        log.info("GameService TEST init");
+        chatRooms = new LinkedHashMap<>();
+        users = new ArrayList<>();
+    }
     public String getHint(String type,String roomId){
         ChatRoom room = this.findById(roomId);
         Long gameIndex= room.getGameIndex();
@@ -110,8 +115,8 @@ public class GameService {
         List<User> result = users.stream().filter(target -> target.getRoomId().equals(roomId)).collect(Collectors.toList());
         return result;
     }
-    public User findUserByUsername(String username) {
-        Optional<User> result = users.stream().filter(target -> target.getName().equals(username)).findAny();
+    public User findUserByName(String name) {
+        Optional<User> result = users.stream().filter(target -> target.getName().equals(name)).findAny();
         if(result.isPresent())
             return result.get();
         else {
@@ -119,11 +124,11 @@ public class GameService {
             return null;
         }
     }
-    public void deleteUserByUsername(String username) {
+    public void deleteUserByName(String name) {
         Iterator it=users.iterator();
         while(it.hasNext()){
             User next = (User) it.next();
-            if(next.getName().equals(username)){
+            if(next.getName().equals(name)){
                 it.remove();
                 break;
             }
@@ -155,8 +160,6 @@ public class GameService {
         Long seq=room.getSeq();
         Optional<List<AnswerListMapping>> opt = answerRepository.findAnswerListByGameIndexAndSeq(gameIndex,seq);
         if(opt.isPresent()){
-//            List<String> result = new ArrayList<>();
-//            opt.get().forEach(answer -> result.add(answer.getAnswer()));
             return opt.get();
         }
         else {

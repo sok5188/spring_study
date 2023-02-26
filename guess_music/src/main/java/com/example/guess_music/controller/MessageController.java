@@ -55,7 +55,7 @@ public class MessageController {
         if(ChatMessage.MessageType.LEAVE.equals(message.getType())){
             if(room.getRoomStatus().equals("START")){
                 //유저 퇴장 시 해당 User객체 삭제
-                gameService.deleteUserByUsername(message.getSender());
+                gameService.deleteUserByName(message.getSender());
             }
             //게임 방의 유저 수 --
             room.setRoomUserNum(room.getRoomUserNum() - 1);
@@ -92,7 +92,7 @@ public class MessageController {
 
         if(answers.stream().filter(ans->ans.getAnswer().equals(message.getMessage())).findAny().isPresent()) {
             //정답자 User객체 찾아서 score++
-            User userByUsername = gameService.findUserByUsername(message.getSender());
+            User userByUsername = gameService.findUserByName(message.getSender());
             userByUsername.setScore(userByUsername.getScore() + 1);
             //정답 메세지 설정 및 전송
             message.setMessage(message.getSender()+"님이 정답을 맞추셨습니다!");

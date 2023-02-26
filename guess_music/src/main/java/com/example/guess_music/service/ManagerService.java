@@ -141,14 +141,14 @@ public class ManagerService {
         return true;
     }
 
-    public boolean addAnswer(Long gameIndex,Long seq, String answer){
+    public Answers addAnswer(Long gameIndex, Long seq, String answer){
         Answers answers=new Answers();
         Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
         Optional<Game> gameByGameIndex = gameRepository.findById(gameIndex);
         if(!opt.isPresent()||!gameByGameIndex.isPresent())
         {
             log.error("singer or initial or game not found");
-            return false;
+            return new Answers();
         }
         answers.setAnswer(answer);
         answers.setGameIndex(gameByGameIndex.get());
@@ -156,8 +156,8 @@ public class ManagerService {
         answers.setSinger(opt.get().getSinger());
         answers.setInitial(opt.get().getInitial());
         answers.setMusic(opt.get().getMusic());
-        answerRepository.save(answers);
-        return true;
+        Answers save = answerRepository.save(answers);
+        return save;
     }
     public boolean deleteAnswer(Long id){
         answerRepository.deleteById(id);
@@ -165,7 +165,8 @@ public class ManagerService {
     }
 
     public boolean updateGameTitle(Long gameIndex, String title){
-        return gameRepository.updateGameTitle(gameIndex,title);
+        gameRepository.updateGameTitle(gameIndex,title);
+        return true;
     }
 
     public Music storeMusic(MultipartFile file,Long gameIndex) throws IOException {

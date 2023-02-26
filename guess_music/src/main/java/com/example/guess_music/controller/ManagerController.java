@@ -130,8 +130,8 @@ public class ManagerController {
     @PostMapping("/manage/addAnswer")
     public String addAnswer(@RequestParam("seq") Long seq,@RequestParam("answer") String answer,@RequestParam("gameIndex") Long gameIndex){
         System.out.println("get add Answer req : "+seq);
-
-        if(managerService.addAnswer(gameIndex,seq,answer))
+        Answers saved = managerService.addAnswer(gameIndex, seq, answer);
+        if(saved.getAnswer()!=null)
             return "Success";
         else
         {

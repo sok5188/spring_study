@@ -8,16 +8,12 @@ import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.game.User;
 import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.repository.*;
-import org.junit.Before;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

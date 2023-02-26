@@ -9,6 +9,7 @@ import com.example.guess_music.repository.MusicRepository;
 import com.example.guess_music.repository.SingerListMapping;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 @Slf4j
 @Transactional
+@Service
 public class ManagerService {
 
     @Autowired

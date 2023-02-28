@@ -16,19 +16,20 @@ import java.io.IOException;
 import java.util.List;
 @Slf4j
 @Controller
+@RequestMapping("/manage")
 public class ManagerController {
     private final ManagerService managerService;
     public ManagerController(ManagerService manageService) {
         this.managerService = manageService;
     }
 
-    @GetMapping("/manage")
+    @GetMapping("")
     public String enterManager(){
         return "manage/manager";
     }
 
     @ResponseBody
-    @DeleteMapping("/manage")
+    @DeleteMapping("")
     public String deleteGame(@RequestParam("gameIndex") Long gameIndex){
         //해당 게임 DB에서 삭제 -> Cascade로 해당 게임의 answers전부 삭제
         if(managerService.delete(gameIndex))
@@ -39,25 +40,25 @@ public class ManagerController {
         }
     }
 
-    @GetMapping("/manage/createGame")
+    @GetMapping("/createGame")
     public String createGamePage(){
         return "manage/createGame";
     }
 
-    @PostMapping("/manage/createGame")
+    @PostMapping("/createGame")
     public String createGame(CreateGameForm form){
         Game game = new Game();
         game.setTitle(form.getTitle());
         managerService.join(game);
         return "redirect:/manage";
     }
-    @GetMapping("/manage/modifyGame")
+    @GetMapping("/modifyGame")
     public String modifyGamePage(@RequestParam("gameIndex") Long gameIndex, Model model){
         model.addAttribute("idx",gameIndex);
         return "manage/updateSong";
     }
     @ResponseBody
-    @PostMapping("/manage/modifyGame")
+    @PostMapping("/modifyGame")
     public String modifyGameTitle(@RequestParam("gameIndex") Long gameIndex, @RequestParam("newTitle") String title){
         if(managerService.updateGameTitle(gameIndex,title))
             return "Success";
@@ -66,7 +67,7 @@ public class ManagerController {
             return "Fail";
         }
     }
-    @DeleteMapping("/manage/modifyGame")
+    @DeleteMapping("/modifyGame")
     @ResponseBody
     public String deleteSong(@RequestParam("gameIndex") Long gameIndex,@RequestParam("seq") Long seq){
         if(managerService.delete(gameIndex,seq))
@@ -77,18 +78,18 @@ public class ManagerController {
         }
 
     }
-    @ResponseBody@GetMapping("/manage/songList")
+    @ResponseBody@GetMapping("/songList")
     public List<Answers> modifySong(@RequestParam("gameIndex") Long gameIndex){
         return managerService.getAnswerList(gameIndex);
     }
 
-    @GetMapping("/manage/upload")
+    @GetMapping("/upload")
     public String uploadSong(@RequestParam("gameIndex")Long gameIndex,Model model){
         model.addAttribute("gameIndex",gameIndex);
         return "manage/uploadSong";
     }
 
-    @PostMapping("/manage/upload")
+    @PostMapping("/upload")
     public String saveSong(SaveSongForm form,Model model) throws IOException {
         Long gameIndex = form.getGameIndex();
         log.info("gameIndex : "+gameIndex);
@@ -114,7 +115,7 @@ public class ManagerController {
         }
     }
     @ResponseBody
-    @PostMapping("/manage/updateAnswer")
+    @PostMapping("/updateAnswer")
     public String updateAnswer(@RequestParam("id") Long id,@RequestParam("answer") String answer){
         System.out.println("get update Answer req : "+id);
         if(managerService.updateAnswer(id,answer))
@@ -127,7 +128,7 @@ public class ManagerController {
     }
 
     @ResponseBody
-    @PostMapping("/manage/addAnswer")
+    @PostMapping("/addAnswer")
     public String addAnswer(@RequestParam("seq") Long seq,@RequestParam("answer") String answer,@RequestParam("gameIndex") Long gameIndex){
         System.out.println("get add Answer req : "+seq);
         Answers saved = managerService.addAnswer(gameIndex, seq, answer);
@@ -141,7 +142,7 @@ public class ManagerController {
 
     }
     @ResponseBody
-    @DeleteMapping("/manage/updateAnswer")
+    @DeleteMapping("/updateAnswer")
     public String deleteAnswer(@RequestParam("ansId") Long id){
         Answers answerById = managerService.findAnswerById(id);
         if(answerById==null)

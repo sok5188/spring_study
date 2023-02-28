@@ -110,9 +110,15 @@ public class GameController {
         return gameService.findAllRoom();
     }
 
-    @GetMapping("/createRoom")
-    public String createRoom(){
-        return "game/createRoom";
+//    @GetMapping("/createRoom")
+//    public String createRoom(){
+//        return "game/createRoom";
+//    }
+
+    @GetMapping("/test")
+    public String testGame(){
+        System.out.println(session.getAttribute("username"));
+        return "test";
     }
 
     @PostMapping("/createRoom")

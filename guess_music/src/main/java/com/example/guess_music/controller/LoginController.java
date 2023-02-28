@@ -41,12 +41,17 @@ public class LoginController {
     }
 
     @GetMapping("/joinForm")
-    public String createSignInForm() {
+    public String createSignInForm(@RequestParam(value = "error", required = false) String error,Model model) {
+        if(error!=null){
+            log.warn("already exist id..");
+            model.addAttribute("error",error);
+        }
+
         return "login/createSignInForm";
     }
     @PostMapping("/signIn")
     public String signIn(SignInForm form){
-
+        log.info("Sign in form: {}", form.getUsername()+"/"+form.getPassword());
         Member user = new Member();
         user.setUsername(form.getUsername());
         user.setName(form.getName());
@@ -60,9 +65,11 @@ public class LoginController {
         else
             user.setRole(Role.ROLE_USER);
 
-        memberService.join(user);
-
-        return "redirect:/auth/loginForm";
+        String join = memberService.join(user);
+        if(join.equals("FAIL"))
+            return "redirect:/auth/joinForm?error=true";
+        else
+            return "redirect:/auth/loginForm";
     }
     @GetMapping("/accessDenied")
     public String accessDeny(){

@@ -22,7 +22,12 @@ public class MemberService implements UserDetailsService {
 
     public String join(Member member){
 
-        validateMember(member);
+        try {
+            validateMember(member);
+        }catch (IllegalStateException e){
+            log.warn(e.getMessage());
+            return "FAIL";
+        }
         //member.setPassword(getEncodedPassword(member.getPassword()));
         Member save = memberRepository.save(member);
         return save.getUsername();

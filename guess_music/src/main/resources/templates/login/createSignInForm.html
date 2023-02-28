@@ -27,8 +27,10 @@
 </body>
 <script th:inline="javascript">
     var error=[[${error}]];
-    if(error!=null)
+    if(error!=null){
         alert("중복된 아이디 입니다");
+        location.href='/auth/joinForm';
+    }
 </script>
 
 </html>

@@ -71,10 +71,6 @@ public class LoginController {
         else
             return "redirect:/auth/loginForm";
     }
-    @GetMapping("/accessDenied")
-    public String accessDeny(){
-        return "login/accessDenied";
-    }
 
     @GetMapping("/oAuthUserCheck")
     public String oAuthUsercheck(HttpSession session){

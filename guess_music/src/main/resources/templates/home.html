@@ -30,7 +30,10 @@
 <script th:inline="javascript">
     var err=[[${error}]];
     if(err!=null){
-        alert(err+"\n 권한이 없습니다.");
+        if(err=="accessDenied")
+            alert(err+"\n 권한이 없습니다.");
+        else
+            alert(err+"\n 로그인 후 이용 해 주세요");
         location.href='/';
     }
 

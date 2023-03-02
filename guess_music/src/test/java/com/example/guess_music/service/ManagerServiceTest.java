@@ -132,7 +132,9 @@ class ManagerServiceTest {
         game.setSongNum(1L);
         Music music = makeMusic(game);
         Answers answers = makeAnswer(game,music);
-        given(answerRepository.findByIdxSeq(game.getGameIndex(),answers.getSeq())).willReturn(Optional.of(answers));
+        List<Answers> ansList=new ArrayList<>();
+        ansList.add(answers);
+        given(answerRepository.findByIdxSeq(game.getGameIndex(),answers.getSeq())).willReturn(ansList);
         given(gameRepository.findById(game.getGameIndex())).willReturn(Optional.of(game));
         Answers newAnswer = makeAnswer(game, music);
         newAnswer.setAnswer("newTestAnswer");

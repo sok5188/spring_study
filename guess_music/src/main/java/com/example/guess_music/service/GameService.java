@@ -50,7 +50,7 @@ public class GameService {
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
         if(type.equals("singer")){
-            Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+            Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
             if(opt.isPresent())
                 return opt.get().getSinger();
             else{
@@ -59,7 +59,7 @@ public class GameService {
             }
         }
         if(type.equals("initial")){
-            Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+            Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
             if(opt.isPresent())
                 return opt.get().getInitial();
             else{
@@ -191,7 +191,7 @@ public class GameService {
         Long gameIndex= room.getGameIndex();
         Long seq=room.getSeq();
         log.info("gameIndex: "+gameIndex+" seq: "+seq);
-        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
         if(opt.isPresent()){
             Optional<Music> byId = musicRepository.findById(opt.get().getMusic().getId());
             if(byId.isPresent())

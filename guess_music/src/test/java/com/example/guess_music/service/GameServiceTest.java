@@ -16,11 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class GameServiceTest {
@@ -112,8 +110,9 @@ class GameServiceTest {
 
         given(gameRepository.findById(game.getGameIndex())).willReturn(Optional.of(game));
         ChatRoom room = gameService.createRoom(game.getGameIndex(), "testTitle", "testOwner");
-
-        given(answerRepository.findByIdxSeq(game.getGameIndex(),room.getSeq())).willReturn(Optional.of(answers));
+        List<Answers> ansList=new ArrayList<>();
+        ansList.add(answers);
+        given(answerRepository.findByIdxSeq(game.getGameIndex(),room.getSeq())).willReturn(ansList);
         //when
         String singer = gameService.getHint("singer", room.getRoomId());
         String initial = gameService.getHint("initial", room.getRoomId());
@@ -234,7 +233,9 @@ class GameServiceTest {
         ChatRoom room = gameService.createRoom(game.getGameIndex(), "testTitle", "testOwner");
         Music music = makeMusic(game);
         Answers answers = makeAnswer(game, music);
-        given(answerRepository.findByIdxSeq(room.getGameIndex(),room.getSeq())).willReturn(Optional.of(answers));
+        List<Answers> ansList=new ArrayList<>();
+        ansList.add(answers);
+        given(answerRepository.findByIdxSeq(room.getGameIndex(),room.getSeq())).willReturn(ansList);
         given(musicRepository.findById(answers.getMusic().getId())).willReturn(Optional.of(music));
         //when
         Music musicByRoomId = gameService.findMusicByRoomId(room.getRoomId());

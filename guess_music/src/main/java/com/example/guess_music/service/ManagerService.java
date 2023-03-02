@@ -49,20 +49,27 @@ public class ManagerService {
         return true;
     }
     public boolean delete(Long gameIndex,Long seq){
+        System.out.println(gameIndex+"/"+seq);
         //file db에서 노래 삭제 -> cascade설정으로 answer 전부 같이 연쇄적으로 삭제 됨
-        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
         if(!opt.isPresent()){
             //삭제할 노래가 없으면 false
             return false;
         }
         Music music = opt.get().getMusic();
-        musicRepository.delete(music);
-
+        //System.out.println("now delete id :"+music.getId());
+        //musicRepository.delete(music);
+        //!!! 지금 갑자기 노래 삭제 기능이 말을 안듣는다..
+        musicRepository.deleteManual(music.getId());
         //game repo에 노래 수 감소
         gameRepository.deleteSongToGame(gameIndex);
 
         return true;
     }
+    public Long getAnswerNum(Long gameIndex,Long seq){
+        return answerRepository.countByGameIndexAndSeq(gameIndex,seq);
+    }
+
 
     public List<Answers> getAnswerList(Long gameIndex){
         Optional<List<Answers>> opt = Optional.ofNullable(answerRepository.findByGameIndex(gameIndex));
@@ -76,6 +83,7 @@ public class ManagerService {
             return new ArrayList<>();
         }
     }
+
     public Long storeAnswers(List<String> answer, String singer, String initial, Long gameIndex, Music music){
         //가수 초성힌트 저장
         if(singer==null||initial==null)
@@ -119,7 +127,6 @@ public class ManagerService {
             log.error("No valid answer found");
             return -1L;
         }
-
         gameRepository.addSongToGame(gameIndex);
         return maxSeq;
     }
@@ -142,10 +149,9 @@ public class ManagerService {
         answerRepository.updateAnswer(id,answer);
         return true;
     }
-
     public Answers addAnswer(Long gameIndex, Long seq, String answer){
         Answers answers=new Answers();
-        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq);
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
         Optional<Game> gameByGameIndex = gameRepository.findById(gameIndex);
         if(!opt.isPresent()||!gameByGameIndex.isPresent())
         {
@@ -170,7 +176,6 @@ public class ManagerService {
         gameRepository.updateGameTitle(gameIndex,title);
         return true;
     }
-
     public Music storeMusic(MultipartFile file,Long gameIndex) throws IOException {
         Optional<Game> gameOpt = gameRepository.findById(gameIndex);
         Game game;
@@ -186,6 +191,7 @@ public class ManagerService {
         Music save = musicRepository.save(music);
         return save;
     }
+
     public Answers findAnswerById(Long id){
         Optional<Answers> opt = answerRepository.findById(id);
         if(opt.isPresent()){
@@ -193,6 +199,7 @@ public class ManagerService {
         }
         return null;
     }
+
     public void validateMusic(String musicId,Long gameIndex){
         //정답 삭제로 만약 노래의 정답이 없어진 경우 노래 삭제 및 게임 노래 수 감소 필요
         Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(musicId);
@@ -200,5 +207,29 @@ public class ManagerService {
             musicRepository.deleteById(musicId);
             gameRepository.deleteSongToGame(gameIndex);
         }
+    }
+    public Long getSongNum(Long gameIndex){
+        //for Test
+        Long songNum = gameRepository.findSongNum(gameIndex);
+        return songNum;
+    }
+    public Long getMusicNum(Long gameIndex){
+        //for Test
+        return musicRepository.findNumberOfMusic(gameIndex);
+    }
+    public List<Music> getMusicList(Long gameIndex){
+        Optional<List<Music>> opt = Optional.ofNullable(musicRepository.findByGameIndex(gameIndex));
+        if(opt.isPresent()){
+            List<Music> musics = opt.get();
+            return musics;
+        }
+        else {
+            log.warn("No Music found");
+            return new ArrayList<>();
+        }
+    }
+    public Answers getAnswerForOnlyTest(Long gameIndex,Long seq){
+        Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
+        return opt.get();
     }
 }

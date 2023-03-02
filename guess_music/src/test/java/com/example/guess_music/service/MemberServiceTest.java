@@ -63,9 +63,9 @@ class MemberServiceTest {
         given(memberRepository.findByUsername(member.getUsername())).willReturn(Optional.of(member));
 
         //when
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+        String result = memberService.join(member2);
         //then
-        assertThat(e.getMessage()).isEqualTo("already exist id");
+        assertThat(result).isEqualTo("FAIL");
     }
 
     @Test

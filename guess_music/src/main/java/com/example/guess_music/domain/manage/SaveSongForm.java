@@ -1,10 +1,12 @@
 package com.example.guess_music.domain.manage;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
-
+@AllArgsConstructor
 public class SaveSongForm {
     private String singer,initial;
     private List<String> answer;

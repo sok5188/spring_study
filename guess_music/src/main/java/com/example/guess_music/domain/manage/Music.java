@@ -1,13 +1,19 @@
 package com.example.guess_music.domain.manage;
+import com.example.guess_music.domain.game.Answers;
 import com.example.guess_music.domain.game.Game;
 import jakarta.persistence.*;
 
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "files")
+@Table(name = "Music")
+@NoArgsConstructor
 public class Music {
     @Id
     @GeneratedValue(generator = "uuid")
@@ -29,13 +35,12 @@ public class Music {
         this.game = game;
     }
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "gameIndex")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Game game;
-    public Music() {
-    }
-
+//    @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Answers> answers=new ArrayList<>();
     public Music(String name, String type, byte[] data, Game game) {
         this.name = name;
         this.type = type;

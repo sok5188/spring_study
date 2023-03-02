@@ -88,7 +88,7 @@ class AnswerRepositoryTest {
         answers.setGameIndex(game);
         answerRepository.save(answers);
         //when
-        Optional<Answers> opt = answerRepository.findByIdxSeq(game.getGameIndex(), answers.getSeq());
+        Optional<Answers> opt = answerRepository.findByIdxSeq(game.getGameIndex(), answers.getSeq()).stream().findAny();
         //then
         assertThat(opt.isPresent()).isTrue();
         assertThat(opt.get()).isEqualTo(answers);
@@ -114,10 +114,14 @@ class AnswerRepositoryTest {
     void findByMusicIndex() {
         //given
         Music music=getMusic();
+        Game game = getGame();
+        Game savedGame = gameRepository.save(game);
+        music.setGame(savedGame);
         Music save = musicRepository.save(music);
 
         Answers answers=getAnswers();
         answers.setMusic(save);
+        answers.setGameIndex(savedGame);
         answerRepository.save(answers);
 
         //when

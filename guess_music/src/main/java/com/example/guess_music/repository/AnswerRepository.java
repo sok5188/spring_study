@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answers, Long> {
     @Query("select a from Answers a join fetch a.game g where g.gameIndex=?1 and a.seq=?2")
-    Optional<Answers> findByIdxSeq(Long gameIndex, Long seq);
+    List<Answers> findByIdxSeq(Long gameIndex, Long seq);
     @Query("select a from Answers a join fetch a.game g where g.gameIndex=?1")
     List<Answers> findByGameIndex(Long gameIndex);
     @Query("select a from Answers a join fetch a.music m where m.id=?1")
@@ -26,5 +26,9 @@ public interface AnswerRepository extends JpaRepository<Answers, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update Answers a set a.answer=?2 where a.id=?1")
     void updateAnswer(Long id,String answer);
+
+    //for test
+    @Query("select count(*) from Answers where game.gameIndex=?1 and seq=?2")
+    Long countByGameIndexAndSeq(Long gameIndex, Long seq);
 
 }

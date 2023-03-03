@@ -202,7 +202,7 @@ public class ManagerService {
 
     public void validateMusic(String musicId,Long gameIndex){
         //정답 삭제로 만약 노래의 정답이 없어진 경우 노래 삭제 및 게임 노래 수 감소 필요
-        Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(musicId);
+        Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(musicId).stream().findAny();
         if(!byMusicIndex.isPresent()){
             musicRepository.deleteById(musicId);
             gameRepository.deleteSongToGame(gameIndex);

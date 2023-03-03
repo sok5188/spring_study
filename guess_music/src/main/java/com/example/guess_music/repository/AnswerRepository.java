@@ -16,7 +16,7 @@ public interface AnswerRepository extends JpaRepository<Answers, Long> {
     @Query("select a from Answers a join fetch a.game g where g.gameIndex=?1")
     List<Answers> findByGameIndex(Long gameIndex);
     @Query("select a from Answers a join fetch a.music m where m.id=?1")
-    Optional<Answers> findByMusicIndex(String musicIndex);
+    List<Answers> findByMusicIndex(String musicIndex);
     //@Query(value = "select a.answer from Answers a join fetch a.game g where g.gameIndex=?1 and a.seq=?2",nativeQuery = true)
     @Query(value = "select a.answer as answer from Answers a where a.game.gameIndex=?1 and a.seq=?2")
     Optional<List<AnswerListMapping>> findAnswerListByGameIndexAndSeq(Long gameIndex, Long seq);

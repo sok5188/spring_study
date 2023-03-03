@@ -125,7 +125,7 @@ class AnswerRepositoryTest {
         answerRepository.save(answers);
 
         //when
-        Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(save.getId());
+        Optional<Answers> byMusicIndex = answerRepository.findByMusicIndex(save.getId()).stream().findAny();
         //then
         assertThat(byMusicIndex.isPresent()).isTrue();
         assertThat(byMusicIndex.get().getAnswer()).isEqualTo(answers.getAnswer());

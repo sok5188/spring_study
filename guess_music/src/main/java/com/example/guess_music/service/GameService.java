@@ -95,7 +95,7 @@ public class GameService {
             return chatRooms.get(roomId);
         else{
             log.error("No room in server memory");
-            return new ChatRoom();
+            return null;
         }
     }
     public void deleteById(String roomId) {

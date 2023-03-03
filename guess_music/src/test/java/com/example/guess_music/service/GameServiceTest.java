@@ -33,20 +33,7 @@ class GameServiceTest {
     @InjectMocks
     GameService gameService;
 
-//    private Map<String, ChatRoom> chatRooms= new HashMap<>();
-//    private ArrayList<User> users=new ArrayList<>();
-//    @Before
-//    public void setUp() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-//        MockitoAnnotations.initMocks(this);
-//        Method postConstruct=GameService.class.getDeclaredMethod("init",null);
-//        postConstruct.setAccessible(true);
-//        postConstruct.invoke(gameService);
-//    }
-//    @AfterEach
-//    public void afterEach() {
-//        chatRooms.clear();
-//        users.clear();
-//    }
+
     @BeforeEach
     public void beforeEach() {
         gameService.testinit();

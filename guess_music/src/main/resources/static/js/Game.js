@@ -53,46 +53,47 @@ var vm = new Vue({
     },
     created() {
         this.roomId = localStorage.getItem('wschat.roomId');
-        this.findRoom();
         this.findUser();
+        this.findRoom();
     },
     methods: {
         unLoadEvent: function (event) {
           event.preventDefault();
           this.sendMessage('LEAVE');
         },
-        findRoom: function() {
-            axios.get('/Game/room/'+this.roomId).then(response => { this.room = response.data;
-              console.log("in room"+this.sender+" / " + this.room.ownerName);
-              if(this.room.roomStatus=="WAITING"){
+        findRoom:async function() {
+            console.log("findRoom Called");
+            const response= await axios.get('/Game/room/'+this.roomId)
+            this.room = response.data;
+            if(this.room.roomStatus=="WAITING"){
                 console.log("now waiting");
-               this.totalSong=this.room.songNum;
-               this.remainSong=this.room.songNum;
-              }
-                console.log(this.sender===this.room.ownerName);
-              if(this.sender==this.room.ownerName&&this.room.roomStatus=="WAITING"){
-                console.log("you are owner!");
-                this.startDiv=true;
-
-              }
-
-
-            });
+                this.totalSong=this.room.songNum;
+                this.remainSong=this.room.songNum;
+                if(this.sender==this.room.ownerName)
+                    this.startDiv=true;
+            }
+            console.log("findRoom Exit");
         },
-        findUser: function(){
-          axios.get('/Game/getUser').then(response=>{
-            this.sender=response.data;
-            if(this.sender==this.room.ownerName&&this.room.roomStatus=="WAITING")
-                this.startDiv=true;
-          });
+        findUser: async function(){
+            //sender를 찾는 함수( 사실 create된 시점에만 필요함.)
+            console.log("findUser Called");
+          const response=await axios.get('/Game/getUser')
+          this.sender=response.data;
+          console.log("findUser return");
         },
-        findUsers:function(){
-            axios.get("/Game/getUsers/"+this.roomId).then(response=>{
-                            this.users=response.data;
-                            this.users.sort((a,b)=>{
-                                return b.score-a.score;
-                            })
-                       })
+        findUsers:async function(){
+        //방 내의 유저 목록 및 유저 수를 갱신하는 함수
+            console.log("findUsers called");
+            const res=await axios.get("/Game/getUsers/"+this.roomId)
+            this.users=res.data;
+            this.users.sort((a,b)=>{
+                return b.score-a.score;
+            })
+            this.userNum=this.users.length;
+            console.log("userNum :"+this.userNum);
+            var half= Math.floor(this.userNum/2);
+            this.voteLimit=half +1;
+            console.log("findUsers return");
         },
         sendMessage: function(MsgType) {
             if(this.block){
@@ -104,32 +105,40 @@ var vm = new Vue({
             //checkAnswer(message);
             this.message = '';
         },
-        recvMessage: function(recv) {
-            axios.get('/Game/getUserCount/'+this.roomId).then(response=>{
-                this.userNum=response.data;
-                var half= Math.floor(this.userNum/2);
-                this.voteLimit=half +1;
-                console.log("now voteLimit:"+this.voteLimit+ " usernum :  "+this.userNum+ " / half : "+half);
-            })
+        recvMessage: async function(recv) {
+            if(recv.type=="ENTER"){
+                console.log("entered!")
+                const res=await axios.get("/Game/getUserCount/"+this.roomId);
+                this.userNum=res.data;
 
+                console.log("enter return, roomNum :"+this.userNum);
+            }
             if(recv.type=='START'){
                 console.log("in recv it is START");
+                this.findUsers();
                 this.startGame();
             }else{
                 if(recv.type=='VOTE'){
                     this.nowVote=this.nowVote+1;
                     //누군가가 skip을 누르면 skipDiv를 보여준다
                     this.skipDiv=true;
-                    this.checkSkip();
+                    //굳이 checkskip불러서 api호출 하는 것 보다 코드적으로만 스킵 체크 하고 스킵 호출 !
+                    if(this.nowVote>=this.voteLimit){
+                        console.log("vote is over the limit nowVote:"+this.nowVote+" voteLimit:"+this.voteLimit);
+                        this.skipSong();
+                    }
                 }else if(recv.type=='ANSWER'){
                     this.findUsers();
                     this.skipSong();
                 }
                 else if(recv.type=='LEAVE'){
-                    this.findRoom();
-                    this.findUsers();
-                    this.findUser();
-                    this.checkSkip();
+                    await this.findRoom();
+                    if(this.room.roomStatus=="WAITING"){
+                        axios.get("/Game/getUserCount/"+this.roomId).then(res=>{this.userNum=res.data;})
+                    }else{
+                        await this.findUsers();
+                        this.checkSkip();
+                    }
                 }
                 this.messages.unshift({"type":recv.type,"sender":recv.type!='TALK'?'[알림]':recv.sender,"message":recv.message})
             }
@@ -137,12 +146,14 @@ var vm = new Vue({
 
 
         },
-        checkSkip :function(){
+        checkSkip :async function(){
+            console.log("checkSkip called");
             console.log("now vote in checkSKip:"+this.nowVote+" voteLimit:"+this.voteLimit);
             if(this.nowVote>=this.voteLimit){
                 console.log("vote is over the limit nowVote:"+this.nowVote+" voteLimit:"+this.voteLimit);
                 this.skipSong();
             }
+            console.log("checkSkip return");
         },
         sendStart : function(){
            console.log("send start");
@@ -238,9 +249,8 @@ var vm = new Vue({
                 this.singerHintText=response.data[1];
             })
         },
-        skipSong: function() {
+        skipSong: async function() {
             console.log("in skip song");
-            //this.showAnswer();
             this.block=true;
             this.skipStatus="skipping";
             this.skipText="투표로 인해 노래가 스킵됩니다 !"
@@ -249,30 +259,22 @@ var vm = new Vue({
             this.singerDiv=false;
             this.initialDiv=false;
             this.gotAnswerDiv=true;
-
-            axios.get("/Game/getAnswer/"+this.roomId).then(response=>{
-                console.log("response data is : "+response.data);
-                this.answerText=response.data[0];
-                this.singerHintText=response.data[1];
-                if(this.remainSong==1){
-                     //game end
-                     //this.endGame();
-                     //3초 후 종료 되게 끔 기달기달
-                }else{
-                    let ownFlag='nope';
-                    if(this.sender==this.room.ownerName){
-                        console.log("owner will send owner flag")
-                        ownFlag='owner'
-                    }
-                    axios.get("/Game/skip",{params:{roomId:this.roomId,type:ownFlag}}).then(response=>{
-                        //서버로 바로 스킵 시그널 전송 클라이언트에선 3초 후 새로운 노래 load함
-                    });
-
-                }
-            })
-
-
+            console.log("in skip, call get answer")
+            const response=await axios.get("/Game/getAnswer/"+this.roomId)
+            this.answerText=response.data[0];
+            this.singerHintText=response.data[1];
+            console.log("in skip, after get answer and call if or else ..")
+            if(this.remainSong>1){
+                 let ownFlag='nope';
+                 if(this.sender==this.room.ownerName){
+                     console.log("owner will send owner flag")
+                     ownFlag='owner'
+                 }
+                 await axios.get("/Game/skip",{params:{roomId:this.roomId,type:ownFlag}})
+            }
+            console.log("all done to skip will call time out ");
             setTimeout(() => {
+                console.log("Time Out! will reset game set")
                 if(this.remainSong==1){
                      //game end
                      this.endGame();
@@ -301,14 +303,6 @@ var vm = new Vue({
 
 
         },
-        sendSkip : function(){
-            if(this.sender==this.room.ownerName){
-                axios.post("/Game/skip/"+this.roomId).then(res=>{
-                })
-            }
-            return;
-        }
-        ,
         skipVote: function() {
             //버튼 누르면 투표 수 증가
             this.skipBtnMsg='투표완료';

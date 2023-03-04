@@ -105,8 +105,10 @@ public class MessageController {
     }
 
     @GetMapping("/Game/getUserCount/{roomId}")
-    public int subNum(@PathVariable String roomId){
-        return this.findSub(roomId).size();
+    public int newSubNum(@PathVariable String roomId){
+        ChatRoom room = gameService.findById(roomId);
+        //System.out.println("room user num:"+room.getRoomUserNum());
+        return room.getRoomUserNum();
     }
 
     @GetMapping("/Game/findSub/{roomId}")

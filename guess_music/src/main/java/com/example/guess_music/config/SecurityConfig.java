@@ -57,7 +57,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.addFilterBefore(new CustomLoginPageFilter(), DefaultLoginPageGeneratingFilter.class);
-        http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> { System.out.println("authenticationEntryPoint Error:"+req.getAuthType()); rsp.sendRedirect("/?error=authenticationError");})
+        http.exceptionHandling().authenticationEntryPoint((req, rsp, e) -> { System.out.println("authenticationEntryPoint Error:"+req.getServletPath());
+            if(req.getServletPath().equals("/error"))
+                rsp.sendRedirect("/auth/loginForm");
+            else rsp.sendRedirect("/?error=authenticationError");
+        })
                 .accessDeniedHandler((req, rsp, e) -> {  System.out.println("accessDenied Error"); rsp.sendRedirect("/?error=accessDenied");})
                 .and().sessionManagement().maximumSessions(1).expiredUrl("/auth/loginForm").maxSessionsPreventsLogin(true)
                 .and()
@@ -65,6 +69,8 @@ public class SecurityConfig {
                 .requestMatchers("/manage/**").access("hasRole('MANAGER') or hasRole('ADMIN')")
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/").permitAll()
+                .requestMatchers("/logout").permitAll()
+                .requestMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin()
                 .loginPage("/auth/loginForm").loginProcessingUrl("/login").failureUrl("/auth/loginForm").permitAll().defaultSuccessUrl("/").successHandler((req, res, auth) -> {req.getSession().setAttribute("username",auth.getName());

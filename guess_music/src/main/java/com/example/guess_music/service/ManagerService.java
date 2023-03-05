@@ -297,16 +297,14 @@ public class ManagerService {
         return Arrays.asList(mem,ans,song,game);
     }
     public Page<Game> getPagedGames(int page){
-        //List<Game> allBySearchDTO = gameRepository.findAllBySearchDTO(0L, 10L);
         Page<Game> pages = gameRepository.findAll(PageRequest.of(page, 10));
-        pages.forEach(game -> {
-            System.out.println(game.getGameIndex()+"/"+game.getTitle());
+        return pages;
+    }
+    public Page<Answers> getPagedAnswers(int page,Long gameIndex){
+        Page<Answers> pages = answerRepository.findAllByGame_GameIndex(gameIndex,PageRequest.of(page, 10));
+        pages.forEach(answers -> {
+            System.out.println(answers.getAnswer()+"/"+answers.getGameIndex());
         });
-        int totalPages = pages.getTotalPages();
-        System.out.println(totalPages);
-        Pageable pageable = pages.getPageable();
-        System.out.println(pageable.getPageNumber());
-
         return pages;
     }
 }

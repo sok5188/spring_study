@@ -7,6 +7,7 @@ import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.domain.manage.SaveSongForm;
 import com.example.guess_music.domain.manage.SearchDTO;
 import com.example.guess_music.service.ManagerService;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -58,8 +59,11 @@ public class ManagerController {
         return "redirect:/manage";
     }
     @GetMapping("/modifyGame")
-    public String modifyGamePage(@RequestParam("gameIndex") Long gameIndex, Model model){
-        model.addAttribute("idx",gameIndex);
+    public String modifyGamePage(@ModelAttribute("searchDTO") SearchDTO searchDTO, Model model,@ModelAttribute("gameIndex") Long gameIndex){
+        Page<Answers> pagedAnswers = managerService.getPagedAnswers(searchDTO.getPageNum(), gameIndex);
+        List<Answers> answers = pagedAnswers.toList();
+        searchDTO.setTotalPageSize(pagedAnswers.getTotalPages());
+        model.addAttribute("answers",answers);
         return "manage/updateSong";
     }
     @ResponseBody
@@ -181,12 +185,4 @@ public class ManagerController {
         return "manage/increase";
     }
 
-//    @GetMapping("/getpage")
-//    public String getpage(@ModelAttribute("searchDTO") SearchDTO searchDTO, Model model){
-//        Page<Game> pagedGames = managerService.getPagedGames(searchDTO.getPageNum());
-//        List<Game> games = pagedGames.toList();
-//        searchDTO.setTotalPageSize(pagedGames.getTotalPages());
-//        model.addAttribute("games",games);
-//        return "manage/manager";
-//    }
 }

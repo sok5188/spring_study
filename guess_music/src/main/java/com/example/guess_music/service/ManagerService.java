@@ -1,28 +1,30 @@
 package com.example.guess_music.service;
 
+import com.example.guess_music.domain.auth.Member;
+import com.example.guess_music.domain.auth.Role;
 import com.example.guess_music.domain.game.Answers;
 import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.manage.Music;
-import com.example.guess_music.repository.AnswerRepository;
-import com.example.guess_music.repository.GameRepository;
-import com.example.guess_music.repository.MusicRepository;
-import com.example.guess_music.repository.SingerListMapping;
+import com.example.guess_music.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 @Slf4j
 @Transactional
 @Service
 public class ManagerService {
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private GameRepository gameRepository;
@@ -231,5 +233,80 @@ public class ManagerService {
     public Answers getAnswerForOnlyTest(Long gameIndex,Long seq){
         Optional<Answers> opt = answerRepository.findByIdxSeq(gameIndex, seq).stream().findAny();
         return opt.get();
+    }
+
+    public void increaseDB(String type){
+        Optional<Music> optMusic = musicRepository.findById("c0c0bbac-f6ad-42cc-9adb-81d24be2a075");
+        if(!optMusic.isPresent())
+            System.out.println("Not exist music");
+        Optional<Game> opt = gameRepository.findById(2L);
+        if(!opt.isPresent())
+            System.out.println("Not exist game");
+        if(type.equals("member")){
+            log.info("member");
+            for( int i=0; i<1000;i++){
+                Member member=new Member();
+                member.setUsername(UUID.randomUUID().toString());
+                member.setName("DELETEME");
+                member.setRole(Role.ROLE_USER);
+                memberRepository.save(member);
+            }
+        }else if (type.equals("game")){
+            log.info("game");
+            for( int i=0; i<1000;i++){
+                Game game=new Game();
+                game.setSongNum(0L);
+                game.setGameIndex(getValidGameIndex());
+                game.setTitle("DELETEME");
+                gameRepository.save(game);
+            }
+
+        }else if (type.equals("song")){
+            log.info("song");
+            //톰캣 heap용량 이슈로 일단 100개씩 추가.
+            for( int i=0; i<100;i++){
+                Music music=new Music();
+                music.setGame(opt.get());
+                music.setName("DELETEME");
+                music.setData(optMusic.get().getData());
+                music.setType(optMusic.get().getType());
+                musicRepository.save(music);
+            }
+
+        }else if (type.equals("answer")){
+            log.info("answer");
+            for( int i=0; i<1000;i++){
+
+                Answers answers=new Answers();
+                answers.setGameIndex(opt.get());
+                answers.setAnswer("DELETEME");
+                answers.setSinger("DELETEME");
+                answers.setInitial("DELETEME");
+                answers.setSeq(999L);
+                answers.setMusic(optMusic.get());
+                answerRepository.save(answers);
+            }
+
+        }
+    }
+    public List<Long> getSize(){
+        Long mem=memberRepository.count();
+        Long ans = answerRepository.count();
+        Long song=musicRepository.count();
+        Long game=gameRepository.count();
+        return Arrays.asList(mem,ans,song,game);
+    }
+    public Page<Game> getPagedGames(int page){
+        //List<Game> allBySearchDTO = gameRepository.findAllBySearchDTO(0L, 10L);
+        Page<Game> pages = gameRepository.findAll(PageRequest.of(page, 10));
+        pages.forEach(game -> {
+            System.out.println(game.getGameIndex()+"/"+game.getTitle());
+        });
+        int totalPages = pages.getTotalPages();
+        System.out.println(totalPages);
+        Pageable pageable = pages.getPageable();
+        System.out.println(pageable.getPageNumber());
+
+        return pages;
     }
 }

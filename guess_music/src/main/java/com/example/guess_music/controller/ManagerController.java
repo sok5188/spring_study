@@ -5,8 +5,10 @@ import com.example.guess_music.domain.game.Game;
 import com.example.guess_music.domain.manage.CreateGameForm;
 import com.example.guess_music.domain.manage.Music;
 import com.example.guess_music.domain.manage.SaveSongForm;
+import com.example.guess_music.domain.manage.SearchDTO;
 import com.example.guess_music.service.ManagerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -153,4 +155,34 @@ public class ManagerController {
         return "Success";
     }
 
+    //for Test DB
+    @GetMapping("/increase")
+    public String increaseView(Model model){
+        List<Long> size = managerService.getSize();
+        model.addAttribute("memberNum",size.get(0));
+        model.addAttribute("answerNum",size.get(1));
+        model.addAttribute("songNum",size.get(2));
+        model.addAttribute("gameNum",size.get(3));
+        return "manage/increase";
+    }
+    @PostMapping("/increase")
+    public String increaseDB(@RequestParam("type") String type,Model model){
+        System.out.println("type : "+type);
+        managerService.increaseDB(type);
+        List<Long> size = managerService.getSize();
+        model.addAttribute("memberNum",size.get(0));
+        model.addAttribute("answerNum",size.get(1));
+        model.addAttribute("songNum",size.get(2));
+        model.addAttribute("gameNum",size.get(3));
+        return "manage/increase";
+    }
+
+    @GetMapping("/getpage")
+    public String getpage(@ModelAttribute("searchDTO") SearchDTO searchDTO, Model model){
+        Page<Game> pagedGames = managerService.getPagedGames(searchDTO.getPageNum());
+        List<Game> games = pagedGames.toList();
+        searchDTO.setTotalPageSize(pagedGames.getTotalPages());
+        model.addAttribute("games",games);
+        return "manage/manager";
+    }
 }

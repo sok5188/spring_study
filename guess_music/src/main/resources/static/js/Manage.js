@@ -1,21 +1,6 @@
 const url='/Game/gameList'
 const table=document.getElementById("tableBody");
-var ansCount=0;
-fetch(url).then(res=>res.json()).then(data=>{
-    data.forEach(function(game){
-        ansCount++;
-        console.log(game);
-        var row=`<tr id="${ansCount}">
-        <td>${game.gameIndex}</td>
-        <td>${game.title}</td>
-        <td>${game.songNum}</td>
-        <td><input type="button" value="제목 변경" id="modifyTitleBtn" onclick="addNewTitle(${game.gameIndex},${ansCount})"></td>
-        <td><input type="button" value="게임 수정" id="modifyGameBtn" onclick="modifyGame(${game.gameIndex})"></td>
-        <td><input type="button" value="게임 삭제" id="deleteGameBtn" onclick="deleteGame(${game.gameIndex})"></td>
-        </tr>`
-        table.innerHTML+=row;
-    })
-})
+
 function addNewTitle(gameIndex,trId){
     var tr=document.getElementById(trId);
 

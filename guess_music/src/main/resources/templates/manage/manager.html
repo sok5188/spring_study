@@ -10,24 +10,90 @@
 <div>
     <h2> 관리자 페이지 입니다 </h2>
 </div>
-<div>
-    <input type="button" value="새 게임추가" id="makeGameBtn" onclick="makeGame()">
-    <table class="table table-striped" id="mainTable">
-        <tr>
-            <th> 게임 번호 </th>
-            <th> 게임 제목 </th>
-            <th> 곡 수 </th>
-        </tr>
-        <tbody id="tableBody">
+<th:block layout:fragment="content">
+    <div class="content">
+        <div>
+            <input type="button" value="새 게임추가" id="makeGameBtn" onclick="makeGame()">
+            <table class="table table-striped" id="mainTable">
+                <tr>
+                    <th> 게임 번호 </th>
+                    <th> 게임 제목 </th>
+                    <th> 곡 수 </th>
+                </tr>
+                <tbody id="tableBody">
 
-        </tbody>
-    </table>
+                </tbody>
+            </table>
 
-</div>
-<div>
-    <input type="button" value="Home" id="returnBtn" onclick="goback()">
-</div>
+        </div>
+        <div class="footNum">
+
+        </div>
+        <div>
+            <input type="button" value="Home" id="returnBtn" onclick="goback()">
+        </div>
+    </div>
+</th:block>
 </body>
-<script src="js/Manage.js">
+<script src="/js/Manage.js">
+</script>
+<script th:inline="javascript">
+    const dto=[[${searchDTO}]];
+    console.log("dto info"+dto.pageNum+"/"+dto.totalPageSize+"/"+dto.pagingSize);
+    const pageNum=dto.pageNum+1;
+    const games=[[${games}]];
+    console.log("games:"+games.length);
+    var ansCount=0;
+    games.forEach(function(game){
+        ansCount++;
+        console.log(game);
+        var row=`<tr id="${ansCount}">
+        <td>${game.gameIndex}</td>
+        <td>${game.title}</td>
+        <td>${game.songNum}</td>
+        <td><input type="button" value="제목 변경" id="modifyTitleBtn" onclick="addNewTitle(${game.gameIndex},${ansCount})"></td>
+        <td><input type="button" value="게임 수정" id="modifyGameBtn" onclick="modifyGame(${game.gameIndex})"></td>
+        <td><input type="button" value="게임 삭제" id="deleteGameBtn" onclick="deleteGame(${game.gameIndex})"></td>
+        </tr>`
+        table.innerHTML+=row;
+    })
+
+    let html='';
+    //이전 페이지 버튼 필요
+    if(dto.pageNum>0){
+        html+=`
+        <a href="javascript:void(0);" onclick="movePage(0)" class="page_bt first" > 첫 페이지 </a>
+        <a href="javascript:void(0);" onclick="movePage(${dto.pageNum-1})" class="page_bt prev"> 이전 페이지 </a>
+        `;
+    }
+    let idx=Math.floor(dto.pageNum/dto.pagingSize);
+    idx=idx*10+1;
+    let maxIdx=idx+dto.pagingSize;
+    if(idx+dto.pagingSize>dto.totalPageSize)
+        maxIdx=dto.totalPageSize+1;
+    html+=`<p>`;
+    for(let i=idx;i<maxIdx;i++){
+        html+=(i!==pageNum)?`<a href="javascript:void(0);" onclick="movePage(${i-1})" style="padding-right:5px;padding-left:5px">${i}</a>`:`<span class="on" style="color:green; padding-right:5px;padding-left:5px">${i}</span>`;
+    }
+    html+=`</p>`;
+
+    if(pageNum<dto.totalPageSize){
+        html += `
+        <a href="javascript:void(0);" onclick="movePage(${dto.pageNum + 1});" class="page_bt next">다음 페이지</a>
+        <a href="javascript:void(0);" onclick="movePage(${dto.totalPageSize-1});" class="page_bt last">마지막 페이지</a>
+    `;
+    }
+    document.querySelector('.footNum').innerHTML = html;
+    function movePage(targetPage){
+        const params={
+            pageNum: targetPage,
+            totalPageSize: dto.totalPageSize,
+            pagingSize: dto.pagingSize
+        }
+        let url = location.pathname + '?' + new URLSearchParams(params).toString();
+        console.log(url);
+        location.href = url;
+    }
+
 </script>
 </html>

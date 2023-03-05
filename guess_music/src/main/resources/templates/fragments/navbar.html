@@ -34,6 +34,11 @@
           <a class="nav-link" th:href="@{/manage}">Manage</a>
         </div>
       </li>
+      <li class="nav-item">
+        <div sec:authorize="hasRole('ADMIN')" style="padding:1em;">
+          <a class="nav-link" th:href="@{/manage/increase}">IncreaseDB</a>
+        </div>
+      </li>
 
     </ul>
 

@@ -25,7 +25,11 @@ public class ManagerController {
     }
 
     @GetMapping("")
-    public String enterManager(){
+    public String enterManager(@ModelAttribute("searchDTO") SearchDTO searchDTO, Model model){
+        Page<Game> pagedGames = managerService.getPagedGames(searchDTO.getPageNum());
+        List<Game> games = pagedGames.toList();
+        searchDTO.setTotalPageSize(pagedGames.getTotalPages());
+        model.addAttribute("games",games);
         return "manage/manager";
     }
 
@@ -177,12 +181,12 @@ public class ManagerController {
         return "manage/increase";
     }
 
-    @GetMapping("/getpage")
-    public String getpage(@ModelAttribute("searchDTO") SearchDTO searchDTO, Model model){
-        Page<Game> pagedGames = managerService.getPagedGames(searchDTO.getPageNum());
-        List<Game> games = pagedGames.toList();
-        searchDTO.setTotalPageSize(pagedGames.getTotalPages());
-        model.addAttribute("games",games);
-        return "manage/manager";
-    }
+//    @GetMapping("/getpage")
+//    public String getpage(@ModelAttribute("searchDTO") SearchDTO searchDTO, Model model){
+//        Page<Game> pagedGames = managerService.getPagedGames(searchDTO.getPageNum());
+//        List<Game> games = pagedGames.toList();
+//        searchDTO.setTotalPageSize(pagedGames.getTotalPages());
+//        model.addAttribute("games",games);
+//        return "manage/manager";
+//    }
 }
